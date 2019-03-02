@@ -3,19 +3,19 @@ package de.eternalwings.vima.controller
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.repository.VideoRepository
 import org.apache.commons.io.IOUtils
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
-import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.util.Collections
 import javax.persistence.EntityNotFoundException
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/api")
@@ -31,14 +31,9 @@ class VideoController(val videoRepository: VideoRepository) {
     }
 
     @GetMapping("/video/{id}/stream")
-    fun streamVideo(@PathVariable("id") id: Int, response: HttpServletResponse) {
+    fun streamVideo(@PathVariable("id") id: Int): ResponseEntity<Resource> {
         val video = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
-        val videoPath = Paths.get(video.location)
-        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/mp4")
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline")
-        Files.newInputStream(videoPath, StandardOpenOption.READ).use {
-            it.copyTo(response.outputStream)
-        }
+        return ResponseEntity.status(OK).body(FileSystemResource(video.location!!))
     }
 
     @GetMapping("/video/{id}/thumbnails")
