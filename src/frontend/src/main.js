@@ -13,16 +13,16 @@ import colors from 'vuetify/es5/util/colors'
 Vue.config.productionTip = false;
 
 Vue.use(Vuetify, {
-  theme: {
-    primary: colors.orange.base
-  }
+    theme: {
+        primary: colors.orange.base
+    }
 });
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  store,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+    router,
+    store,
+    components: { App },
+    template: '<App/>'
 });

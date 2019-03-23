@@ -1,8 +1,5 @@
 package de.eternalwings.vima.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY
 import de.eternalwings.vima.MetadataType
 import de.eternalwings.vima.domain.Ordering.ASC
 import javax.persistence.CascadeType.ALL
@@ -32,4 +29,10 @@ data class Metadata(
         var systemSpecified: Boolean = false,
         @OneToOne(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
         var options: MetadataOptions? = null
-)
+) {
+    fun toValue() : MetadataValue<*> {
+        val value = options!!.toValue()
+        value.metadata = this
+        return value
+    }
+}

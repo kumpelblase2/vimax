@@ -1,0 +1,87 @@
+<template>
+    <v-dialog v-model="dialog" persistent max-width="750px" v-if="video">
+        <v-card>
+            <v-card-title>
+                <span class="headline">Editing Video</span>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field v-model="video.name"></v-text-field>
+                <v-item-group mandatory @change="updateSelectedThumbnail">
+                    <v-layout row wrap>
+                        <v-flex v-for="(thumbnail, index) in video.thumbnails" :key="index">
+                            <v-item active-class="active" class="element">
+                                <v-img :src="thumbnailUrl(thumbnail)" slot-scope="{ active, toggle }" @click="toggle"></v-img>
+                            </v-item>
+                        </v-flex>
+                    </v-layout>
+                </v-item-group>
+                <div v-for="(metadata,index) in video.metadata" :key="index">
+                    <metadata-value-editor :metadata-definition="metadata.metadata"
+                                           :metadata-value="metadata.value"
+                                           @change="handleMetadataUpdate(index, $event)"></metadata-value-editor>
+                </div>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="refreshThumbnails">Refresh Thumbs</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn @click="save">Save</v-btn>
+                <v-btn @click="close">Cancel</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>
+
+<script>
+    import { mapActions, mapState } from "vuex";
+    import MetadataValueEditor from "./MetadataValueEditor";
+
+    export default {
+        name: "VideoEditDialog",
+        components: { MetadataValueEditor },
+        computed: {
+            ...mapState('videos', [
+                'editingVideo'
+            ]),
+            dialog() {
+                return this.editingVideo != null;
+            },
+            video() {
+                return this.editingVideo;
+            }
+        },
+        methods: {
+            ...mapActions('videos', [
+                'editVideo',
+                'saveEditingVideo',
+                'changeSelectedThumbnail',
+                'setEditingMetadataValue',
+                'refreshThumbnails'
+            ]),
+            close() {
+                this.editVideo(null);
+            },
+            save() {
+                this.saveEditingVideo().then(() => this.close());
+            },
+            thumbnailUrl(thumbnail) {
+                return `/api/video/${this.editingVideo.id}/thumbnail/${thumbnail.id}`;
+            },
+            updateSelectedThumbnail(thumbnailIndex) {
+                this.changeSelectedThumbnail(thumbnailIndex);
+            },
+            handleMetadataUpdate(index, event) {
+                this.setEditingMetadataValue({index, value: event});
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .active {
+        box-shadow: 0 0 0 5px orange;
+    }
+
+    .element {
+        margin: 10px;
+    }
+</style>

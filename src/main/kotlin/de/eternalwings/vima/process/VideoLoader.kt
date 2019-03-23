@@ -1,5 +1,6 @@
 package de.eternalwings.vima.process
 
+import de.eternalwings.vima.domain.Library
 import de.eternalwings.vima.repository.LibraryRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.context.ApplicationListener
@@ -17,23 +18,25 @@ class VideoLoader(
         val videoImporter: VideoImporter
 ) : ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
-        scan()
+        scanAllLibraries()
     }
 
-    fun scan() = scanDirectories(libraryRepository.findAll().map { Paths.get(it.path) })
+    fun scanAllLibraries() = scanLibraries(libraryRepository.findAll())
 
-    fun scanDirectories(paths: List<Path>) {
+    fun scanLibraries(libraries: List<Library>) {
         val existingVideos = videoRepository.findAll()
         val existingPaths = existingVideos.map { Paths.get(it.location) }.toSet()
-        paths.stream().flatMap { Files.walk(it, 1, FOLLOW_LINKS) }
-            .filter { Files.isRegularFile(it) }
-            .filter { isVideoFile(it) }
-            .filter { !existingPaths.contains(it) }
-            .forEach(videoImporter::considerForImport)
+        libraries.forEach { library ->
+            Files.walk(Paths.get(library.path), 1, FOLLOW_LINKS)
+                .filter { Files.isRegularFile(it) }
+                .filter { isVideoFile(it) }
+                .filter { !existingPaths.contains(it) }
+                .forEach { videoImporter.considerForImport(it, library) }
+        }
     }
 
-    fun scanDirectory(path: Path) {
-        scanDirectories(listOf(path))
+    fun scanLibrary(library: Library) {
+        scanLibraries(listOf(library))
     }
 
     private fun isVideoFile(possibleVideoFile: Path): Boolean {

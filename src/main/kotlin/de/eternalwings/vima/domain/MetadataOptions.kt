@@ -10,18 +10,23 @@ import de.eternalwings.vima.MetadataType.BOOLEAN
 import de.eternalwings.vima.MetadataType.DATE
 import de.eternalwings.vima.MetadataType.DATETIME
 import de.eternalwings.vima.MetadataType.DURATION
+import de.eternalwings.vima.MetadataType.FLOAT
 import de.eternalwings.vima.MetadataType.NUMBER
 import de.eternalwings.vima.MetadataType.RANGE
 import de.eternalwings.vima.MetadataType.SELECTION
 import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.MetadataType.TIME
+import de.eternalwings.vima.ext.toLocalDate
+import de.eternalwings.vima.ext.toLocalDateTime
+import de.eternalwings.vima.ext.toLocalTime
 import java.util.Date
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 import javax.persistence.Temporal
 import javax.persistence.TemporalType
 import javax.persistence.TemporalType.TIMESTAMP
@@ -39,7 +44,8 @@ import javax.persistence.Transient
     Type(name = "BOOLEAN", value = BooleanMetadataOptions::class),
     Type(name = "DATE", value = DateMetadataOptions::class),
     Type(name = "DATETIME", value = DateTimeMetadataOptions::class),
-    Type(name = "TIME", value = TimeMetadataOptions::class)
+    Type(name = "TIME", value = TimeMetadataOptions::class),
+    Type(name = "FLOAT", value = FloatMetadataOptions::class)
 ])
 abstract class MetadataOptions {
     @Id
@@ -48,6 +54,9 @@ abstract class MetadataOptions {
 
     @Transient
     abstract fun getType(): MetadataType?
+
+    @Transient
+    abstract fun toValue(): MetadataValue<*>
 }
 
 @Entity
@@ -58,9 +67,12 @@ class TextMetadataOptions() : MetadataOptions() {
     }
 
     var suggest: Boolean = false
+
     var defaultTextValue: String? = null
 
     override fun getType() = TEXT
+
+    override fun toValue() = StringMetadataValue(defaultTextValue)
 }
 
 @Entity
@@ -79,6 +91,8 @@ class NumberMetadataOptions() : MetadataOptions() {
     var defaultNumberValue: Int? = null
 
     override fun getType() = NUMBER
+
+    override fun toValue() = NumberMetadataValue(defaultNumberValue)
 }
 
 @Entity
@@ -89,6 +103,8 @@ class RangeMetadataOptions : MetadataOptions() {
     var defaultNumberValue: Int? = null
 
     override fun getType() = RANGE
+
+    override fun toValue() = NumberMetadataValue(defaultNumberValue)
 }
 
 @Entity
@@ -96,9 +112,11 @@ class DurationMetadataOptions : MetadataOptions() {
     var min: Int? = null
     var max: Int? = null
     var step: Int? = null
-    var defaultNumberValue: Int? = null
+    var defaultLongValue: Long? = null
 
     override fun getType() = DURATION
+
+    override fun toValue() = DurationMetadataValue(defaultLongValue)
 }
 
 @Entity
@@ -106,9 +124,12 @@ class SelectionMetadataOptions : MetadataOptions() {
 
     @OneToMany(cascade = [ALL], orphanRemoval = true)
     var values: List<SelectionValues> = emptyList()
-    var defaultTextValue: String? = null
+    @OneToOne
+    var defaultSelectValue: SelectionValues? = null
 
     override fun getType() = SELECTION
+
+    override fun toValue() = SelectionMetadataValue(defaultSelectValue)
 }
 
 @Entity
@@ -123,16 +144,21 @@ class SelectionValues {
 @Entity
 class TaglistMetadataOptions : MetadataOptions() {
 
-    var defaultTextValue: String? = null
+    @field:org.hibernate.annotations.Type(type = "varchar-array")
+    var defaultTagValues: Array<String> = emptyArray()
+
     override fun getType() = TAGLIST
 
+    override fun toValue() = TaglistMetadataValue(defaultTagValues)
 }
 
 @Entity
 class BooleanMetadataOptions : MetadataOptions() {
-    var defaultBooleanValue: Boolean? = null
+    var defaultBooleanValue: Boolean? = false
 
     override fun getType() = BOOLEAN
+
+    override fun toValue() = BooleanMetadataValue(defaultBooleanValue)
 }
 
 @Entity
@@ -141,6 +167,8 @@ class TimeMetadataOptions : MetadataOptions() {
     var defaultTimeValue: Date? = null
 
     override fun getType() = TIME
+
+    override fun toValue() = TimeMetadataValue(defaultTimeValue?.toLocalTime())
 }
 
 @Entity
@@ -149,6 +177,8 @@ class DateTimeMetadataOptions : MetadataOptions() {
     var defaultTimestampValue: Date? = null
 
     override fun getType() = DATETIME
+
+    override fun toValue() = TimestampMetadataValue(defaultTimestampValue?.toLocalDateTime())
 }
 
 @Entity
@@ -157,4 +187,15 @@ class DateMetadataOptions : MetadataOptions() {
     var defaultDateValue: Date? = null
 
     override fun getType() = DATE
+
+    override fun toValue() = DateMetadataValue(defaultDateValue?.toLocalDate())
+}
+
+@Entity
+class FloatMetadataOptions : MetadataOptions() {
+    var defaultDoubleValue: Double? = null
+
+    override fun getType() = FLOAT
+
+    override fun toValue() = FloatMetadataValue(defaultDoubleValue)
 }

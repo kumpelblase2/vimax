@@ -1,6 +1,10 @@
 package de.eternalwings.vima.controller
 
+import de.eternalwings.vima.domain.MetadataValue
+import de.eternalwings.vima.domain.Thumbnail
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.process.VideoProcess
+import de.eternalwings.vima.repository.ThumbnailRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.apache.commons.io.IOUtils
 import org.springframework.core.io.FileSystemResource
@@ -11,6 +15,9 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.nio.file.Files
@@ -19,7 +26,9 @@ import javax.persistence.EntityNotFoundException
 
 @RestController
 @RequestMapping("/api")
-class VideoController(val videoRepository: VideoRepository) {
+class VideoController(private val videoRepository: VideoRepository,
+                      private val thumbnailRepository: ThumbnailRepository,
+                      private val videoProcess: VideoProcess) {
     @GetMapping("/videos")
     fun getAllVideos(): List<Video> {
         return videoRepository.findAll()
@@ -29,6 +38,9 @@ class VideoController(val videoRepository: VideoRepository) {
     fun getRecentVideos(): List<Video> {
         return videoRepository.findAllByOrderByCreationTimeDesc(PageRequest.of(0, 10)).content
     }
+
+    @GetMapping("/video/{id}")
+    fun getVideo(@PathVariable("id") id: Int) = videoRepository.getOne(id)
 
     @GetMapping("/video/{id}/stream")
     fun streamVideo(@PathVariable("id") id: Int): ResponseEntity<Resource> {
@@ -49,5 +61,31 @@ class VideoController(val videoRepository: VideoRepository) {
         val thumbnail = video.thumbnails.find { it.id == thumbnailId } ?: throw EntityNotFoundException()
         val inputStream = Files.newInputStream(thumbnail.locationPath)
         return IOUtils.toByteArray(inputStream)
+    }
+
+    @PutMapping("/video/{id}")
+    fun updateVideo(@RequestBody newVideo: Video, @PathVariable("id") id: Int): Video {
+        return videoRepository.findById(id).map { oldVideo ->
+            oldVideo.selectedThumbnail = newVideo.selectedThumbnail
+            oldVideo.name = newVideo.name
+            newVideo.metadata.forEach { metadataValue ->
+                // I can't do the following without those ugly casts. These two values _should_ be of the
+                // same type. And if they aren't we should fail because something is horribly wrong.
+                val existingValue = oldVideo.metadata.find { existing ->
+                    existing.id == metadataValue.id
+                } as MetadataValue<Any>?
+                existingValue?.copyFrom(metadataValue as MetadataValue<Any>)
+            }
+            videoRepository.save(oldVideo)
+        }.orElseThrow {
+            EntityNotFoundException()
+        }
+    }
+
+    @PostMapping("/video/{id}/refresh")
+    fun refreshThumbnails(@PathVariable("id") videoId: Int): List<Thumbnail> {
+        val video = videoRepository.findById(videoId).orElseThrow { EntityNotFoundException() }
+        videoProcess.refreshThumbnailsFor(video)
+        return thumbnailRepository.findByVideo(video) // Otherwise hibernate cannot load the new thumbnails
     }
 }

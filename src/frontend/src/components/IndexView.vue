@@ -1,26 +1,35 @@
 <template>
-  <v-container fluid>
-    <v-layout row wrap>
-      <VideoCard v-for="video in videos" :key="video.id" :video="video"></VideoCard>
-    </v-layout>
-  </v-container>
+    <v-container fluid grid-list>
+        <v-layout row wrap justify-space-around>
+            <VideoCard v-for="video in videos" :key="video.id" :video_id="video.id"></VideoCard>
+        </v-layout>
+        <video-edit-dialog></video-edit-dialog>
+    </v-container>
 </template>
 
 <script>
-  import VideoCard from "./VideoCard";
+    import { mapActions, mapState } from 'vuex';
+    import VideoCard from "./VideoCard";
+    import VideoEditDialog from "./VideoEditDialog";
 
-  export default {
-    name: "Index",
-    components: { VideoCard },
-    mounted() {
-      this.$store.dispatch('loadRecentVideos');
-    },
-    computed: {
-      videos() {
-        return this.$store.state.videos;
-      }
+    export default {
+        name: "Library",
+        components: { VideoEditDialog, VideoCard },
+        mounted() {
+            this.loadAllVideos();
+        },
+        computed: {
+            ...mapState('videos', [
+                'videos'
+            ])
+        },
+        methods: {
+            ...mapActions('videos', [
+                'loadRecentVideos',
+                'loadAllVideos'
+            ])
+        }
     }
-  }
 </script>
 
 <style scoped>

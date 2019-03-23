@@ -19,9 +19,13 @@ abstract class BasePersistable<T : Serializable> : Persistable<T> {
     var creationTime: LocalDateTime? = null
     var updateTime: LocalDateTime? = null
     @Version
-    var version: Int? = null
+    var version: Int? = 1
 
     override fun getId(): T? = id
+
+    fun setId(id: T?) {
+        this.id = id
+    }
 
     @JsonIgnore
     override fun isNew() = id != null

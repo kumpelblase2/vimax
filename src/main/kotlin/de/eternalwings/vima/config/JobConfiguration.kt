@@ -1,24 +1,20 @@
 package de.eternalwings.vima.config
 
-import de.eternalwings.vima.job.ThumbnailTasklet
 import de.eternalwings.vima.job.LoadVideoTasklet
+import de.eternalwings.vima.job.ThumbnailTasklet
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
-import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.batch.core.launch.support.RunIdIncrementer
-import org.springframework.batch.core.launch.support.SimpleJobLauncher
-import org.springframework.batch.core.repository.JobRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.task.TaskExecutor
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
-import java.util.concurrent.ThreadPoolExecutor
+import org.springframework.scheduling.annotation.EnableAsync
 
 @Configuration
+@EnableAsync
 @EnableBatchProcessing
 class JobConfiguration {
     @Autowired
@@ -42,16 +38,5 @@ class JobConfiguration {
     @Bean
     fun analyzeStep(thumbnailTasklet: ThumbnailTasklet): Step {
         return stepBuilderFactory.get("video-thumbnail-step").tasklet(thumbnailTasklet).build()
-    }
-
-    @Bean
-    fun taskExecutor(): TaskExecutor = ThreadPoolTaskExecutor()
-
-    @Bean
-    fun jobLauncher(jobRepository: JobRepository, taskExecutor: TaskExecutor): JobLauncher {
-        val launcher = SimpleJobLauncher()
-        launcher.setJobRepository(jobRepository)
-        launcher.setTaskExecutor(taskExecutor)
-        return launcher
     }
 }

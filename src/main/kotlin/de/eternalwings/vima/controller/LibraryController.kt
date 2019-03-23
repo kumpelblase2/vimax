@@ -2,6 +2,7 @@ package de.eternalwings.vima.controller
 
 import de.eternalwings.vima.domain.Library
 import de.eternalwings.vima.process.VideoLoader
+import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.repository.LibraryRepository
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,7 +18,8 @@ import javax.persistence.EntityNotFoundException
 @RestController
 @RequestMapping("/api/library")
 class LibraryController(private val libraryRepository: LibraryRepository,
-                        private val videoLoader: VideoLoader) {
+                        private val videoLoader: VideoLoader,
+                        private val videoProcess: VideoProcess) {
 
     @PostMapping
     fun saveLibrary(@RequestBody library: Library): Library {
@@ -30,7 +32,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
             throw IllegalArgumentException("Not readable.")
         }
 
-        if(!Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
             throw IllegalArgumentException("Not a directory.")
         }
 
@@ -40,7 +42,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
             val existing = libraryRepository.findByPath(library.path!!)
             if (existing == null) {
                 val newLibrary = libraryRepository.save(library)
-                videoLoader.scanDirectory(path)
+                videoLoader.scanLibrary(newLibrary)
                 return newLibrary
             } else {
                 throw IllegalStateException("Already exists.")
@@ -53,19 +55,21 @@ class LibraryController(private val libraryRepository: LibraryRepository,
 
     @DeleteMapping("/{id}")
     fun deleteLibrary(@PathVariable("id") id: Int): Int {
-        libraryRepository.deleteById(id)
+        val library = libraryRepository.getOne(id)
+        videoProcess.deleteAllVideosInLibrary(library)
+        libraryRepository.delete(library)
         return id
     }
 
     @GetMapping("/scan")
     fun scanLibrary() {
-        videoLoader.scan()
+        videoLoader.scanAllLibraries()
     }
 
     @GetMapping("/scan/{id}")
     fun scanDirectory(@PathVariable("id") libraryId: Int) {
         val library = libraryRepository.findById(libraryId).orElseThrow { EntityNotFoundException() }
-        videoLoader.scanDirectory(Paths.get(library.path))
+        videoLoader.scanLibrary(library)
     }
 
 }
