@@ -16,6 +16,7 @@ import javax.persistence.DiscriminatorType.INTEGER
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
@@ -38,7 +39,7 @@ import javax.persistence.Transient
     JsonSubTypes.Type(name = "FLOAT", value = FloatMetadataValue::class)
 ])
 sealed class MetadataValue<T>(
-        @Id @GeneratedValue
+        @Id @GeneratedValue(strategy = IDENTITY)
         var id: Int? = null,
         @ManyToOne
         open var metadata: Metadata? = null,
@@ -98,12 +99,13 @@ data class TimestampMetadataValue(var timestampValue: LocalDateTime? = LocalDate
 
 @Entity
 @DiscriminatorValue("5")
-data class TaglistMetadataValue(@Type(type = "de.eternalwings.vima.hsql.StringArrayType")
-                                var taglistValues: Array<String> = emptyArray()) :
-        MetadataValue<Array<String>>() {
+data class TaglistMetadataValue(
+        @Type(type = "de.eternalwings.vima.sqlite.SQLiteArrayUserType")
+        var taglistValues: List<String> = emptyList()) :
+        MetadataValue<List<String>>() {
     @get:Transient
     @delegate:Transient
-    override var value: Array<String>? by PropertyDelegate(this::taglistValues)
+    override var value: List<String>? by PropertyDelegate(this::taglistValues)
 }
 
 @Entity

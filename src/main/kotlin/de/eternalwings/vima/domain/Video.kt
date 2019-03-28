@@ -40,7 +40,7 @@ data class Video(
 @Entity
 data class Thumbnail(
         @Id @GeneratedValue
-        var id: Long? = null,
+        var id: Int? = null,
         @field:Column(updatable = false)
         var location: String? = null,
         @ManyToOne

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Persistable
 import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.MappedSuperclass
 import javax.persistence.PrePersist
@@ -13,7 +14,7 @@ import javax.persistence.Version
 
 @MappedSuperclass
 abstract class BasePersistable<T : Serializable> : Persistable<T> {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = IDENTITY)
     private var id: T? = null
 
     var creationTime: LocalDateTime? = null

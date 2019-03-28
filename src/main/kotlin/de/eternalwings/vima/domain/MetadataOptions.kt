@@ -24,6 +24,7 @@ import java.util.Date
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
@@ -49,7 +50,7 @@ import javax.persistence.Transient
 ])
 abstract class MetadataOptions {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     var id: Int? = null
 
     @Transient
@@ -136,7 +137,7 @@ class SelectionMetadataOptions : MetadataOptions() {
 class SelectionValues {
     @Id
     @GeneratedValue
-    var id: Long? = null
+    var id: Int? = null
 
     var name: String? = null
 }
@@ -144,8 +145,8 @@ class SelectionValues {
 @Entity
 class TaglistMetadataOptions : MetadataOptions() {
 
-    @field:org.hibernate.annotations.Type(type = "de.eternalwings.vima.hsql.StringArrayType")
-    var defaultTagValues: Array<String> = emptyArray()
+    @org.hibernate.annotations.Type(type = "de.eternalwings.vima.sqlite.SQLiteArrayUserType")
+    var defaultTagValues: List<String> = emptyList()
 
     override fun getType() = TAGLIST
 
