@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import de.eternalwings.vima.ext.PropertyDelegate
-import de.eternalwings.vima.hsql.VarCharStringArrayType
 import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -99,9 +97,8 @@ data class TimestampMetadataValue(var timestampValue: LocalDateTime? = LocalDate
 }
 
 @Entity
-@TypeDef(name = "varchar-array", typeClass = VarCharStringArrayType::class)
 @DiscriminatorValue("5")
-data class TaglistMetadataValue(@Type(type = "varchar-array")
+data class TaglistMetadataValue(@Type(type = "de.eternalwings.vima.hsql.StringArrayType")
                                 var taglistValues: Array<String> = emptyArray()) :
         MetadataValue<Array<String>>() {
     @get:Transient

@@ -27,7 +27,7 @@ data class FullMetadataValue(
         @ManyToOne(fetch = EAGER)
         var selectionValue: SelectionValues? = null,
         var stringValue: String? = null,
-        @Type(type = "varchar-array")
+        @Type(type = "de.eternalwings.vima.hsql.StringArrayType")
         var taglistValues: Array<String>? = null,
         var timeValue: LocalTime? = null,
         var timestampValue: LocalDateTime? = null

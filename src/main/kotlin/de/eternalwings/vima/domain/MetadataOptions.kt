@@ -144,7 +144,7 @@ class SelectionValues {
 @Entity
 class TaglistMetadataOptions : MetadataOptions() {
 
-    @field:org.hibernate.annotations.Type(type = "varchar-array")
+    @field:org.hibernate.annotations.Type(type = "de.eternalwings.vima.hsql.StringArrayType")
     var defaultTagValues: Array<String> = emptyArray()
 
     override fun getType() = TAGLIST
