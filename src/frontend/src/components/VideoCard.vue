@@ -31,25 +31,25 @@
     export default {
         name: "VideoCard",
         components: { MetadataValueDisplay },
-        props: ['video_id'],
+        props: ['video-id'],
         computed: {
             ...mapGetters('videos', [
                 'thumbnailOf',
                 'getVideo'
             ]),
             video() {
-                return this.getVideo(this.video_id);
+                return this.getVideo(this.videoId);
             },
             thumbnailUrl() {
-                return `/api/video/${this.video_id}/thumbnail/${this.thumbnailOf(this.video_id).id}`;
+                return `/api/video/${this.videoId}/thumbnail/${this.thumbnailOf(this.videoId).id}`;
             },
             watchRoute() {
-                return `/watch/${this.video_id}`;
+                return `/watch/${this.videoId}`;
             }
         },
         methods: {
             edit() {
-                this.editVideo(this.video_id);
+                this.editVideo(this.videoId);
             },
             ...mapActions('videos', [
                 'editVideo'

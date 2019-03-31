@@ -1,7 +1,7 @@
 <template>
     <v-container fluid grid-list>
         <v-layout row wrap justify-space-around>
-            <VideoCard v-for="video in videos" :key="video.id" :video_id="video.id"></VideoCard>
+            <VideoCard v-for="video in videos" :key="video.id" :video-id="video.id"></VideoCard>
         </v-layout>
         <video-edit-dialog></video-edit-dialog>
     </v-container>
