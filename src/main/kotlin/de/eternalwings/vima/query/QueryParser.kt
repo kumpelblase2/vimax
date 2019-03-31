@@ -28,7 +28,7 @@ object QueryParser : Grammar<FullQuery>() {
     val ws by token("\\s+")
     val quoteString by token("\"[^\"]*\"")
 
-    val value by (quoteString or word).map { it.text }
+    val value by (quoteString.map { it.text.substring(0, it.text.length - 1) } or word.map { it.text })
 
     val boolean by plus.map { BooleanOp(true) } or minus.map { BooleanOp(false) }
     val comparator by smaller.map { Comparator.SMALLER } or larger.map { Comparator.LARGER }
