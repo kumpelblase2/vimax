@@ -20,6 +20,7 @@ object QueryParser : Grammar<FullQuery>() {
     val colon by token(":")
     val smaller by token("<")
     val larger by token(">")
+    val equals by token("=")
     val AND by token("AND|and")
     val OR by token("OR|or")
     val openBrace by token("\\(")
@@ -31,7 +32,18 @@ object QueryParser : Grammar<FullQuery>() {
     val value by (quoteString.map { it.text.substring(0, it.text.length - 1) } or word.map { it.text })
 
     val boolean by plus.map { BooleanOp(true) } or minus.map { BooleanOp(false) }
-    val comparator by smaller.map { Comparator.SMALLER } or larger.map { Comparator.LARGER }
+    val comparator by ((smaller.map { Comparator.SMALLER } or larger.map { Comparator.GREATER }) and
+            optional(equals)).map {
+        if (it.t2 != null) {
+            when (it.t1) {
+                Comparator.SMALLER -> Comparator.SMALLER_OR_EQUALS
+                Comparator.GREATER -> Comparator.GREATER_OR_EQUALS
+                else -> throw IllegalStateException()
+            }
+        } else {
+            it.t1
+        }
+    }
 
     val property by (word and skip(colon) and value).map { PropertyQuery(it.t1.text, it.t2) }
     val comparison by (word and comparator and value).map { ComparisonQuery(it.t1.text, it.t2, it.t3) }

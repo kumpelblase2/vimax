@@ -14,5 +14,14 @@ data class ComparisonQuery(val property: String, val comparator: Comparator, val
 
 enum class Comparator {
     SMALLER,
-    LARGER
+    GREATER,
+    SMALLER_OR_EQUALS,
+    GREATER_OR_EQUALS;
+
+    fun inverse(): Comparator = when(this) {
+        GREATER -> SMALLER_OR_EQUALS
+        SMALLER -> GREATER_OR_EQUALS
+        SMALLER_OR_EQUALS -> GREATER
+        GREATER_OR_EQUALS -> SMALLER
+    }
 }
