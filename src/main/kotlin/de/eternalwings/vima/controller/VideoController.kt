@@ -4,6 +4,7 @@ import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.Thumbnail
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.process.VideoProcess
+import de.eternalwings.vima.query.VideoSearcher
 import de.eternalwings.vima.repository.ThumbnailRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.apache.commons.io.IOUtils
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.file.Files
 import java.util.Collections
@@ -30,8 +32,12 @@ class VideoController(private val videoRepository: VideoRepository,
                       private val thumbnailRepository: ThumbnailRepository,
                       private val videoProcess: VideoProcess) {
     @GetMapping("/videos")
-    fun getAllVideos(): List<Video> {
-        return videoRepository.findAll()
+    fun getAllVideos(@RequestParam("query", required = false) query: String?): List<Video> {
+        return if(query != null && query.isNotBlank()) {
+            videoProcess.searchFor(query.trim())
+        } else {
+            videoRepository.findAll()
+        }
     }
 
     @GetMapping("/home")

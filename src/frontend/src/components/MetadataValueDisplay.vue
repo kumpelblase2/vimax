@@ -1,42 +1,28 @@
 <template>
     <div>
-        <span v-if="displayAsText">{{ textValue }}</span>
-        <div v-else-if="metadataValue.metadata.type === 'TAGLIST'">
-            <v-chip v-for="(item, index) in metadataValue.metadata.value" :key="index">{{item}}</v-chip>
+        <div v-if="metadataType === 'TAGLIST'">
+            <v-chip small v-for="(item, index) in metadataValue.value" :key="index">{{item}}</v-chip>
         </div>
+        <span v-else-if="displayAsText">{{ textValue }}</span>
     </div>
 </template>
 
 <script>
+    import { canBeDisplayedAsText, toDisplayValue } from "../helpers/metadata-display-helper";
+
     export default {
         name: "MetadataValueDisplay",
         props: ['metadata-value'],
         computed: {
+            metadataType() {
+                return this.metadataValue.metadata.type;
+            },
             displayAsText() {
-                switch(this.metadataValue.metadata.type) {
-                    case 'TEXT':
-                    case 'NUMBER':
-                    case 'RANGE':
-                    case 'BOOLEAN':
-                    case 'SELECTION':
-                        return true;
-                    default:
-                        return false;
-                }
+                return canBeDisplayedAsText(this.metadataType);
             },
             textValue() {
                 if(this.metadataValue != null && this.metadataValue.value != null) {
-                    switch(this.metadataValue.metadata.type) {
-                        case 'TEXT':
-                        case 'NUMBER':
-                        case 'RANGE':
-                        case 'BOOLEAN':
-                            return this.metadataValue.value.toString();
-                        case 'SELECTION':
-                            return this.metadataValue.value.name.toString();
-                        default:
-                            throw `No text representation for ${this.metadataValue.metadata.type}.`;
-                    }
+                    return toDisplayValue(this.metadataType, this.metadataValue.value);
                 } else {
                     return "";
                 }

@@ -19,5 +19,9 @@ export default {
 
     refreshThumbnails(video) {
         return axios.post(`/api/video/${video.id}/refresh`).then(response => response.data);
+    },
+
+    search(query) {
+        return axios.get(`/api/videos?query=${encodeURIComponent(query)}`).then(response => response.data);
     }
 };

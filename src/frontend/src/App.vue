@@ -25,14 +25,7 @@
             <v-toolbar-title>Vima</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-layout row align-center style="max-width: 650px">
-                <v-text-field
-                    :append-icon-cb="() => {}"
-                    placeholder="Search..."
-                    single-line
-                    append-icon="search"
-                    color="white"
-                    hide-details
-                ></v-text-field>
+                <SearchComponent></SearchComponent>
             </v-layout>
         </v-toolbar>
         <v-content>
@@ -43,8 +36,10 @@
 </template>
 
 <script>
+    import SearchComponent from "./components/SearchComponent";
     export default {
         name: 'Vima',
+        components: { SearchComponent },
         data: () => ({
             drawer: null
         })

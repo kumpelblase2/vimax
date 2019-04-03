@@ -72,6 +72,11 @@ export default {
         },
         updateEditingThumbnails(state, thumbnails) {
             state.editingVideo.thumbnails = thumbnails;
+        },
+        clearVideos(state) {
+            while(state.videos.length) {
+                state.videos.pop();
+            }
         }
     },
     actions: {
@@ -119,6 +124,13 @@ export default {
             const newThumbnails = await videoApi.refreshThumbnails(state.editingVideo);
             commit('updateThumbnail', {videoId: state.editingVideo.id, thumbnails: newThumbnails});
             commit('updateEditingThumbnails', newThumbnails);
+        },
+        async search({commit}, query) {
+            const videos = await videoApi.search(query);
+            commit('clearVideos');
+            videos.forEach(video => {
+                commit('addOrUpdateVideo', video);
+            });
         }
     }
 };
