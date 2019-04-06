@@ -28,7 +28,7 @@ abstract class BasePersistable<T : Serializable> : Persistable<T> {
     }
 
     @JsonIgnore
-    override fun isNew() = id != null
+    override fun isNew() = id == null
 
     @PrePersist
     fun updateCreationDate() {
