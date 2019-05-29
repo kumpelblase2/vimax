@@ -59,6 +59,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
                 return "($modelId.id IN (SELECT mv.video.id FROM FullMetadataValue mv WHERE " +
                         when (foundMetadata.type) {
                             BOOLEAN -> "mv.booleanValue = " + booleanQuery.value
+                            TAGLIST -> "CARDINALITY(mv.taglistValues) " + (if(booleanQuery.value) ">" else "=") + " 0"
                             else -> ""
                         } + " AND mv.metadata.id = ${foundMetadata.id}))"
             }
