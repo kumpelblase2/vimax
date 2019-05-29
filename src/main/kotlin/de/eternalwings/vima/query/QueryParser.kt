@@ -14,6 +14,14 @@ import com.github.h0tk3y.betterParse.parser.Parser
 
 object QueryParser : Grammar<FullQuery>() {
 
+    private fun String.unquote(): String {
+        return if(this.startsWith("\"") && this.endsWith("\"")) {
+            this.substring(1, this.length - 1)
+        } else {
+            this
+        }
+    }
+
     // Base tokens
     val plus by token("\\+")
     val minus by token("-")
@@ -29,7 +37,7 @@ object QueryParser : Grammar<FullQuery>() {
     val ws by token("\\s+")
     val quoteString by token("\"[^\"]*\"")
 
-    val value by (quoteString.map { it.text.substring(0, it.text.length - 1) } or word.map { it.text })
+    val value by (quoteString.map { it.text.unquote() } or word.map { it.text })
 
     val boolean by plus.map { BooleanOp(true) } or minus.map { BooleanOp(false) }
     val comparator by ((smaller.map { Comparator.SMALLER } or larger.map { Comparator.GREATER }) and
@@ -45,8 +53,8 @@ object QueryParser : Grammar<FullQuery>() {
         }
     }
 
-    val property by (word and skip(colon) and value).map { PropertyQuery(it.t1.text, it.t2) }
-    val comparison by (word and comparator and value).map { ComparisonQuery(it.t1.text, it.t2, it.t3) }
+    val property by (value and skip(colon) and value).map { PropertyQuery(it.t1, it.t2) }
+    val comparison by (value and comparator and value).map { ComparisonQuery(it.t1, it.t2, it.t3) }
     val text by value.map { TextQuery(it) }
 
     val term: Parser<QueryPart> by (optional(boolean) and (property or comparison or text)).map {
