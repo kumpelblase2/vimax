@@ -50,7 +50,7 @@
             }
         },
         mounted() {
-            if(this.metadataDefinition.type === 'TAGLIST') {
+            if(this.metadataDefinition.type === 'TAGLIST' && this.metadataValue != null) {
                 this.tagValues = [...this.metadataValue];
             }
         }
