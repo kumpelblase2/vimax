@@ -124,7 +124,11 @@ CREATE TABLE metadata (
     ordering VARCHAR(255),
     read_only BOOLEAN NOT NULL,
     system_specified BOOLEAN,
+    display_order INTEGER,
     type INTEGER,
+    creation_time TIMESTAMP,
+    update_time TIMESTAMP,
+    version INTEGER,
     options_id INTEGER
         CONSTRAINT metadata_options_id_fk
             REFERENCES metadata_options

@@ -45,9 +45,15 @@
             </v-toolbar>
             <v-data-table :headers="headers" :items="metadatas" class="elevation-1">
                 <template slot="items" slot-scope="props">
+                    <td>{{ props.item.displayOrder }}</td>
                     <td>{{ props.item.name }}</td>
                     <td>{{ props.item.type }}</td>
                     <td class="justify-center">
+                        <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
+                                @click="moveDown(props.item)">arrow_downward</v-icon>
+                        <v-icon v-if="props.item.displayOrder > 1" small class="mr-2"
+                                @click="moveUp(props.item)">arrow_upward
+                        </v-icon>
                         <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
                         <v-icon small @click="deleteItem(props.item)">delete</v-icon>
                     </td>
@@ -80,6 +86,9 @@
         computed: {
             formTitle() {
                 return this.editedIndex === -1 ? 'New Metadata' : 'Edit Metadata'
+            },
+            metadataCount() {
+                return this.metadatas.length;
             },
             ...mapState({
                 metadatas: state => state.settings.metadata.metadata
@@ -115,12 +124,20 @@
                     this.close();
                 });
             },
+            moveUp(metadata) {
+                this.moveMetadataUp(metadata);
+            },
+            moveDown(metadata) {
+                this.moveMetadataDown(metadata);
+            },
             ...mapActions('settings/metadata', [
                 'deleteMetadata',
                 'saveMetadata',
                 'loadMetadata',
                 'resetEditItem',
-                'startEditItem'
+                'startEditItem',
+                'moveMetadataDown',
+                'moveMetadataUp'
             ])
         },
         mounted() {

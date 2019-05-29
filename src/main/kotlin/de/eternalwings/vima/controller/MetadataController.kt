@@ -24,8 +24,15 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     @PostMapping("/metadata")
     @Transactional
     fun createOrUpdateMetadata(@RequestBody metadata: Metadata): Metadata {
+        val isNew = metadata.isNew
+        if (isNew) {
+            val existingSequenceNumber = metadataRepository.getHighestDisplayOrder() ?: 0
+            metadata.displayOrder = existingSequenceNumber + 1
+        }
+
         val savedMetadata: Metadata
-        if (metadata.type == SELECTION && (metadata.options as SelectionMetadataOptions).defaultSelectValue != null) {
+        if (metadata.type == SELECTION && (metadata.options as SelectionMetadataOptions).defaultSelectValue
+                != null && (metadata.options as SelectionMetadataOptions).defaultSelectValue!!.id == null) {
             // This is because we need an existing reference when saving the default value so it points to
             // the same selection option
             val oldDefaultValue = (metadata.options as SelectionMetadataOptions).defaultSelectValue
@@ -39,7 +46,10 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         } else {
             savedMetadata = this.metadataRepository.save(metadata)
         }
-        videoMetadataUpdater.addMetadata(savedMetadata)
+
+        if (isNew) {
+            videoMetadataUpdater.addMetadata(savedMetadata)
+        }
         return savedMetadata
     }
 
@@ -47,7 +57,7 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     @Transactional
     fun deleteMetadata(@PathVariable("id") metadataId: Int): Int {
         val metadata = this.metadataRepository.getOne(metadataId)
-        videoMetadataUpdater.deleteMetadata(metadata)
+        this.videoMetadataUpdater.deleteMetadata(metadata)
         this.metadataRepository.delete(metadata)
         return metadataId
     }

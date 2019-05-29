@@ -8,16 +8,11 @@ import javax.persistence.Entity
 import javax.persistence.EnumType.STRING
 import javax.persistence.Enumerated
 import javax.persistence.FetchType.EAGER
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
 import javax.persistence.OneToOne
 import javax.validation.constraints.NotBlank
 
 @Entity
 data class Metadata(
-        @Id
-        @GeneratedValue
-        var id: Int? = null,
         @NotBlank
         var name: String? = null,
         @NotBlank
@@ -28,8 +23,9 @@ data class Metadata(
         @Column(updatable = false)
         var systemSpecified: Boolean = false,
         @OneToOne(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
-        var options: MetadataOptions? = null
-) {
+        var options: MetadataOptions? = null,
+        var displayOrder: Int = 0
+): BasePersistable<Int>() {
     fun toValue() : MetadataValue<*> {
         val value = options!!.toValue()
         value.metadata = this

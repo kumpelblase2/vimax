@@ -14,9 +14,10 @@ export default {
             { text: 'Switch', value: 'BOOLEAN' }
         ],
         headers: [
+            { text: 'Order', value: 'displayOrder' },
             { text: 'Name', value: 'name' },
             { text: 'Type', value: 'type' },
-            { text: 'Actions', value: 'actions', sortable: false, width: 50 }
+            { text: 'Actions', value: 'actions', sortable: false, width: 150 }
         ],
         editingItem: {
             id: null,
@@ -35,6 +36,11 @@ export default {
             options: {
                 values: []
             }
+        }
+    },
+    getters: {
+        orderedMetadata(state) {
+            return [...state.metadata].sort((first,second) => first.displayOrder - second.displayOrder);
         }
     },
     actions: {
@@ -59,6 +65,26 @@ export default {
         },
         startEditItem({ commit }, item) {
             commit('setEditItem', item);
+        },
+        async moveMetadataUp({ commit, state }, metadata) {
+            const currentOrder = metadata.displayOrder;
+            const nextOrder = metadata.displayOrder - 1;
+            const metadataToMove = state.metadata.find(existing => existing.displayOrder === nextOrder);
+            commit('setOrder', { metadataId: metadata.id, order: nextOrder });
+            commit('setOrder', { metadataId: metadataToMove.id, order: currentOrder });
+
+            await metadataApi.saveMetadata(metadata);
+            await metadataApi.saveMetadata(metadataToMove);
+        },
+        async moveMetadataDown({ commit, state }, metadata) {
+            const currentOrder = metadata.displayOrder;
+            const nextOrder = metadata.displayOrder + 1;
+            const metadataToMove = state.metadata.find(existing => existing.displayOrder === nextOrder);
+            commit('setOrder', { metadataId: metadata.id, order: nextOrder });
+            commit('setOrder', { metadataId: metadataToMove.id, order: currentOrder });
+
+            await metadataApi.saveMetadata(metadata);
+            await metadataApi.saveMetadata(metadataToMove);
         }
     },
     mutations: {
@@ -78,6 +104,10 @@ export default {
         },
         setEditItem(state, item) {
             state.editingItem = Object.assign({}, item);
+        },
+        setOrder(state, {metadataId,order}) {
+            const found = state.metadata.find(existing => existing.id === metadataId);
+            found.displayOrder = order;
         }
     }
 };
