@@ -10,6 +10,14 @@
                         <v-list-tile-title>Videos</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-tile to="/sorting">
+                    <v-list-tile-action>
+                        <v-icon>sort</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Sorting Mode</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
                 <v-list-tile to="/settings">
                     <v-list-tile-action>
                         <v-icon>settings</v-icon>
@@ -31,7 +39,11 @@
         <v-content>
             <router-view></router-view>
         </v-content>
-        <v-footer app></v-footer>
+        <v-footer app>
+            <v-spacer></v-spacer>
+            <div>Vima made with ❤️ by kumpelblase2</div>
+            <v-spacer></v-spacer>
+        </v-footer>
     </v-app>
 </template>
 

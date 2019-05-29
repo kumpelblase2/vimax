@@ -4,17 +4,7 @@
             <v-img height="250px" v-bind:src="thumbnailUrl"></v-img>
             <v-card-title>{{ video.name }}</v-card-title>
             <v-card-text>
-                <v-layout column>
-                    <v-layout v-for="(metadata, index) in video.metadata" xs12 column :key="index">
-                        <v-layout justift-space-between row my-1>
-                            <v-flex>{{ metadata.metadata.name }}</v-flex>
-                            <v-flex class="text-xs-right">
-                                <metadata-value-display :metadata-value="metadata"></metadata-value-display>
-                            </v-flex>
-                        </v-layout>
-                        <v-divider xs12 v-if="index < video.metadata.length - 1"></v-divider>
-                    </v-layout>
-                </v-layout>
+                <VideoMetadataDisplay :video-metadata="video.metadata"/>
             </v-card-text>
             <v-card-actions>
                 <v-btn flat color="orange" :to="watchRoute">Play</v-btn>
@@ -26,11 +16,12 @@
 
 <script>
     import { mapActions, mapGetters } from "vuex";
-    import MetadataValueDisplay from "./MetadataValueDisplay";
+    import VideoMetadataDisplay from "./VideoMetadataDisplay";
+    import { getThumbnailURLForVideo } from "../video";
 
     export default {
         name: "VideoCard",
-        components: { MetadataValueDisplay },
+        components: { VideoMetadataDisplay},
         props: ['video-id'],
         computed: {
             ...mapGetters('videos', [
@@ -41,22 +32,20 @@
                 return this.getVideo(this.videoId);
             },
             thumbnailUrl() {
-                return `/api/video/${this.videoId}/thumbnail/${this.thumbnailOf(this.videoId).id}`;
+                return getThumbnailURLForVideo(this.videoId, this.thumbnailOf(this.videoId));
             },
             watchRoute() {
                 return `/watch/${this.videoId}`;
             }
         },
         methods: {
-            edit() {
-                this.editVideo(this.videoId);
-            },
             ...mapActions('videos', [
                 'editVideo'
-            ])
+            ]),
+            edit() {
+                this.editVideo(this.videoId);
+            }
         }
     }
 </script>
 
-<style scoped>
-</style>

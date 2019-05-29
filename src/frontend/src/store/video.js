@@ -1,5 +1,15 @@
 import videoApi from "../api/videos";
 
+const APPEND_VIDEO = 'addOrUpdateVideo';
+const CLEAR_VIDEOS = 'clearVideos';
+const SET_ACTIVE_VIDEO = 'updateActiveVideo';
+const SET_EDITING_VIDEO = 'editVideo';
+
+const SELECT_VIDEO = 'selectVideo';
+const UNSELECT_VIDEO = 'unselectVideo';
+
+export const MUTATIONS = { APPEND_VIDEO, CLEAR_VIDEOS, SET_ACTIVE_VIDEO, SET_EDITING_VIDEO, SELECT_VIDEO, UNSELECT_VIDEO };
+
 export default {
     namespaced: true,
     state: {
@@ -9,27 +19,31 @@ export default {
         selectedVideos: []
     },
     getters: {
-        activeVideo(state, getters) {
+        activeVideo: (state, getters) => {
             return getters.getVideo(state.activeVideoId);
         },
-        getVideo(state) {
+        getVideo: (state) => {
             return (id) => state.videos.find(video => video.id === id);
         },
-        editingVideo(state, getters) {
+        editingVideo: (state, getters) => {
             return getters.getVideo(state.editingId);
         },
         videoThumbnail: (state, getters) => {
             return (videoId) => getters.thumbnailOf(videoId);
         },
-        thumbnailOf(state, getters) {
+        thumbnailOf: (state, getters) => {
             return (id) => {
                 const video = getters.getVideo(id);
-                return video.thumbnails[video.selectedThumbnail];
+                if(video != null) {
+                    return video.thumbnails[video.selectedThumbnail];
+                } else {
+                    return null;
+                }
             }
         }
     },
     mutations: {
-        addOrUpdateVideo(state, video) {
+        [APPEND_VIDEO](state, video) {
             const index = state.videos.findIndex(existing => existing.id === video.id);
             if(index >= 0) {
                 Object.assign(state.videos[index], video);
@@ -37,22 +51,22 @@ export default {
                 state.videos.push(video);
             }
         },
-        updateActiveVideo(state, videoId) {
+        [SET_ACTIVE_VIDEO](state, videoId) {
             state.activeVideoId = videoId;
         },
-        editVideo(state, videoId) {
+        [SET_EDITING_VIDEO](state, videoId) {
             if(videoId == null) {
                 state.editingVideo = null;
             } else {
                 state.editingVideo = Object.assign({}, state.videos.find(video => video.id === videoId));
             }
         },
-        selectVideo(state, videoId) {
+        [SELECT_VIDEO](state, videoId) {
             if(state.selectedVideos.findIndex(videoId) < 0) {
                 state.selectedVideos.push(videoId);
             }
         },
-        unselectVideo(state, videoId) {
+        [UNSELECT_VIDEO](state, videoId) {
             const index = state.selectedVideos.findIndex(videoId);
             if(index >= 0) {
                 state.selectedVideos.splice(index, 1);
@@ -64,7 +78,7 @@ export default {
         setEditingMetadataValue(state, { index, value }) {
             state.editingVideo.metadata[index].value = value;
         },
-        updateThumbnail(state, {videoId, thumbnails}){
+        updateThumbnail(state, { videoId, thumbnails }) {
             const video = state.videos.find(video => video.id === videoId);
             if(video != null) {
                 video.thumbnails = thumbnails;
@@ -73,7 +87,7 @@ export default {
         updateEditingThumbnails(state, thumbnails) {
             state.editingVideo.thumbnails = thumbnails;
         },
-        clearVideos(state) {
+        [CLEAR_VIDEOS](state) {
             while(state.videos.length) {
                 state.videos.pop();
             }
@@ -83,36 +97,30 @@ export default {
         async loadRecentVideos({ commit }) {
             const videos = await videoApi.getRecentVideos();
             videos.forEach(video => {
-                commit('addOrUpdateVideo', video);
+                commit(APPEND_VIDEO, video);
             });
         },
         async loadAllVideos({ commit }) {
             const videos = await videoApi.getAllVideos();
             videos.forEach(video => {
-                commit('addOrUpdateVideo', video);
+                commit(APPEND_VIDEO, video);
             });
         },
         async makeVideoActive({ commit }, videoId) {
-            commit('updateActiveVideo', videoId);
+            commit(SET_ACTIVE_VIDEO, videoId);
             const video = await videoApi.getVideo(videoId);
-            commit('addOrUpdateVideo', video);
+            commit(APPEND_VIDEO, video);
         },
         async editVideo({ commit }, videoId) {
-            commit('editVideo', videoId);
+            commit(SET_EDITING_VIDEO, videoId);
             if(videoId != null) {
                 const video = await videoApi.getVideo(videoId);
-                commit('addOrUpdateVideo', video);
+                commit(APPEND_VIDEO, video);
             }
         },
         async saveEditingVideo({ commit, state }) {
             const editedVideo = await videoApi.saveVideo(state.editingVideo);
-            commit('addOrUpdateVideo', editedVideo);
-        },
-        selectVideo({ commit }, videoId) {
-            commit('selectVideo', videoId);
-        },
-        unselectVideo({ commit }, videoId) {
-            commit('unselectVideo', videoId);
+            commit(APPEND_VIDEO, editedVideo);
         },
         changeSelectedThumbnail({ commit }, thumbnailIndex) {
             commit('changeThumbnailsInEdit', thumbnailIndex);
@@ -122,14 +130,14 @@ export default {
         },
         async refreshThumbnails({ commit, state }) {
             const newThumbnails = await videoApi.refreshThumbnails(state.editingVideo);
-            commit('updateThumbnail', {videoId: state.editingVideo.id, thumbnails: newThumbnails});
+            commit('updateThumbnail', { videoId: state.editingVideo.id, thumbnails: newThumbnails });
             commit('updateEditingThumbnails', newThumbnails);
         },
-        async search({commit}, query) {
+        async search({ commit }, query) {
             const videos = await videoApi.search(query);
-            commit('clearVideos');
+            commit(CLEAR_VIDEOS);
             videos.forEach(video => {
-                commit('addOrUpdateVideo', video);
+                commit(APPEND_VIDEO, video);
             });
         }
     }

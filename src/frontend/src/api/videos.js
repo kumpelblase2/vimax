@@ -23,5 +23,9 @@ export default {
 
     search(query) {
         return axios.get(`/api/videos?query=${encodeURIComponent(query)}`).then(response => response.data);
+    },
+
+    getSortableVideosFor(metadata) {
+        return axios.get(`/api/sorting/${metadata.id}`).then(response => response.data);
     }
 };
