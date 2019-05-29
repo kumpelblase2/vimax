@@ -18,8 +18,8 @@ export default {
         editingVideo(state, getters) {
             return getters.getVideo(state.editingId);
         },
-        activeVideoStream(state) {
-            return `/api/video/${state.activeVideoId}/stream`;
+        videoThumbnail: (state, getters) => {
+            return (videoId) => getters.thumbnailOf(videoId);
         },
         thumbnailOf(state, getters) {
             return (id) => {
