@@ -88,7 +88,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
             FLOAT -> "mv.floatingValue" + (if (inverse) " <> " else " = ") + propertyQuery.value
             NUMBER, RANGE -> "mv.numberValue" + (if (inverse) " <> " else " = ") + propertyQuery.value
             TEXT -> "mv.stringValue" + (if (inverse) " <> " else " = ") + "'${propertyQuery.value}'"
-            TAGLIST -> "POSITION_ARRAY(${propertyQuery.value} IN mv.taglistValues)" + (if (inverse) "= 0" else "> 0")
+            TAGLIST -> "POSITION_ARRAY('${propertyQuery.value}', mv.taglistValues)" + (if (inverse) "= 0" else "> 0")
             BOOLEAN -> "mv.booleanValue" + (if (inverse) " <> " else " = ") + propertyQuery.value
             else -> throw IllegalStateException()
         } + " AND mv.metadata.id = ${foundMetadata.id}))"
