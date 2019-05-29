@@ -8,8 +8,17 @@
         <v-text-field v-else-if="metadataDefinition.type === 'NUMBER'" type="number"
                       :label="metadataDefinition.name" :value="metadataValue"
                       @change="updateNumber"></v-text-field>
-        <v-select v-else-if="metadataDefinition.type === 'SELECTION'" @change="update" :value="metadataValue"
-                  :items="metadataDefinition.options.values" item-text="name" return-object></v-select>
+        <v-select v-else-if="metadataDefinition.type === 'SELECTION'" :label="metadataDefinition.name"
+                  @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
+                  item-text="name" return-object></v-select>
+        <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
+                    @change="update" chips clearable multiple :items="tagValues">
+            <template #selection="data">
+                <v-chip :selected="data.selected" close @input="removeTag(data.item)">
+                    {{ data.item }}
+                </v-chip>
+            </template>
+        </v-combobox>
     </div>
 </template>
 
@@ -17,12 +26,32 @@
     export default {
         name: "MetadataValueEditor",
         props: ['metadata-definition', 'metadata-value'],
+        data() {
+            return {
+                tagValues: []
+            }
+        },
         methods: {
             update(ev) {
                 this.$emit('change', ev);
+                if(this.metadataDefinition.type === 'TAGLIST') {
+                    for(let elem of ev) {
+                        if(!this.tagValues.includes(elem)) {
+                            this.tagValues.push(elem);
+                        }
+                    }
+                }
             },
             updateNumber(ev) {
                 this.$emit('change', parseInt(ev));
+            },
+            removeTag(tag) {
+                this.$emit('change', this.metadataValue.filter(elem => elem !== tag));
+            }
+        },
+        mounted() {
+            if(this.metadataDefinition.type === 'TAGLIST') {
+                this.tagValues = [...this.metadataValue];
             }
         }
     }
