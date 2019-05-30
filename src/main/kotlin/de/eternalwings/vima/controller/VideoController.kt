@@ -1,10 +1,11 @@
 package de.eternalwings.vima.controller
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.Thumbnail
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.process.VideoProcess
-import de.eternalwings.vima.query.VideoSearcher
 import de.eternalwings.vima.repository.ThumbnailRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.apache.commons.io.IOUtils
@@ -31,9 +32,12 @@ import javax.persistence.EntityNotFoundException
 class VideoController(private val videoRepository: VideoRepository,
                       private val thumbnailRepository: ThumbnailRepository,
                       private val videoProcess: VideoProcess) {
+
+    private val videoLocationCache: Cache<Int, String> = CacheBuilder.newBuilder().maximumSize(100).build()
+
     @GetMapping("/videos")
     fun getAllVideos(@RequestParam("query", required = false) query: String?): List<Video> {
-        return if(query != null && query.isNotBlank()) {
+        return if (query != null && query.isNotBlank()) {
             videoProcess.searchFor(query.trim())
         } else {
             videoRepository.findAll()
@@ -50,8 +54,11 @@ class VideoController(private val videoRepository: VideoRepository,
 
     @GetMapping("/video/{id}/stream")
     fun streamVideo(@PathVariable("id") id: Int): ResponseEntity<Resource> {
-        val video = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
-        return ResponseEntity.status(OK).body(FileSystemResource(video.location!!))
+        val location = videoLocationCache.get(id) {
+            val video = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
+            video.location!!
+        }
+        return ResponseEntity.status(OK).body(FileSystemResource(location))
     }
 
     @GetMapping("/video/{id}/thumbnails")
