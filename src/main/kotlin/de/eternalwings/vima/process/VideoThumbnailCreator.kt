@@ -12,7 +12,7 @@ import java.util.stream.Collectors
 @Component
 class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
                             private val thumbnailRepository: ThumbnailRepository,
-                            @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int = 3,
+                            @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int,
                             @Value("\${thumbnail-relative-dir:.thumbnails}") thumbnailsRelativePath: String) {
 
     private val rediscoverPattern: Pattern = Pattern.compile("(.+)_\\d+\\.jpg")
@@ -21,6 +21,9 @@ class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
     fun createThumbnailsFor(videoPath: Path, videoId: Int) {
         val parentPath = videoPath.parent
         val thumbnailDir = parentPath.resolve(relativeThumbnailDir)
+        if(!Files.exists(thumbnailDir)) {
+            Files.createDirectory(thumbnailDir)
+        }
         val existingThumbnails =
                 this.discoverExistingThumbnails(thumbnailDir, videoPath.fileName.toString()
                     .substringBeforeLast("."))
