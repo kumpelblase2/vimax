@@ -26,13 +26,6 @@ data class Video(
         var thumbnails: MutableList<Thumbnail> = ArrayList(),
         var selectedThumbnail: Int? = 0
 ) : BasePersistable<Int>() {
-    @get:Transient
-    val currentThumbnail: Thumbnail
-        get() {
-            var thumbnailIndex = this.selectedThumbnail ?: 0
-            thumbnailIndex = thumbnailIndex.coerceIn(this.thumbnails.indices)
-            return this.thumbnails[thumbnailIndex]
-        }
 
     fun addMetadataValue(value: MetadataValue<*>) {
         value.video = this
