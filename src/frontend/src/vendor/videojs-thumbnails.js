@@ -7,7 +7,7 @@ function buildThumbnailContainers(settings, player) {
     const thumbHeight = settings.thumbnailHeight;
     const thumbWidth = settings.thumbnailWidth;
 
-    const mainPlayerVideo = player.tag;
+    const mainPlayerVideo = (player.tag || player.tech().el());
     const video = mainPlayerVideo.cloneNode(true);
     video.className = "";
     video.removeAttribute("data-setup");

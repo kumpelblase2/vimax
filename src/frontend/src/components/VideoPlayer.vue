@@ -31,6 +31,7 @@
                     }
                 ]);
                 this.player.poster(this.myVideoThumbnail);
+                this.player.thumbnails({ play: true });
             }
         },
         computed: {
