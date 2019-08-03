@@ -1,106 +1,112 @@
-// Based on https://github.com/ajbogh/video-js-html5Thumbnails, though heavily modified actually work
-
-
+// Based on https://github.com/ajbogh/video-js-html5Thumbnails, though heavily modified to actually work
 import videojs from 'video.js';
 
-function buildThumbnailContainers(settings, player) {
-    const thumbHeight = settings.thumbnailHeight;
-    const thumbWidth = settings.thumbnailWidth;
-
-    const mainPlayerVideo = (player.tag || player.tech().el());
-    const video = mainPlayerVideo.cloneNode(true);
-    video.className = "";
-    video.removeAttribute("data-setup");
-    video.muted = true;
-    video.id = "vjs-thumbnail-video";
-    video.className = 'vjs-thumbnail-video';
-    video.src = player.src();
-
-    // create the thumbnail
-    const div = document.createElement('div');
-    div.className = 'vjs-thumbnail-holder';
-
-    //calculate the thumbnail width and height
-    div.height = thumbHeight;
-    div.width = thumbWidth;
-
-    //set the thumbnail container width and height
-    div.style.width = div.width;
-    div.style.height = div.height;
-
-    //set the thumbnail container width and height
-    video.height = div.height;
-    video.width = div.width;
-
-    //hide the thumbnail by default
-    div.style.opacity = 0;
-
-    //append the video thumbnail to its container
-    div.appendChild(video);
-
-    //adjust the position
-    div.style.top = `-${thumbHeight}px`;
-    div.style.position = "absolute";
-
-    // add the thumbnail to the player
-    const progressControl = player.controlBar.progressControl;
-    progressControl.el().appendChild(div);
-
-    return {
-        div: div,
-        video: video,
-        progressControl: progressControl
-    };
-}
-
-function showThumb(div) {
-    div.style.opacity = '1';
-    div.style.display = 'block';
-}
+const Plugin = videojs.getPlugin('plugin');
 
 function getThumbnailXOffset(seekRect, progress, settings) {
     const offset = (seekRect.width * progress) - (settings.thumbnailWidth / 2);
     return Math.min(Math.max(offset, 0), seekRect.width - settings.thumbnailWidth);
 }
 
-export function Html5ThumbnailsPlugin(options) {
-    const settings = Object.assign({ thumbnailWidth: 250, thumbnailHeight: 140, play: false }, options);
-    const player = this;
+export class Html5ThumbnailsPlugin extends Plugin {
+    constructor(player, options) {
+        super(player, options);
+        this.player = player;
 
-    const thumbnailElems = buildThumbnailContainers(settings, player);
-    const div = thumbnailElems.div;
-    const video = thumbnailElems.video;
-    const progressControl = thumbnailElems.progressControl;
+        this.settings = Object.assign({ thumbnailWidth: 250, thumbnailHeight: 140, play: false }, options);
 
-    let hideInterval;
+        this.buildThumbnailContainers(player);
 
-    const updateThumbnail = (event) => {
-        clearInterval(hideInterval);
-        const progress = videojs.dom.getPointerPosition(progressControl.seekBar.el(), event).x;
-        const seekRect = videojs.dom.getBoundingClientRect(progressControl.seekBar.el());
-        showThumb(div);
+        this.videoProgressControl.el().addEventListener('mouseover', (event) => {
+            this.updateThumbnail(event);
 
-        div.style.left = getThumbnailXOffset(seekRect, progress, settings) + "px";
-        video.currentTime = progress * player.duration();
-    };
-
-    progressControl.el().addEventListener('mouseover', (event) => {
-        updateThumbnail(event);
-
-        if(settings.play) {
-            video.play().catch(ex => null);
-        }
-    }, false);
-
-    progressControl.el().addEventListener('mousemove', updateThumbnail, false);
-    progressControl.el().addEventListener('mouseout', () => {
-        video.pause(); //make sure the video doesn't continue downloading on mouse out.
-        hideInterval = setInterval(function() {
-            if(div.style.opacity <= 0) {
-                div.style.display = "none";
-                clearInterval(hideInterval);
+            if(this.settings.play) {
+                this.thumbnailVideo.play().catch(ex => null);
             }
-            div.style.opacity = +(div.style.opacity) - 0.1;
+        }, false);
+
+        this.videoProgressControl.el().addEventListener('mousemove', e => this.updateThumbnail(e), false);
+        this.videoProgressControl.el().addEventListener('mouseout', () => {
+            this.thumbnailVideo.pause(); //make sure the video doesn't continue downloading on mouse out.
+            this.hideThumb();
+        }, false);
+    }
+
+    src(newUrl) {
+        this.thumbnailVideo.src = newUrl;
+    }
+
+    updateThumbnail(event) {
+        clearInterval(this.hideInterval);
+        this.showThumb();
+
+        const progress = videojs.dom.getPointerPosition(this.videoProgressControl.seekBar.el(), event).x;
+        const seekRect = videojs.dom.getBoundingClientRect(this.videoProgressControl.seekBar.el());
+
+        this.thumbnailContainer.style.left = getThumbnailXOffset(seekRect, progress, this.settings) + "px";
+        this.thumbnailVideo.currentTime = progress * this.player.duration();
+    }
+
+    showThumb() {
+        this.thumbnailContainer.style.opacity = '1';
+        this.thumbnailContainer.style.display = 'block';
+    }
+
+    hideThumb() {
+        this.hideInterval = setInterval(() => {
+            if(this.thumbnailContainer.style.opacity <= 0) {
+                this.thumbnailContainer.style.display = "none";
+                clearInterval(this.hideInterval);
+            }
+            this.thumbnailContainer.style.opacity = +(this.thumbnailContainer.style.opacity) - 0.1;
         }, 10);
-    }, false);
+    }
+
+    buildThumbnailContainers(player) {
+        const thumbHeight = this.settings.thumbnailHeight;
+        const thumbWidth = this.settings.thumbnailWidth;
+
+        const mainPlayerVideo = (player.tag || player.tech().el());
+        const video = mainPlayerVideo.cloneNode(true);
+        video.className = "";
+        video.removeAttribute("data-setup");
+        video.muted = true;
+        video.id = "vjs-thumbnail-video";
+        video.className = 'vjs-thumbnail-video';
+        video.src = player.src();
+
+        // create the thumbnail
+        const div = document.createElement('div');
+        div.className = 'vjs-thumbnail-holder';
+
+        //calculate the thumbnail width and height
+        div.height = thumbHeight;
+        div.width = thumbWidth;
+
+        //set the thumbnail container width and height
+        div.style.width = div.width;
+        div.style.height = div.height;
+
+        //set the thumbnail container width and height
+        video.height = div.height;
+        video.width = div.width;
+
+        //hide the thumbnail by default
+        div.style.opacity = 0;
+
+        //append the video thumbnail to its container
+        div.appendChild(video);
+
+        //adjust the position
+        div.style.top = `-${thumbHeight}px`;
+        div.style.position = "absolute";
+
+        // add the thumbnail to the player
+        const progressControl = player.controlBar.progressControl;
+        progressControl.el().appendChild(div);
+
+        this.thumbnailContainer = div;
+        this.thumbnailVideo = video;
+        this.videoProgressControl = progressControl;
+    }
 }
