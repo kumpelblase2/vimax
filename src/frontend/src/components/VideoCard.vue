@@ -1,15 +1,17 @@
 <template>
-    <v-flex xs4 md3>
+    <v-flex xs12 sm6 md3 xl2>
         <v-card>
-            <v-img height="250px" v-bind:src="thumbnailUrl"></v-img>
+            <v-img :aspect-ratio="16/9" v-bind:src="thumbnailUrl" @mouseenter="startHover" @mouseleave="stopHover">
+                <v-layout row fill-height v-show="hover">
+                    <v-spacer></v-spacer>
+                    <v-btn flat icon color="orange" :to="watchRoute"><v-icon>play_arrow</v-icon></v-btn>
+                    <v-btn flat icon color="orange" @click="edit"><v-icon>edit</v-icon></v-btn>
+                </v-layout>
+            </v-img>
             <v-card-title>{{ video.name }}</v-card-title>
             <v-card-text>
                 <VideoMetadataDisplay :video-metadata="video.metadata"/>
             </v-card-text>
-            <v-card-actions>
-                <v-btn flat color="orange" :to="watchRoute">Play</v-btn>
-                <v-btn flat color="orange" @click="edit">Edit</v-btn>
-            </v-card-actions>
         </v-card>
     </v-flex>
 </template>
@@ -21,8 +23,13 @@
 
     export default {
         name: "VideoCard",
-        components: { VideoMetadataDisplay},
+        components: { VideoMetadataDisplay },
         props: ['video-id'],
+        data() {
+            return {
+                hover: false
+            }
+        },
         computed: {
             ...mapGetters('videos', [
                 'thumbnailOf',
@@ -32,7 +39,12 @@
                 return this.getVideo(this.videoId);
             },
             thumbnailUrl() {
-                return getThumbnailURLForVideo(this.videoId, this.thumbnailOf(this.videoId));
+                let thumbnail = this.thumbnailOf(this.videoId);
+                if(thumbnail == null) {
+                    return "";
+                } else {
+                    return getThumbnailURLForVideo(this.videoId, thumbnail);
+                }
             },
             watchRoute() {
                 return `/watch/${this.videoId}`;
@@ -44,6 +56,12 @@
             ]),
             edit() {
                 this.editVideo(this.videoId);
+            },
+            startHover() {
+                this.hover = true;
+            },
+            stopHover() {
+                this.hover = false;
             }
         }
     }
