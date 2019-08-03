@@ -6,7 +6,7 @@
 
 <script>
     import { mapGetters } from "vuex";
-    import { getStreamURLForVideo } from "../video";
+    import { getStreamURLForVideo, getThumbnailURLForVideo } from "../video";
     import videojs from 'video.js';
 
     export default {
@@ -41,7 +41,12 @@
                 return getStreamURLForVideo(this.videoId);
             },
             myVideoThumbnail() {
-                return this.videoThumbnail(this.videoId);
+                const thumbnail = this.videoThumbnail(this.videoId);
+                if(thumbnail == null) {
+                    return "";
+                } else {
+                    return getThumbnailURLForVideo(this.videoId, thumbnail);
+                }
             },
             videoPlayerOptions() {
                 return {
