@@ -98,7 +98,7 @@
         mounted() {
             this.loadMetadata();
             this.listener = (event) => {
-                if(event.code.startsWith("Digit")) {
+                if(event.code.startsWith("Digit") && event.target.tagName !== "INPUT") {
                     const digit = event.code.replace("Digit", "");
                     const number = parseInt(digit);
                     this.assignToBucket(number - 1);
