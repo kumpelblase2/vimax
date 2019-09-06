@@ -2,13 +2,12 @@ package de.eternalwings.vima.domain
 
 import de.eternalwings.vima.MetadataType
 import de.eternalwings.vima.domain.Ordering.ASC
-import javax.persistence.CascadeType.ALL
+import de.eternalwings.vima.sqlite.SQLiteMetadataOptionsJsonConverter
 import javax.persistence.Column
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType.STRING
 import javax.persistence.Enumerated
-import javax.persistence.FetchType.EAGER
-import javax.persistence.OneToOne
 import javax.validation.constraints.NotBlank
 
 @Entity
@@ -22,13 +21,12 @@ data class Metadata(
         var readOnly: Boolean = false,
         @Column(updatable = false)
         var systemSpecified: Boolean = false,
-        @OneToOne(fetch = EAGER, cascade = [ALL], orphanRemoval = true)
-        var options: MetadataOptions? = null,
+        @Column(columnDefinition = "text")
+        @Convert(converter = SQLiteMetadataOptionsJsonConverter::class)
+        var options: MetadataOptions<*>? = null,
         var displayOrder: Int = 0
-): BasePersistable<Int>() {
-    fun toValue() : MetadataValue<*> {
-        val value = options!!.toValue()
-        value.metadata = this
-        return value
+) : BasePersistable<Int>() {
+    fun toValue(): MetadataValueContainer {
+        return MetadataValueContainer(null, this, options!!.toValue())
     }
 }

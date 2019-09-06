@@ -81,13 +81,13 @@ class VideoController(private val videoRepository: VideoRepository,
         return videoRepository.findById(id).map { oldVideo ->
             oldVideo.selectedThumbnail = newVideo.selectedThumbnail
             oldVideo.name = newVideo.name
-            newVideo.metadata.forEach { metadataValue ->
+            newVideo.metadata?.forEach { metadataValue ->
                 // I can't do the following without those ugly casts. These two values _should_ be of the
                 // same type. And if they aren't we should fail because something is horribly wrong.
-                val existingValue = oldVideo.metadata.find { existing ->
-                    existing.id == metadataValue.id
-                } as MetadataValue<Any>?
-                existingValue?.copyFrom(metadataValue as MetadataValue<Any>)
+                val existingValue: MetadataValue<Any> = oldVideo.metadata?.find { existing ->
+                    existing.definition?.id == metadataValue.definition?.id
+                }?.value as? MetadataValue<Any> ?: return@forEach
+                existingValue.copyFrom(metadataValue.value as MetadataValue<Any>)
             }
             videoRepository.save(oldVideo)
         }.orElseThrow {

@@ -76,7 +76,7 @@ export default {
             state.editingVideo.selectedThumbnail = thumbnailIndex;
         },
         setEditingMetadataValue(state, { index, value }) {
-            state.editingVideo.metadata[index].value = value;
+            state.editingVideo.metadata[index].value.value = value;
         },
         updateThumbnail(state, { videoId, thumbnails }) {
             const video = state.videos.find(video => video.id === videoId);

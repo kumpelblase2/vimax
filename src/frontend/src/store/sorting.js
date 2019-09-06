@@ -79,8 +79,8 @@ export default {
             const bucket = getters.bucket(index);
             const video = state.sortingVideoQueue[0];
             const assigningMetadata = state.selectedMetadata;
-            const metadataToUpdate = video.metadata.find(metadata => metadata.metadata.id === assigningMetadata.id);
-            metadataToUpdate.value = bucket.value;
+            const metadataToUpdate = video.metadata.find(metadata => metadata.definition.id === assigningMetadata.id);
+            metadataToUpdate.value.value = bucket.value;
             await videos.saveVideo(video);
             commit(SKIP_VIDEO);
             if(state.sortingVideoQueue.length === 0) {

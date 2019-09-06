@@ -16,8 +16,8 @@
                     </v-layout>
                 </v-item-group>
                 <div v-for="(metadata,index) in video.metadata" :key="index">
-                    <metadata-value-editor :metadata-definition="metadata.metadata"
-                                           :metadata-value="metadata.value"
+                    <metadata-value-editor :metadata-definition="metadata.definition"
+                                           :metadata-value="metadata.value.value"
                                            @change="handleMetadataUpdate(index, $event)"></metadata-value-editor>
                 </div>
             </v-card-text>

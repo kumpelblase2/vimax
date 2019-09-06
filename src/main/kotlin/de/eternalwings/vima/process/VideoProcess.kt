@@ -24,7 +24,7 @@ class VideoProcess(private val videoRepository: VideoRepository,
         thumbnailDeleter.deleteThumbnailsOf(video)
         video.thumbnails.clear()
         videoRepository.save(video)
-        thumbnailCreator.createThumbnailsFor(Paths.get(video.location), video.id!!)
+        thumbnailCreator.createThumbnailsFor(Paths.get(video.location!!), video.id!!)
     }
 
     fun searchFor(query: String) = videoSearcher.search(query)

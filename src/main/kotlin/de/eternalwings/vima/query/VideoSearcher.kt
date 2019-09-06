@@ -3,25 +3,27 @@ package de.eternalwings.vima.query
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.Parsed
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.stereotype.Component
-import java.lang.IllegalStateException
+import java.util.stream.Collectors
+import java.util.stream.Stream
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
 @Component
 class VideoSearcher(@PersistenceContext private val entityManager: EntityManager,
+                    private val videoRepository: VideoRepository,
                     private val databaseQueryCreator: DatabaseQueryCreator) {
     fun search(searchString: String): List<Video> {
-        val query = "SELECT v FROM Video v where "
-        val userQuery = QueryParser.tryParseToEnd(searchString)
-        val userQueryAst = when (userQuery) {
+        val userQueryAst = when (val userQuery = QueryParser.tryParseToEnd(searchString)) {
             is Parsed<FullQuery> -> userQuery.value
             else -> throw IllegalStateException()
         }
 
-        val finalQuery = query + this.databaseQueryCreator.createQueryFrom(userQueryAst, "v")
-        val dbQuery = entityManager.createQuery(finalQuery, Video::class.java)
+        val finalQuery = this.databaseQueryCreator.createQueryFrom(userQueryAst)
+        val dbQuery = entityManager.createNativeQuery(finalQuery)
 
-        return dbQuery.resultList
+        val resultStream = dbQuery.resultStream as Stream<Int>
+        return videoRepository.findAllById(resultStream.collect(Collectors.toList()))
     }
 }

@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE batch_job_execution_seq (
     id INTEGER PRIMARY KEY AUTOINCREMENT
 );
@@ -94,30 +96,6 @@ CREATE TABLE library (
     path VARCHAR(255)
 );
 
-CREATE TABLE selection_values (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(255)
-);
-
-CREATE TABLE metadata_options (
-    dtype VARCHAR(31) NOT NULL,
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    default_number_value INTEGER,
-    "MAX" INTEGER,
-    "MIN" INTEGER,
-    step INTEGER,
-    default_date_value DATE,
-    default_text_value VARCHAR(255),
-    suggest INTEGER,
-    default_time_value TIME,
-    default_timestamp_value TIMESTAMP,
-    default_boolean_value INTEGER,
-    default_long_value BIGINT,
-    default_select_value_id BIGINT REFERENCES selection_values,
-    default_tag_values TEXT,
-    default_double_value DOUBLE
-);
-
 CREATE TABLE metadata (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(255),
@@ -126,12 +104,10 @@ CREATE TABLE metadata (
     system_specified INTEGER,
     display_order INTEGER,
     type INTEGER,
+    options TEXT,
     creation_time TIMESTAMP,
     update_time TIMESTAMP,
-    version INTEGER,
-    options_id INTEGER
-        CONSTRAINT metadata_options_id_fk
-            REFERENCES metadata_options
+    version INTEGER
 );
 
 CREATE TABLE video (
@@ -147,44 +123,17 @@ CREATE TABLE video (
             REFERENCES library
 );
 
+CREATE TABLE video_metadata(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    definition_id INTEGER CONSTRAINT video_metadata_def_fk REFERENCES metadata ON DELETE CASCADE,
+    video_id INTEGER CONSTRAINT video_metadata_id_fk REFERENCES video ON DELETE CASCADE,
+    value TEXT
+);
+
 CREATE TABLE thumbnail (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     location VARCHAR(255),
-    video_id INTEGER NOT NULL
-        CONSTRAINT video_thumbnail_video_fk
-            REFERENCES video
-);
-
-CREATE TABLE metadata_value (
-    dtype INTEGER NOT NULL,
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    metadata_id INTEGER NOT NULL
-        CONSTRAINT metadata_value_metadata_fk
-            REFERENCES metadata,
-    video_id INTEGER NOT NULL
-        CONSTRAINT metadata_value_video_fk
-            REFERENCES video,
-    number_value INTEGER,
-    string_value VARCHAR(255),
-    timestamp_value TIMESTAMP,
-    taglist_values TEXT,
-    date_value DATE,
-    duration_value BIGINT,
-    boolean_value INTEGER,
-    selection_value_id BIGINT
-        CONSTRAINT METADATA_VALUE_SELECTION_FK
-            REFERENCES selection_values,
-    floating_value DOUBLE,
-    time_value TIME
-);
-
-CREATE TABLE metadata_options_values (
-    selection_metadata_options_id INTEGER NOT NULL
-        CONSTRAINT metadata_options_metadata_fk
-            REFERENCES metadata_options,
-    values_id BIGINT NOT NULL UNIQUE
-        CONSTRAINT metadata_options_select_fk
-            REFERENCES selection_values
+    video_id INTEGER NOT NULL CONSTRAINT video_thumbnail_video_fk REFERENCES video
 );
 
 CREATE TABLE playlist (
@@ -198,8 +147,8 @@ CREATE TABLE playlist (
 CREATE TABLE playlist_videos (
     playlist_id INTEGER NOT NULL
         CONSTRAINT playlist_videos_playlist_fk
-            REFERENCES playlist,
+            REFERENCES playlist ON DELETE CASCADE,
     videos_id INTEGER NOT NULL
         CONSTRAINT playlist_videos_video_fk
-            REFERENCES video
+            REFERENCES video ON DELETE CASCADE
 );

@@ -1,27 +1,25 @@
 <template>
     <div>
         <div v-if="type === 'TEXT'">
-            <v-text-field v-model="options.defaultTextValue"
+            <v-text-field v-model="options.defaultValue"
                           label="Default Value"></v-text-field>
             <v-switch v-model="options.suggest" label="Suggestions"></v-switch>
         </div>
         <div v-if="type === 'NUMBER' || type === 'RANGE'">
-            <v-text-field type="number" v-model="options.defaultNumberValue"
+            <v-text-field type="number" v-model="options.defaultValue"
                           label="Default Value"></v-text-field>
             <v-text-field type="number" v-model="options.max"
                           label="Maximum"></v-text-field>
-            <v-text-field type="number" v-model="options.minimum"
+            <v-text-field type="number" v-model="options.min"
                           label="Minimum"></v-text-field>
             <v-text-field type="number" v-model="options.step"
                           label="Step"></v-text-field>
         </div>
         <div v-if="type === 'DURATION'">
-            <v-text-field type="time"
-                          v-model="options.defaultNumberValue"></v-text-field>
+            <v-text-field type="time" v-model="options.defaultValue"></v-text-field>
         </div>
         <div v-if="type === 'BOOLEAN'">
-            <v-switch v-model="options.defaultBooleanValue"
-                      label="Default Value"></v-switch>
+            <v-switch v-model="options.defaultValue" label="Default Value"></v-switch>
         </div>
         <div v-if="type === 'SELECTION'">
             <v-btn @click="addSelectionValue">
@@ -37,7 +35,7 @@
                     </v-list-tile-action>
                 </v-list-tile>
             </v-list>
-            <v-select v-model="options.defaultSelectValue"
+            <v-select v-model="options.defaultValue"
                       :items="options.values" item-text="name" label="Default Value" return-object></v-select>
         </div>
     </div>

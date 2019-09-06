@@ -1,9 +1,10 @@
 package de.eternalwings.vima.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As.EXISTING_PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import de.eternalwings.vima.MetadataType
 import de.eternalwings.vima.MetadataType.BOOLEAN
@@ -17,24 +18,12 @@ import de.eternalwings.vima.MetadataType.SELECTION
 import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.MetadataType.TIME
-import de.eternalwings.vima.ext.toLocalDate
-import de.eternalwings.vima.ext.toLocalDateTime
-import de.eternalwings.vima.ext.toLocalTime
-import java.util.Date
-import javax.persistence.CascadeType.ALL
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType.IDENTITY
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.OneToOne
-import javax.persistence.Temporal
-import javax.persistence.TemporalType
-import javax.persistence.TemporalType.TIMESTAMP
-import javax.persistence.Transient
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-@Entity
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
+@JsonTypeInfo(use = NAME, include = EXISTING_PROPERTY, property = "type", visible = false)
 @JsonSubTypes(value = [
     Type(name = "TEXT", value = TextMetadataOptions::class),
     Type(name = "NUMBER", value = NumberMetadataOptions::class),
@@ -48,155 +37,38 @@ import javax.persistence.Transient
     Type(name = "TIME", value = TimeMetadataOptions::class),
     Type(name = "FLOAT", value = FloatMetadataOptions::class)
 ])
-abstract class MetadataOptions {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    var id: Int? = null
-
-    @Transient
-    abstract fun getType(): MetadataType?
-
-    @Transient
-    abstract fun toValue(): MetadataValue<*>
+abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val metadataConstructor: (T?) -> MetadataValue<T>,
+                                  val defaultValue: T? = null) {
+    @JsonIgnore
+    fun toValue(): MetadataValue<T> = metadataConstructor(defaultValue)
 }
 
-@Entity
-class TextMetadataOptions() : MetadataOptions() {
-    constructor(id: Int, suggest: Boolean) : this() {
-        this.id = id
-        this.suggest = suggest
-    }
+class TextMetadataOptions(val suggest: Boolean = false) : MetadataOptions<String>(TEXT, ::StringMetadataValue)
 
-    var suggest: Boolean = false
+class NumberMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+        MetadataOptions<Int>(NUMBER, ::NumberMetadataValue)
 
-    var defaultTextValue: String? = null
+class RangeMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+        MetadataOptions<Int>(RANGE, ::NumberMetadataValue)
 
-    override fun getType() = TEXT
+class DurationMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+        MetadataOptions<Duration>(DURATION, ::DurationMetadataValue)
 
-    override fun toValue() = StringMetadataValue(defaultTextValue)
-}
+class SelectionMetadataOptions(val values: List<SelectionValues> = emptyList()) :
+        MetadataOptions<SelectionValues>(SELECTION, ::SelectionMetadataValue)
 
-@Entity
-class NumberMetadataOptions() : MetadataOptions() {
-
-    constructor(id: Int, min: Int, max: Int, step: Int) : this() {
-        this.id = id
-        this.min = min
-        this.max = max
-        this.step = step
-    }
-
-    var min: Int? = null
-    var max: Int? = null
-    var step: Int? = null
-    var defaultNumberValue: Int? = null
-
-    override fun getType() = NUMBER
-
-    override fun toValue() = NumberMetadataValue(defaultNumberValue)
-}
-
-@Entity
-class RangeMetadataOptions : MetadataOptions() {
-    var min: Int? = null
-    var max: Int? = null
-    var step: Int? = null
-    var defaultNumberValue: Int? = null
-
-    override fun getType() = RANGE
-
-    override fun toValue() = NumberMetadataValue(defaultNumberValue)
-}
-
-@Entity
-class DurationMetadataOptions : MetadataOptions() {
-    var min: Int? = null
-    var max: Int? = null
-    var step: Int? = null
-    var defaultLongValue: Long? = null
-
-    override fun getType() = DURATION
-
-    override fun toValue() = DurationMetadataValue(defaultLongValue)
-}
-
-@Entity
-class SelectionMetadataOptions : MetadataOptions() {
-
-    @OneToMany(cascade = [ALL], orphanRemoval = true)
-    var values: List<SelectionValues> = emptyList()
-    @OneToOne
-    var defaultSelectValue: SelectionValues? = null
-
-    override fun getType() = SELECTION
-
-    override fun toValue() = SelectionMetadataValue(defaultSelectValue)
-}
-
-@Entity
 class SelectionValues {
-    @Id
-    @GeneratedValue
-    var id: Int? = null
-
     var name: String? = null
 }
 
-@Entity
-class TaglistMetadataOptions : MetadataOptions() {
+class TaglistMetadataOptions : MetadataOptions<List<String>>(TAGLIST, ::TaglistMetadataValue)
 
-    @org.hibernate.annotations.Type(type = "de.eternalwings.vima.sqlite.SQLiteArrayUserType")
-    var defaultTagValues: List<String> = emptyList()
+class BooleanMetadataOptions : MetadataOptions<Boolean>(BOOLEAN, ::BooleanMetadataValue)
 
-    override fun getType() = TAGLIST
+class TimeMetadataOptions : MetadataOptions<LocalTime>(TIME, ::TimeMetadataValue)
 
-    override fun toValue() = TaglistMetadataValue(defaultTagValues)
-}
+class DateTimeMetadataOptions : MetadataOptions<LocalDateTime>(DATETIME, ::TimestampMetadataValue)
 
-@Entity
-class BooleanMetadataOptions : MetadataOptions() {
-    var defaultBooleanValue: Boolean? = false
+class DateMetadataOptions : MetadataOptions<LocalDate>(DATE, ::DateMetadataValue)
 
-    override fun getType() = BOOLEAN
-
-    override fun toValue() = BooleanMetadataValue(defaultBooleanValue)
-}
-
-@Entity
-class TimeMetadataOptions : MetadataOptions() {
-    @Temporal(TemporalType.TIME)
-    var defaultTimeValue: Date? = null
-
-    override fun getType() = TIME
-
-    override fun toValue() = TimeMetadataValue(defaultTimeValue?.toLocalTime())
-}
-
-@Entity
-class DateTimeMetadataOptions : MetadataOptions() {
-    @Temporal(TIMESTAMP)
-    var defaultTimestampValue: Date? = null
-
-    override fun getType() = DATETIME
-
-    override fun toValue() = TimestampMetadataValue(defaultTimestampValue?.toLocalDateTime())
-}
-
-@Entity
-class DateMetadataOptions : MetadataOptions() {
-    @Temporal(TemporalType.DATE)
-    var defaultDateValue: Date? = null
-
-    override fun getType() = DATE
-
-    override fun toValue() = DateMetadataValue(defaultDateValue?.toLocalDate())
-}
-
-@Entity
-class FloatMetadataOptions : MetadataOptions() {
-    var defaultDoubleValue: Double? = null
-
-    override fun getType() = FLOAT
-
-    override fun toValue() = FloatMetadataValue(defaultDoubleValue)
-}
+class FloatMetadataOptions : MetadataOptions<Double>(FLOAT, ::FloatMetadataValue)

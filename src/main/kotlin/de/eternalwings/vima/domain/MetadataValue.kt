@@ -1,30 +1,18 @@
 package de.eternalwings.vima.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import de.eternalwings.vima.ext.PropertyDelegate
-import org.hibernate.annotations.Type
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import javax.persistence.DiscriminatorColumn
-import javax.persistence.DiscriminatorType.INTEGER
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType.IDENTITY
-import javax.persistence.Id
-import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.Transient
 
-@Entity // Since we reference this, we cannot make it a @MappedSuperclass
-@DiscriminatorColumn(discriminatorType = INTEGER)
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "meta-type")
+@JsonTypeInfo(use = NAME, include = PROPERTY, property = "meta-type", visible = false)
 @JsonSubTypes(value = [
     JsonSubTypes.Type(name = "TEXT", value = StringMetadataValue::class),
     JsonSubTypes.Type(name = "NUMBER", value = NumberMetadataValue::class),
@@ -38,127 +26,53 @@ import javax.persistence.Transient
     JsonSubTypes.Type(name = "TIME", value = TimeMetadataValue::class),
     JsonSubTypes.Type(name = "FLOAT", value = FloatMetadataValue::class)
 ])
-sealed class MetadataValue<T>(
-        @Id @GeneratedValue(strategy = IDENTITY)
-        var id: Int? = null,
-        @ManyToOne
-        open var metadata: Metadata? = null,
-        @ManyToOne
-        @JsonIgnore
-        open var video: Video? = null
-) {
+sealed class MetadataValue<T> {
     @get:Transient
     abstract var value: T?
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is MetadataValue<*>) return false
-
-        if (id != other.id) return false
+        if (other.value != this.value) return false
 
         return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id ?: 0
-        result = 31 * result + (metadata?.hashCode() ?: 0)
-        result = 31 * result + (video?.hashCode() ?: 0)
-        return result
     }
 
     fun copyFrom(other: MetadataValue<T>) {
         this.value = other.value
     }
+
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
 }
 
-@Entity
-@DiscriminatorValue("1")
-data class StringMetadataValue(var stringValue: String? = null) : MetadataValue<String>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: String? by PropertyDelegate(this::stringValue)
+data class StringMetadataValue(override var value: String? = null) : MetadataValue<String>() {
 }
 
-@Entity
-@DiscriminatorValue("2")
-data class NumberMetadataValue(var numberValue: Int? = null) : MetadataValue<Int>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: Int? by PropertyDelegate(this::numberValue)
+data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<Int>() {
 }
 
-@Entity
-@DiscriminatorValue("4")
-data class TimestampMetadataValue(var timestampValue: LocalDateTime? = LocalDateTime
-    .now()) :
-        MetadataValue<LocalDateTime>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: LocalDateTime? by PropertyDelegate(this::timestampValue)
+data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>() {
 }
 
-@Entity
-@DiscriminatorValue("5")
-data class TaglistMetadataValue(
-        @Type(type = "de.eternalwings.vima.sqlite.SQLiteArrayUserType")
-        var taglistValues: List<String> = emptyList()) :
-        MetadataValue<List<String>>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: List<String>? by PropertyDelegate(this::taglistValues)
+data class TaglistMetadataValue(override var value: List<String>? = emptyList()) : MetadataValue<List<String>>() {
 }
 
-@Entity
-@DiscriminatorValue("6")
-data class DateMetadataValue(var dateValue: LocalDate? = LocalDate.now()) :
-        MetadataValue<LocalDate>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: LocalDate? by PropertyDelegate(this::dateValue)
+data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>() {
 }
 
-@Entity
-@DiscriminatorValue("7")
-data class DurationMetadataValue(var durationValue: Long? = 0) :
-        MetadataValue<Duration>() {
-    @get:Transient
-    override var value: Duration?
-        get() = Duration.ofMillis(this.durationValue ?: 0)
-        set(value) {
-            this.durationValue = value?.toMillis() ?: 0
-        }
+data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) : MetadataValue<Duration>() {
 }
 
-@Entity
-@DiscriminatorValue("8")
-data class BooleanMetadataValue(var booleanValue: Boolean? = false) :
-        MetadataValue<Boolean>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: Boolean? by PropertyDelegate(this::booleanValue)
+data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>() {
 }
 
-@Entity
-@DiscriminatorValue("9")
-data class SelectionMetadataValue(@OneToOne var selectionValue: SelectionValues? = null) :
-        MetadataValue<SelectionValues>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: SelectionValues? by PropertyDelegate(this::selectionValue)
+data class SelectionMetadataValue(override var value: SelectionValues? = null) : MetadataValue<SelectionValues>() {
 }
 
-@Entity
-@DiscriminatorValue("10")
-data class FloatMetadataValue(var floatingValue: Double? = null) : MetadataValue<Double>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: Double? by PropertyDelegate(this::floatingValue)
+data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>() {
 }
 
-@Entity
-@DiscriminatorValue("11")
-data class TimeMetadataValue(var timeValue: LocalTime? = null) : MetadataValue<LocalTime>() {
-    @get:Transient
-    @delegate:Transient
-    override var value: LocalTime? by PropertyDelegate(this::timeValue)
+data class TimeMetadataValue(override var value: LocalTime? = null) : MetadataValue<LocalTime>() {
 }

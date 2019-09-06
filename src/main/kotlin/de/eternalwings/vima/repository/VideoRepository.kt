@@ -13,10 +13,10 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun findAllByOrderByCreationTimeDesc(pageable: Pageable): Page<Video>
     fun findByLocation(location: String): Video?
     fun findByLibrary(library: Library): List<Video>
-    @Query("SELECT DISTINCT v FROM Video v WHERE NOT EXISTS(SELECT mv FROM MetadataValue mv WHERE " +
-            "mv.video = v AND mv.metadata.id = ?1 AND " +
-            "(mv.booleanValue <> NULL OR mv.dateValue <> NULL OR mv.durationValue <> NULL OR mv.floatingValue <> NULL OR " +
-            "mv.numberValue <> NULL OR mv.stringValue <> NULL OR mv.timestampValue <> NULL OR " +
-            "(mv.taglistValues <> NULL AND CARDINALITY(mv.taglistValues) > 0) OR mv.timeValue <> NULL OR mv.selectionValue <> NULL))")
+    @Query("SELECT DISTINCT v.* FROM video v WHERE " +
+            "NOT EXISTS(SELECT * FROM video_metadata vm " +
+            "WHERE vm.video_id = v.id AND vm.definition_id = ?1 AND vm.value IS NOT NULL " +
+            "AND json_extract(vm.value, '$.value') IS NOT NULL)",
+            nativeQuery = true)
     fun findVideosWithMissingMetadata(metadataId: Int, pageable: Pageable): List<Video>
 }

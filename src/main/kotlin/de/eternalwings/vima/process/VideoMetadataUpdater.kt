@@ -1,14 +1,12 @@
 package de.eternalwings.vima.process
 
 import de.eternalwings.vima.domain.Metadata
-import de.eternalwings.vima.repository.MetadataValueRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.stereotype.Component
 import javax.transaction.Transactional
 
 @Component
-class VideoMetadataUpdater(private val videoRepository: VideoRepository,
-                           private val metadataValueRepository: MetadataValueRepository) {
+class VideoMetadataUpdater(private val videoRepository: VideoRepository) {
     @Transactional
     fun addMetadata(metadata: Metadata) {
         val allVideos = videoRepository.findAll()
@@ -18,10 +16,5 @@ class VideoMetadataUpdater(private val videoRepository: VideoRepository,
             }
         }
         videoRepository.saveAll(allVideos)
-    }
-
-    @Transactional
-    fun deleteMetadata(metadata: Metadata) {
-        metadataValueRepository.deleteAllByMetadataId(metadata.id!!)
     }
 }
