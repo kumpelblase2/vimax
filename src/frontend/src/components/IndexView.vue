@@ -16,6 +16,7 @@
         name: "Library",
         components: { VideoEditDialog, VideoCard },
         mounted() {
+            this.loadMetadata();
             this.loadAllVideos();
         },
         computed: {
@@ -27,6 +28,9 @@
             ...mapActions('videos', [
                 'loadRecentVideos',
                 'loadAllVideos'
+            ]),
+            ...mapActions('settings/metadata',[
+                'loadMetadata'
             ])
         }
     }
