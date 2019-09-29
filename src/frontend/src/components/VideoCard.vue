@@ -1,5 +1,5 @@
 <template>
-    <v-flex xs12 sm6 md3 xl2>
+    <v-flex xs12 sm6 md3 xl2 class="px-1">
         <v-card>
             <v-img :aspect-ratio="16/9" v-bind:src="thumbnailUrl" @mouseenter="startHover" @mouseleave="stopHover">
                 <v-layout row fill-height v-show="hover">
