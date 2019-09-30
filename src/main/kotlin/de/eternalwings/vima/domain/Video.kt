@@ -9,7 +9,6 @@ import javax.persistence.Entity
 import javax.persistence.FetchType.LAZY
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
-import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Transient
@@ -21,8 +20,7 @@ data class Video(
         var name: String? = null,
         @ManyToOne
         var library: Library? = null,
-        @OneToMany(cascade = [ALL])
-        @JoinColumn(name = "video_id")
+        @OneToMany(cascade = [ALL], mappedBy = "video")
         var metadata: MutableList<MetadataValueContainer>? = mutableListOf(),
         @OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
         var thumbnails: MutableList<Thumbnail> = mutableListOf(),
@@ -31,6 +29,7 @@ data class Video(
 
     fun addMetadataValue(value: MetadataValueContainer) {
         metadata?.add(value)
+        value.video = this
     }
 
     fun hasMetadata(metadataToCheck: Metadata) = metadata?.any { existing ->

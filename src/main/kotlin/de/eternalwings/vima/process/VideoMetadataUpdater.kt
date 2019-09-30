@@ -11,9 +11,7 @@ class VideoMetadataUpdater(private val videoRepository: VideoRepository) {
     fun addMetadata(metadata: Metadata) {
         val allVideos = videoRepository.findAll()
         allVideos.forEach { video ->
-            if (!video.hasMetadata(metadata)) {
-                video.addMetadataValue(metadata.toValue())
-            }
+            video.addMetadataValue(metadata.toValue())
         }
         videoRepository.saveAll(allVideos)
     }

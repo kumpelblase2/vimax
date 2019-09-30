@@ -5,6 +5,7 @@ import org.springframework.data.domain.Persistable
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
+import javax.persistence.FetchType.LAZY
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
@@ -20,7 +21,9 @@ data class MetadataValueContainer(
         var definition: Metadata? = null,
         @Column(columnDefinition = "text")
         @Convert(converter = SQLiteMetadataValueJsonConverter::class)
-        var value: MetadataValue<*>? = null
+        var value: MetadataValue<*>? = null,
+        @ManyToOne(optional = false, fetch = LAZY)
+        var video: Video? = null
 ) : Persistable<Int> {
     override fun getId() = id
 
