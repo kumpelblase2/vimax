@@ -18,6 +18,7 @@ export default {
             { text: 'Order', value: 'displayOrder' },
             { text: 'Name', value: 'name' },
             { text: 'Type', value: 'type' },
+            { text: 'Default Value', values: 'defaultValue' },
             { text: 'Actions', value: 'actions', sortable: false, width: 150 }
         ],
         editingItem: {
