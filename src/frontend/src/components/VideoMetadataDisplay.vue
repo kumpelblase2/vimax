@@ -29,11 +29,10 @@
         },
         computed: {
             ...mapGetters('settings/metadata', [
-                'orderedMetadata'
+                'visibleMetadata'
             ]),
             metadatas() {
-
-                return this.orderedMetadata.map(definition => {
+                return this.visibleMetadata.map(definition => {
                     return {
                         value: valueOrDefault(this.videoMetadata.find(metadata => metadata.definition.id === definition.id), definition),
                         definition

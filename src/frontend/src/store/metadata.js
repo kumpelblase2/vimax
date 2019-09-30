@@ -4,6 +4,7 @@ export default {
     namespaced: true,
     state: {
         metadata: [],
+        visibleMetadatas: [],
         possibleMetadataTypes: [
             { text: 'Text', value: 'TEXT' },
             { text: 'Number', value: 'NUMBER' },
@@ -40,24 +41,28 @@ export default {
     },
     getters: {
         orderedMetadata(state) {
-            return [...state.metadata].sort((first,second) => first.displayOrder - second.displayOrder);
+            return [...state.metadata].sort((first, second) => first.displayOrder - second.displayOrder);
+        },
+        visibleMetadata(state) {
+            return state.visibleMetadatas;
         }
     },
     actions: {
         async loadMetadata({ commit }) {
             const metadatas = await metadataApi.getMetadata();
             metadatas.forEach(metadata => {
-                commit('addOrUpdateLibrary', metadata);
+                commit('addOrUpdateMetadata', metadata);
+                commit('showMetadata', metadata);
             });
         },
         async saveMetadata({ commit }, metadata) {
             metadata.options.type = metadata.type;
             const saved = await metadataApi.saveMetadata(metadata);
-            commit('addOrUpdateLibrary', saved);
+            commit('addOrUpdateMetadata', saved);
         },
         deleteMetadata({ commit }, metadata) {
             return metadataApi.deleteMetadata(metadata.id).then(() => {
-                commit('removeLibrary', metadata);
+                commit('removeMetadata', metadata);
             }).catch((ex) => console.error(ex));
         },
         resetEditItem({ commit, state }) {
@@ -85,10 +90,32 @@ export default {
 
             await metadataApi.saveMetadata(metadata);
             await metadataApi.saveMetadata(metadataToMove);
+        },
+        onlyShowMetadata({ commit, state }, newVisibleMetadata) {
+            state.metadata.forEach(metadata => {
+                if(newVisibleMetadata.findIndex(visibleMetadata => visibleMetadata.id === metadata.id) >= 0) {
+                    commit('showMetadata', metadata);
+                } else {
+                    commit('hideMetadata', metadata);
+                }
+            })
         }
     },
     mutations: {
-        addOrUpdateLibrary(state, metadata) {
+        showMetadata(state, metadata) {
+            const existingIndex = state.visibleMetadatas.findIndex(existing => metadata.id === existing.id);
+            if(existingIndex < 0) {
+                state.visibleMetadatas.push(metadata);
+                state.visibleMetadatas.sort((first, second) => first.displayOrder - second.displayOrder)
+            }
+        },
+        hideMetadata(state, metadata) {
+            const existingIndex = state.visibleMetadatas.findIndex(existing => metadata.id === existing.id);
+            if(existingIndex >= 0) {
+                state.visibleMetadatas.splice(existingIndex, 1);
+            }
+        },
+        addOrUpdateMetadata(state, metadata) {
             const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
             if(existingIndex >= 0) {
                 Object.assign(state.metadata[existingIndex], metadata);
@@ -96,7 +123,7 @@ export default {
                 state.metadata.push(metadata);
             }
         },
-        removeLibrary(state, metadata) {
+        removeMetadata(state, metadata) {
             const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
             if(existingIndex >= 0) {
                 state.metadata.splice(existingIndex, 1);
@@ -105,7 +132,7 @@ export default {
         setEditItem(state, item) {
             state.editingItem = Object.assign({}, item);
         },
-        setOrder(state, {metadataId,order}) {
+        setOrder(state, { metadataId, order }) {
             const found = state.metadata.find(existing => existing.id === metadataId);
             found.displayOrder = order;
         }

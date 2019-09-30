@@ -32,6 +32,7 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Vima</v-toolbar-title>
             <v-spacer></v-spacer>
+            <MetadataSelection></MetadataSelection>
             <v-layout row align-center style="max-width: 650px">
                 <SearchComponent></SearchComponent>
             </v-layout>
@@ -49,9 +50,10 @@
 
 <script>
     import SearchComponent from "./components/SearchComponent";
+    import MetadataSelection from "./components/MetadataSelection";
     export default {
         name: 'Vima',
-        components: { SearchComponent },
+        components: { MetadataSelection, SearchComponent },
         data: () => ({
             drawer: null
         })
