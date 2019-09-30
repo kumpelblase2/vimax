@@ -29,7 +29,9 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         }
 
         val savedMetadata = metadataRepository.save(metadata)
-        videoMetadataUpdater.addMetadata(savedMetadata)
+        if (isNew) {
+            videoMetadataUpdater.addMetadata(savedMetadata)
+        }
         return savedMetadata
     }
 
