@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="750px" v-if="video">
+    <v-dialog v-model="dialog" persistent max-width="750px" scrollable v-if="video">
         <v-card>
             <v-card-title>
                 <span class="headline">Editing Video</span>
@@ -21,6 +21,7 @@
                                            @change="handleMetadataUpdate(index, $event)"></metadata-value-editor>
                 </div>
             </v-card-text>
+            <v-divider></v-divider>
             <v-card-actions>
                 <v-btn @click="refreshThumbnails">Refresh Thumbs</v-btn>
                 <v-spacer></v-spacer>
