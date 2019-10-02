@@ -6,7 +6,7 @@
             </v-card-title>
             <v-card-text>
                 <v-text-field v-model="video.name" label="Name"></v-text-field>
-                <v-item-group mandatory @change="updateSelectedThumbnail">
+                <v-item-group mandatory @change="updateSelectedThumbnail" :value="video.selectedThumbnail">
                     <v-layout row wrap>
                         <v-flex v-for="(thumbnail, index) in video.thumbnails" :key="index">
                             <v-item active-class="active" class="element">
