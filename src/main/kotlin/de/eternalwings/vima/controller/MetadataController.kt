@@ -1,7 +1,9 @@
 package de.eternalwings.vima.controller
 
 import de.eternalwings.vima.domain.Metadata
+import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.process.VideoMetadataUpdater
+import de.eternalwings.vima.repository.MetadataContainerRepository
 import de.eternalwings.vima.repository.MetadataRepository
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,6 +17,7 @@ import javax.transaction.Transactional
 @RestController
 @RequestMapping("/api")
 class MetadataController(private val metadataRepository: MetadataRepository,
+                         private val metadataValueRepository: MetadataContainerRepository,
                          private val videoMetadataUpdater: VideoMetadataUpdater) {
     @GetMapping("/metadata")
     fun getAll(): List<Metadata> = metadataRepository.findAll()
@@ -41,5 +44,11 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         val metadata = this.metadataRepository.getOne(metadataId)
         this.metadataRepository.delete(metadata)
         return metadataId
+    }
+
+    @GetMapping("/metadata/{id}/values")
+    fun getPossibleValues(@PathVariable("id") metadataId: Int): List<MetadataValue<*>> {
+        return metadataValueRepository.findByDefinition(metadataRepository.getOne(metadataId)).asSequence().mapNotNull { it
+            .value }.filter { it.value != null }.toList()
     }
 }

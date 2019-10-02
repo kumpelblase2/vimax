@@ -1,8 +1,10 @@
 <template>
     <div>
-        <v-text-field v-if="metadataDefinition.type === 'TEXT'"
-                      :label="metadataDefinition.name" :value="metadataValue"
-                      @change="update"></v-text-field>
+        <v-autocomplete v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
+                      :items="loadedItems" :label="metadataDefinition.name" :value="metadataValue"
+                      :search-input.sync="search" :loading="isLoading" @change="update"></v-autocomplete>
+        <v-text-field v-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
+                      :label="metadataDefinition.name" :value="metadataValue" @change="update"></v-text-field>
         <v-switch v-else-if="metadataDefinition.type === 'BOOLEAN'" @change="update"
                   :label="metadataDefinition.name" :value="metadataValue"></v-switch>
         <v-text-field v-else-if="metadataDefinition.type === 'NUMBER'" type="number"
@@ -23,12 +25,17 @@
 </template>
 
 <script>
+    import metadataApi from "../api/metadata";
+
     export default {
         name: "MetadataValueEditor",
         props: ['metadata-definition', 'metadata-value'],
         data() {
             return {
-                tagValues: []
+                tagValues: [],
+                isLoading: false,
+                loadedItems: [],
+                search: null,
             }
         },
         methods: {
@@ -47,6 +54,19 @@
             },
             removeTag(tag) {
                 this.$emit('change', this.metadataValue.filter(elem => elem !== tag));
+            }
+        },
+        watch: {
+            search(value) {
+                if(this.loadedItems.length > 0) return;
+                if(this.isLoading) return;
+                this.isLoading = true;
+
+                metadataApi.getMetadataValues(this.metadataDefinition.id).then(values => {
+                    this.loadedItems = values;
+                }).finally(() => {
+                    this.isLoading = false;
+                });
             }
         },
         mounted() {

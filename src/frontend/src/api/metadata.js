@@ -11,5 +11,9 @@ export default {
 
     deleteMetadata(id) {
         return axios.delete("/api/metadata/" + id).then(response => response.data);
+    },
+
+    getMetadataValues(id) {
+        return axios.get(`/api/metadata/${id}/values`).then(response => response.data.map(value => value.value));
     }
 };
