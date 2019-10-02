@@ -21,6 +21,10 @@ Vue.use(Vuetify, {
     }
 });
 
+router.afterEach((to, _) => {
+    store.commit('page/switchView', to.name);
+});
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',

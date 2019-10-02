@@ -32,8 +32,9 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Vima</v-toolbar-title>
             <v-spacer></v-spacer>
-            <MetadataSelection></MetadataSelection>
-            <v-layout row align-center style="max-width: 650px">
+            <MetadataSelection v-if="shouldShowMetadata"></MetadataSelection>
+            <v-spacer v-if="shouldShowMetadata && shouldShowSearch"></v-spacer>
+            <v-layout v-if="shouldShowSearch" row align-center style="max-width: 650px">
                 <SearchComponent></SearchComponent>
             </v-layout>
         </v-toolbar>
@@ -51,9 +52,17 @@
 <script>
     import SearchComponent from "./components/SearchComponent";
     import MetadataSelection from "./components/MetadataSelection";
+    import { mapGetters } from "vuex";
+
     export default {
         name: 'Vima',
         components: { MetadataSelection, SearchComponent },
+        computed: {
+            ...mapGetters('page', [
+                'shouldShowMetadata',
+                'shouldShowSearch'
+            ])
+        },
         data: () => ({
             drawer: null
         })

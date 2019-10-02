@@ -26,7 +26,7 @@ export default new Router({
         },
         {
             path: '/sorting',
-            name: 'Sorting Mode',
+            name: 'Sorting',
             component: SortingView
         }
     ]
