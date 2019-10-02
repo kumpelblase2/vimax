@@ -9,7 +9,7 @@
                       :label="metadataDefinition.name" :value="metadataValue"
                       @change="updateNumber"></v-text-field>
         <v-select v-else-if="metadataDefinition.type === 'SELECTION'" :label="metadataDefinition.name"
-                  @change="update" :value="metadmataValue" :items="metadataDefinition.options.values"
+                  @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
                   item-text="name" return-object></v-select>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
                     @change="update" chips clearable multiple :items="tagValues">
