@@ -1,6 +1,6 @@
 <template>
     <v-select class="nav-select single-line" :value="visibleMetadata" :items="orderedMetadata" item-text="name" return-object
-              flat dense multiple @change="onlyShowMetadata">
+              flat dense multiple @change="onlyShowMetadata" placeholder="No metadata visible">
         <template v-slot:selection="{ item, index }">
             <span v-if="index === 2" class="grey--text">
                  &nbsp;+{{visibleMetadata.length - 2}} more
