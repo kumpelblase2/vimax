@@ -1,7 +1,7 @@
 <template>
-    <v-flex xs12 sm6 md3 xl2 class="px-1">
+    <v-flex xs12 sm6 md3 xl2 class="pa-1">
         <v-card>
-            <v-img :aspect-ratio="16/9" v-bind:src="thumbnailUrl" @mouseenter="startHover" @mouseleave="stopHover">
+            <v-img :aspect-ratio="16/10" v-bind:src="thumbnailUrl" @mouseenter="startHover" @mouseleave="stopHover">
                 <v-layout row fill-height v-show="hover">
                     <v-spacer></v-spacer>
                     <v-btn flat icon color="orange" :to="watchRoute"><v-icon>play_arrow</v-icon></v-btn>
@@ -9,7 +9,7 @@
                 </v-layout>
             </v-img>
             <v-card-title>{{ video.name }}</v-card-title>
-            <v-card-text>
+            <v-card-text v-if="hasVisibleMetadata">
                 <VideoMetadataDisplay :video-metadata="video.metadata"/>
             </v-card-text>
         </v-card>
@@ -35,6 +35,7 @@
                 'thumbnailOf',
                 'getVideo'
             ]),
+            ...mapGetters('settings/metadata', ['hasVisibleMetadata']),
             video() {
                 return this.getVideo(this.videoId);
             },

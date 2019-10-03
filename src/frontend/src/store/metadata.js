@@ -46,6 +46,9 @@ export default {
         },
         visibleMetadata(state) {
             return state.visibleMetadatas;
+        },
+        hasVisibleMetadata(state) {
+            return state.visibleMetadatas.length > 0;
         }
     },
     actions: {
