@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-autocomplete v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
+        <v-combobox v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
                       :items="loadedItems" :label="metadataDefinition.name" :value="metadataValue"
-                      :search-input.sync="search" :loading="isLoading" @change="update"></v-autocomplete>
+                      :search-input.sync="search" :loading="isLoading" @change="update"></v-combobox>
         <v-text-field v-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
                       :label="metadataDefinition.name" :value="metadataValue" @change="update"></v-text-field>
         <v-switch v-else-if="metadataDefinition.type === 'BOOLEAN'" @change="update"
