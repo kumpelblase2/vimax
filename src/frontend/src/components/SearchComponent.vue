@@ -5,6 +5,7 @@
             :append-icon-cb="doSearch"
             placeholder="Search..."
             single-line
+            solo
             append-icon="search"
             color="white"
             hide-details
