@@ -2,19 +2,19 @@
     <div>
         <v-combobox v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
                       :items="loadedItems" :label="metadataDefinition.name" :value="metadataValue"
-                      :search-input.sync="search" :loading="isLoading" @change="update"></v-combobox>
+                      :search-input.sync="search" :loading="isLoading" @change="update" :solo="solo"></v-combobox>
         <v-text-field v-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
-                      :label="metadataDefinition.name" :value="metadataValue" @change="update"></v-text-field>
+                      :label="metadataDefinition.name" :value="metadataValue" @change="update" :solo="solo"></v-text-field>
         <v-switch v-else-if="metadataDefinition.type === 'BOOLEAN'" @change="update"
-                  :label="metadataDefinition.name" :value="metadataValue"></v-switch>
+                  :label="metadataDefinition.name" :value="metadataValue" :solo="solo"></v-switch>
         <v-text-field v-else-if="metadataDefinition.type === 'NUMBER'" type="number"
                       :label="metadataDefinition.name" :value="metadataValue"
-                      @change="updateNumber"></v-text-field>
+                      @change="updateNumber" :solo="solo"></v-text-field>
         <v-select v-else-if="metadataDefinition.type === 'SELECTION'" :label="metadataDefinition.name"
                   @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
-                  item-text="name" return-object></v-select>
+                  item-text="name" return-object :solo="solo"></v-select>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
-                    @change="update" chips clearable multiple :items="tagValues">
+                    @change="update" chips clearable multiple :items="tagValues" :solo="solo">
             <template #selection="data">
                 <v-chip :selected="data.selected" close @input="removeTag(data.item)">
                     {{ data.item }}
@@ -29,7 +29,7 @@
 
     export default {
         name: "MetadataValueEditor",
-        props: ['metadata-definition', 'metadata-value'],
+        props: ['metadata-definition', 'metadata-value', 'solo'],
         data() {
             return {
                 tagValues: [],

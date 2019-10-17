@@ -4,6 +4,7 @@ import settings from './settings';
 import videos from './video';
 import sorting from './sorting';
 import page from "./page";
+import search from "./search";
 
 Vue.use(Vuex);
 
@@ -12,6 +13,7 @@ export default new Vuex.Store({
         settings,
         videos,
         sorting,
-        page
+        page,
+        search
     }
 });

@@ -12,7 +12,7 @@
             </v-layout>
             <metadata-value-editor :metadata-definition="selectedMetadata"
                                    :metadata-value="myBucketAssignedValue"
-                                   @change="updateValue({value: $event, index: bucketIndex})"></metadata-value-editor>
+                                   @change="updateValue({value: $event, index: bucketIndex})" solo></metadata-value-editor>
 
             <v-btn @click="$emit('click', $event)">Assign</v-btn>
         </v-sheet>

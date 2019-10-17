@@ -43,7 +43,7 @@
                     </v-card>
                 </v-dialog>
             </v-toolbar>
-            <v-data-table :headers="headers" :items="metadatas" class="elevation-1">
+            <v-data-table :headers="headers" :items="metadatas" class="elevation-1" items-per-page="20">
                 <template slot="items" slot-scope="props">
                     <td>{{ props.item.displayOrder }}</td>
                     <td>{{ props.item.name }}</td>

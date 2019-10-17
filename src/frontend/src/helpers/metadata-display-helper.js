@@ -11,6 +11,19 @@ export function canBeDisplayedAsText(type) {
     }
 }
 
+export function isSortable(type) {
+    switch(type) {
+        case 'TEXT':
+        case 'NUMBER':
+        case 'RANGE':
+        case 'BOOLEAN':
+        case 'DURATION':
+            return true;
+        default:
+            return false;
+    }
+}
+
 export function toDisplayValue(type, value) {
     if(value != null) {
         switch(type) {

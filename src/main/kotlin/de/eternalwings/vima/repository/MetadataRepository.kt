@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface MetadataRepository : JpaRepository<Metadata,Int> {
     @Query("SELECT max(m.displayOrder) FROM Metadata m")
     fun getHighestDisplayOrder(): Int?
+    fun findByName(name: String): Metadata?
 }

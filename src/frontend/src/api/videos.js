@@ -5,6 +5,10 @@ export default {
         return axios.get('/api/videos').then(response => response.data);
     },
 
+    getVideosByPage(page, query = "", sortProp = 'Name', sortDir = 'ASC') {
+        return axios.get(`/api/videos?query=${encodeURIComponent(query)}&page=${page}&sortby=${sortProp}&sortdir=${sortDir}`).then(response => response.data);
+    },
+
     getRecentVideos() {
         return axios.get('/api/home').then(response => response.data);
     },
@@ -21,11 +25,11 @@ export default {
         return axios.post(`/api/video/${video.id}/refresh`).then(response => response.data);
     },
 
-    search(query) {
-        return axios.get(`/api/videos?query=${encodeURIComponent(query)}`).then(response => response.data);
-    },
-
     getSortableVideosFor(metadata) {
         return axios.get(`/api/sorting/${metadata.id}`).then(response => response.data);
+    },
+
+    getVideosById(ids) {
+        return axios.get(`/api/videos/byid?ids=${ids.join(",")}`).then(response => response.data);
     }
 };

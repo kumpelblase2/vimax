@@ -8,6 +8,7 @@
     import { mapGetters } from "vuex";
     import { getStreamURLForVideo, getThumbnailURLForVideo } from "../video";
     import videojs from 'video.js';
+    import events from '../api/event';
 
     export default {
         name: "VideoPlayer",
@@ -23,7 +24,7 @@
             };
         },
         watch: {
-            videoId() {
+            videoId(newValue) {
                 this.player.src([
                     {
                         src: this.myVideoStream,
@@ -32,6 +33,7 @@
                 ]);
                 this.player.poster(this.myVideoThumbnail);
                 this.player.thumbnails().src(this.myVideoStream);
+                events.watchStartEvent(newValue);
             }
         },
         computed: {
@@ -67,6 +69,7 @@
         mounted() {
             this.player = videojs(this.$refs.videoPlayer, this.videoPlayerOptions);
             this.player.thumbnails({ play: true });
+            events.watchStartEvent(this.videoId);
         },
         beforeDestroy() {
             if(this.player) {

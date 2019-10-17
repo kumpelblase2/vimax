@@ -1,4 +1,5 @@
 import metadataApi from "../api/metadata";
+import { isSortable } from "../helpers/metadata-display-helper";
 
 export default {
     namespaced: true,
@@ -49,6 +50,9 @@ export default {
         },
         hasVisibleMetadata(state) {
             return state.visibleMetadatas.length > 0;
+        },
+        sortableMetadata(state) {
+            return state.visibleMetadatas.filter(metadata => isSortable(metadata.type));
         }
     },
     actions: {
@@ -103,6 +107,16 @@ export default {
                     commit('hideMetadata', metadata);
                 }
             })
+        },
+        hideAllMetadata({ commit, state }) {
+            state.metadata.forEach(metadata => {
+                commit('hideMetadata', metadata);
+            });
+        },
+        showAllMetadata({ commit, state }) {
+            state.metadata.forEach(metadata => {
+                commit('showMetadata', metadata);
+            });
         }
     },
     mutations: {

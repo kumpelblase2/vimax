@@ -63,6 +63,7 @@
             },
             save() {
                 this.saveEditingVideo().then(() => this.close());
+                this.$emit('finish-edit');
             },
             thumbnailUrl(thumbnail) {
                 return `/api/video/${this.editingVideo.id}/thumbnail/${thumbnail.id}`;

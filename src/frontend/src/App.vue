@@ -31,9 +31,12 @@
         <v-toolbar app fixed clipped-left>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Vima</v-toolbar-title>
-            <v-spacer></v-spacer>
+            <v-spacer v-if="shouldShowMetadata"></v-spacer>
             <MetadataSelection v-if="shouldShowMetadata"></MetadataSelection>
-            <v-spacer v-if="shouldShowMetadata && shouldShowSearch"></v-spacer>
+            <v-spacer v-if="shouldShowSort"></v-spacer>
+            <SortSelect v-if="shouldShowSort"></SortSelect>
+            <SortDirectionToggle v-if="shouldShowSort"></SortDirectionToggle>
+            <v-spacer></v-spacer>
             <v-layout v-if="shouldShowSearch" row align-center style="max-width: 650px">
                 <SearchComponent></SearchComponent>
             </v-layout>
@@ -53,14 +56,17 @@
     import SearchComponent from "./components/SearchComponent";
     import MetadataSelection from "./components/MetadataSelection";
     import { mapGetters } from "vuex";
+    import SortSelect from "./components/SortSelect";
+    import SortDirectionToggle from "./components/SortDirectionToggle";
 
     export default {
         name: 'Vima',
-        components: { MetadataSelection, SearchComponent },
+        components: { SortDirectionToggle, SortSelect, MetadataSelection, SearchComponent },
         computed: {
             ...mapGetters('page', [
                 'shouldShowMetadata',
-                'shouldShowSearch'
+                'shouldShowSearch',
+                'shouldShowSort'
             ])
         },
         data: () => ({

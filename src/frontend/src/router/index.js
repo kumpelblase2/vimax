@@ -29,5 +29,5 @@ export default new Router({
             name: 'Sorting',
             component: SortingView
         }
-    ]
+    ],
 })

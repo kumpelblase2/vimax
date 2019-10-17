@@ -1,5 +1,6 @@
 package de.eternalwings.vima.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import de.eternalwings.vima.sqlite.SQLiteMetadataValueJsonConverter
 import org.springframework.data.domain.Persistable
 import javax.persistence.Column
@@ -22,6 +23,7 @@ data class MetadataValueContainer(
         @Column(columnDefinition = "text")
         @Convert(converter = SQLiteMetadataValueJsonConverter::class)
         var value: MetadataValue<*>? = null,
+        @JsonIgnore
         @ManyToOne(optional = false, fetch = LAZY)
         var video: Video? = null
 ) : Persistable<Int> {

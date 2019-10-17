@@ -16,7 +16,9 @@ export default {
         videos: [],
         activeVideoId: null,
         editingVideo: null,
-        selectedVideos: []
+        selectedVideos: [],
+        isLoading: false,
+        currentPage: 0
     },
     getters: {
         activeVideo: (state, getters) => {
@@ -91,20 +93,42 @@ export default {
             while(state.videos.length) {
                 state.videos.pop();
             }
+        },
+        setLoading(state, value) {
+            state.isLoading = value;
+        },
+        nextPage(state) {
+            state.currentPage += 1;
+        },
+        resetPage(state) {
+            state.currentPage = 0;
         }
     },
     actions: {
         async loadRecentVideos({ commit }) {
+            commit('setLoading', true);
             const videos = await videoApi.getRecentVideos();
             videos.forEach(video => {
                 commit(APPEND_VIDEO, video);
             });
+            commit('setLoading', false);
         },
         async loadAllVideos({ commit }) {
+            commit('setLoading', true);
             const videos = await videoApi.getAllVideos();
             videos.forEach(video => {
                 commit(APPEND_VIDEO, video);
             });
+            commit('setLoading', false);
+        },
+        async loadVideosOfCurrentPage({ commit, state, rootState }) {
+            commit('setLoading', true);
+            const videos = await videoApi.getVideosByPage(state.currentPage, rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+            commit('nextPage');
+            videos.forEach(video => {
+                commit(APPEND_VIDEO, video);
+            });
+            commit('setLoading', false);
         },
         async makeVideoActive({ commit }, videoId) {
             commit(SET_ACTIVE_VIDEO, videoId);
@@ -133,12 +157,10 @@ export default {
             commit('updateThumbnail', { videoId: state.editingVideo.id, thumbnails: newThumbnails });
             commit('updateEditingThumbnails', newThumbnails);
         },
-        async search({ commit }, query) {
-            const videos = await videoApi.search(query);
+        async search({ commit, dispatch }) {
             commit(CLEAR_VIDEOS);
-            videos.forEach(video => {
-                commit(APPEND_VIDEO, video);
-            });
+            commit('resetPage');
+            await dispatch('loadVideosOfCurrentPage');
         }
     }
 };

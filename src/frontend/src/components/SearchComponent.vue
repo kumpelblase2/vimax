@@ -2,6 +2,7 @@
     <form action="#" @submit="doSearch">
         <v-text-field
             v-model="searchQuery"
+            @change="updateQuery"
             :append-icon-cb="doSearch"
             placeholder="Search..."
             single-line
@@ -14,19 +15,18 @@
 </template>
 
 <script>
-    import {mapActions} from 'vuex';
+    import { mapActions, mapGetters, mapMutations } from 'vuex';
 
     export default {
         name: "SearchComponent",
-        data() {
-            return {
-                searchQuery: ""
-            };
+        computed: {
+            ...mapGetters('search', ['searchQuery'])
         },
         methods: {
             ...mapActions('videos', [
                 'search'
             ]),
+            ...mapMutations('search', ['updateQuery']),
             doSearch() {
                 this.search(this.searchQuery);
             }
