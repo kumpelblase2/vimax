@@ -4,7 +4,7 @@
         <template v-slot:prepend-item>
             <v-list-tile @click="toggleAll">
                 <v-list-tile-content>
-                    Select All
+                    {{selectionText}}
                 </v-list-tile-content>
             </v-list-tile>
             <v-divider class="mt-2"></v-divider>
@@ -32,7 +32,10 @@
             ...mapGetters('settings/metadata', [
                 'visibleMetadata',
                 'orderedMetadata'
-            ])
+            ]),
+            selectionText() {
+                return this.allSelected ? "Select None" : "Select All"
+            }
         },
         methods: {
             ...mapActions('settings/metadata', ['onlyShowMetadata', 'showAllMetadata', 'hideAllMetadata']),
