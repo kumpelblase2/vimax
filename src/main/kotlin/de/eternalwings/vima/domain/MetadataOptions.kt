@@ -38,7 +38,7 @@ import java.time.LocalTime
     Type(name = "FLOAT", value = FloatMetadataOptions::class)
 ])
 abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val metadataConstructor: (T?) -> MetadataValue<T>,
-                                  val defaultValue: T? = null) {
+                                  var defaultValue: T? = null) {
     @JsonIgnore
     fun toValue(): MetadataValue<T> = metadataConstructor(defaultValue)
 }

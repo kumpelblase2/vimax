@@ -161,6 +161,10 @@ export default {
             commit(CLEAR_VIDEOS);
             commit('resetPage');
             await dispatch('loadVideosOfCurrentPage');
+        },
+        async reloadVideo({ commit }, videoId) {
+            const video = await videoApi.getVideo(videoId);
+            commit(APPEND_VIDEO, video);
         }
     }
 };

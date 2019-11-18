@@ -24,7 +24,7 @@
             </v-layout>
             <v-layout row v-if="nextVideo" class="selected-video">
                 <v-flex xs8>
-                    <video-player :video-id="videoId" :autoplay="false"></video-player>
+                    <video-player :video-id="videoId" :autoplay="false" :disable-events="true"></video-player>
                 </v-flex>
                 <v-flex xs4 style="overflow-y: scroll">
                     <v-card>

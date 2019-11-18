@@ -117,6 +117,9 @@ class VideoController(private val videoRepository: VideoRepository,
                 }?.value as? MetadataValue<Any> ?: return@forEach
                 existingValue.copyFrom(metadataValue.value as MetadataValue<Any>)
             }
+
+            PluginManager.callEvent(UPDATE, oldVideo)
+
             videoRepository.save(oldVideo)
         }.orElseThrow {
             EntityNotFoundException()

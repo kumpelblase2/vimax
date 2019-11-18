@@ -1,11 +1,12 @@
 <template>
     <v-flex xs12 fill-height>
-        <video v-if="videoId != null" ref="videoPlayer" class="video-js"></video>
+        <video v-if="videoId != null" ref="videoPlayer" class="video-js" @ended="onVideoFinished"
+               @playing="onVideoStarted"></video>
     </v-flex>
 </template>
 
 <script>
-    import { mapGetters } from "vuex";
+    import { mapGetters, mapActions } from "vuex";
     import { getStreamURLForVideo, getThumbnailURLForVideo } from "../video";
     import videojs from 'video.js';
     import events from '../api/event';
@@ -17,6 +18,7 @@
                 type: Boolean
             },
             videoId: null,
+            disableEvents: false
         },
         data() {
             return {
@@ -69,11 +71,23 @@
         mounted() {
             this.player = videojs(this.$refs.videoPlayer, this.videoPlayerOptions);
             this.player.thumbnails({ play: true });
-            events.watchStartEvent(this.videoId);
         },
         beforeDestroy() {
             if(this.player) {
                 this.player.dispose();
+            }
+        },
+        methods: {
+            ...mapActions('videos', ['reloadVideo']),
+            onVideoFinished() {
+                if(!this.disableEvents) {
+                    events.watchFinishEvent(this.videoId).then(() => this.reloadVideo(this.videoId));
+                }
+            },
+            onVideoStarted() {
+                if(!this.disableEvents) {
+                    events.watchStartEvent(this.videoId).then(() => this.reloadVideo(this.videoId));
+                }
             }
         }
     }
