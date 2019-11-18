@@ -44,7 +44,8 @@ export class Html5ThumbnailsPlugin extends Plugin {
         const seekRect = videojs.dom.getBoundingClientRect(this.videoProgressControl.seekBar.el());
 
         this.thumbnailContainer.style.left = getThumbnailXOffset(seekRect, progress, this.settings) + "px";
-        this.thumbnailVideo.currentTime = progress * this.player.duration();
+        let displayTime = progress * this.player.duration();
+        this.thumbnailVideo.currentTime = isNaN(displayTime) ? 0 : displayTime;
     }
 
     showThumb() {
