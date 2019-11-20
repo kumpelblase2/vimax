@@ -6,6 +6,6 @@ registerPlugin("Version") {
     val versionMetadata = metadata("Version", ASC, NumberMetadataOptions().also { it.defaultValue = 1 })
 
     onUpdate {
-        it[versionMetadata] = it.get(versionMetadata, 0) + 1
+        it[versionMetadata] = (it[versionMetadata] ?: 0) + 1
     }
 }

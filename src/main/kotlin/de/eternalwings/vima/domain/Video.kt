@@ -35,6 +35,10 @@ data class Video(
     fun hasMetadata(metadataToCheck: Metadata) = metadata?.any { existing ->
         existing.definition?.id == metadataToCheck.id
     } ?: false
+
+    fun hasMetadata(metadataToCheck: String) = metadata?.any { existing ->
+        existing.definition?.name == metadataToCheck
+    } ?: false
 }
 
 @Entity

@@ -19,16 +19,18 @@ fun registerPlugin(name: String, setup: PluginConfig.() -> Unit): PluginConfig {
 
 typealias VideoHandler = (Video) -> Unit
 
+data class MetadataReference<T>(val name: String)
+
 class PluginConfig internal constructor(val pluginName: String) {
 
     private val eventHandlers: MutableMap<EventType, MutableCollection<VideoHandler>> = mutableMapOf()
     var allMetadata: List<Metadata> = emptyList()
         private set
 
-    fun <T> metadata(name: String, order: Direction, options: MetadataOptions<T>): Metadata {
+    fun <T> metadata(name: String, order: Direction, options: MetadataOptions<T>): MetadataReference<T> {
         val metadata = Metadata(name = name, type = options.type, systemSpecified = true, ordering = order, options = options)
         allMetadata = allMetadata + metadata
-        return metadata
+        return MetadataReference(name)
     }
 
     private fun addHandler(eventType: EventType, handler: VideoHandler) {
@@ -56,8 +58,8 @@ class PluginConfig internal constructor(val pluginName: String) {
         eventHandlers.getOrDefault(eventType, Collections.emptyList()).forEach { it(video) }
     }
 
-    operator fun <T> Video.set(metadata: Metadata, value: T) {
-        check(hasMetadata(metadata))
+    operator fun <T> Video.set(metadata: MetadataReference<T>, value: T) {
+        check(hasMetadata(metadata.name))
         val existingMetadata = this.metadata ?: throw IllegalStateException()
         val existingContainer = existingMetadata.find { valueContainer ->
             valueContainer.definition?.name == metadata.name
@@ -65,11 +67,11 @@ class PluginConfig internal constructor(val pluginName: String) {
         (existingContainer.value as MetadataValue<T>).value = value
     }
 
-    fun <T> Video.get(metadata: Metadata, defaultValue: T): T {
-        val existingMetadata = this.metadata ?: return defaultValue
+    operator fun <T> Video.get(metadata: MetadataReference<T>): T? {
+        val existingMetadata = this.metadata ?: return null
         val existingContainer = existingMetadata.find { valueContainer ->
             valueContainer.definition?.name == metadata.name
-        } ?: return defaultValue
-        return (existingContainer.value as MetadataValue<T>).value ?: defaultValue
+        } ?: return null
+        return (existingContainer.value as MetadataValue<T>).value ?: null
     }
 }
