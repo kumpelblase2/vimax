@@ -59,6 +59,12 @@ class SelectionMetadataOptions(val values: List<SelectionValues> = emptyList()) 
 
 class SelectionValues {
     var name: String? = null
+
+    constructor() {}
+
+    constructor(name: String) {
+        this.name = name
+    }
 }
 
 class TaglistMetadataOptions : MetadataOptions<List<String>>(TAGLIST, ::TaglistMetadataValue)
