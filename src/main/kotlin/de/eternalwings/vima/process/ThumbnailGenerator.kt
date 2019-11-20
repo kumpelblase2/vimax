@@ -13,10 +13,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @Component
-class ThumbnailGenerator(@Value("\${ffpmeg-binary:ffmpeg}") ffmpegLocation: String,
-                         @Value("\${ffprobe-binary:ffprobe}") ffprobeLocation: String) {
-    private val ffmpeg = FFmpeg(ffmpegLocation)
-    private val ffprobe = FFprobe(ffprobeLocation)
+class ThumbnailGenerator(private val ffmpeg: FFmpeg, private val ffprobe: FFprobe) {
 
     fun generateThumbnailsFor(video: Path, targetDirectory: Path, amount: Int): List<Path> {
         if(amount <= 0) return emptyList()
