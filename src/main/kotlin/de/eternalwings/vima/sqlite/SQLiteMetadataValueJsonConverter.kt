@@ -12,6 +12,10 @@ class SQLiteMetadataValueJsonConverter : AttributeConverter<MetadataValue<*>, St
     private val objectMapper = ObjectMapper()
     private val type: TypeReference<MetadataValue<*>> = object : TypeReference<MetadataValue<*>>() {}
 
+    init {
+        objectMapper.findAndRegisterModules()
+    }
+
     override fun convertToDatabaseColumn(attribute: MetadataValue<*>?): String {
         if (attribute == null) return ""
         return objectMapper.writeValueAsString(attribute)

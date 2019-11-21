@@ -10,6 +10,10 @@ import javax.persistence.Converter
 class SQLiteMetadataOptionsJsonConverter : AttributeConverter<MetadataOptions<*>, String> {
     private val objectMapper = ObjectMapper()
 
+    init {
+        objectMapper.findAndRegisterModules()
+    }
+
     override fun convertToDatabaseColumn(attribute: MetadataOptions<*>?): String {
         if (attribute == null) return ""
         return objectMapper.writeValueAsString(attribute)
