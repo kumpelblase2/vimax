@@ -48,7 +48,7 @@
                     <td>{{ props.item.displayOrder }}</td>
                     <td>{{ props.item.name }}</td>
                     <td>{{ props.item.type }}</td>
-                    <td>{{ props.item.options.defaultValue }}</td>
+                    <td>{{ defaultValueToText(props.item) }}</td>
                     <td class="justify-center">
                         <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
                                 @click="moveDown(props.item)">arrow_downward</v-icon>
@@ -70,6 +70,7 @@
 <script>
     import { mapActions, mapState } from 'vuex';
     import MetadataOptions from "./MetadataOptions";
+    import { toDisplayValue } from "../helpers/metadata-display-helper";
 
     export default {
         name: "MetadataList",
@@ -139,7 +140,10 @@
                 'startEditItem',
                 'moveMetadataDown',
                 'moveMetadataUp'
-            ])
+            ]),
+            defaultValueToText(metadata) {
+                return toDisplayValue(metadata.type, metadata.options.defaultValue);
+            }
         },
         mounted() {
             this.loading = true;
