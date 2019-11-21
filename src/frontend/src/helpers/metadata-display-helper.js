@@ -37,18 +37,22 @@ export function toDisplayValue(type, value) {
             case 'SELECTION':
                 return value.name.toString();
             case 'DURATION':
-                const parsedDuration = parseDurationString(value);
-                const daysPart = parsedDuration.days > 0 ? parsedDuration.days + "d " : "";
-                const hourPart = parsedDuration.hours > 0 ? parsedDuration.hours + "h " : "";
-                const minutesPart = parsedDuration.minutes > 0 ? parsedDuration.minutes + "m " : "";
-                const secondsPart = parsedDuration.seconds > 0 ? parsedDuration.seconds + "s " : "";
-                return daysPart + hourPart + minutesPart + secondsPart;
+                return durationToString(value);
             default:
                 throw `No text representation for ${type}.`;
         }
     } else {
         return "";
     }
+}
+
+export function durationToString(value) {
+    const parsedDuration = parseDurationString(value);
+    const daysPart = parsedDuration.days > 0 ? parsedDuration.days + "d " : "";
+    const hourPart = parsedDuration.hours > 0 ? parsedDuration.hours + "h " : "";
+    const minutesPart = parsedDuration.minutes > 0 ? parsedDuration.minutes + "m " : "";
+    const secondsPart = parsedDuration.seconds > 0 || (parsedDuration.days + parsedDuration.hours + parsedDuration.minutes === 0) ? parsedDuration.seconds + "s " : "";
+    return daysPart + hourPart + minutesPart + secondsPart;
 }
 
 export function parseDurationString(durationString) {
