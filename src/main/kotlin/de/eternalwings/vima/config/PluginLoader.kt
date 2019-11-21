@@ -40,8 +40,13 @@ class PluginLoader(private val metadataRepository: MetadataRepository, private v
             safeEval { engine.eval(reader, bindings) } as T
 
     private fun registerMetadata(metadata: Collection<Metadata>) {
+        var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
         val existingMetadata = metadataRepository.findAll()
         val newMetadata = metadata.filter { new -> existingMetadata.none { it.name == new.name } }
+        for (newMetadatum in newMetadata) {
+            highestDisplayOrder += 1
+            newMetadatum.displayOrder = highestDisplayOrder
+        }
         val saved = metadataRepository.saveAll(newMetadata)
         saved.forEach { videoMetadataUpdater.addMetadata(it) }
     }
