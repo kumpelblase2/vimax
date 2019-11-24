@@ -1,3 +1,4 @@
+import de.eternalwings.vima.domain.DurationMetadataOptions
 import de.eternalwings.vima.domain.NumberMetadataOptions
 import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValues
