@@ -1,16 +1,17 @@
 <template>
-    <v-layout column>
-        <v-layout v-for="(metadata, index) in metadatas" xs12 column :key="metadata.definition.id">
-            <v-layout justift-space-between row my-1>
-                <v-flex>{{ metadata.definition.name }}</v-flex>
-                <v-flex class="text-xs-right">
+    <v-simple-table dense>
+        <template v-slot:default>
+            <tbody>
+            <tr v-for="(metadata, index) in metadatas" :key="index">
+                <td>{{ metadata.definition.name }}</td>
+                <td>
                     <metadata-value-display :metadata-value="metadata.value"
                                             :metadata-definition="metadata.definition"></metadata-value-display>
-                </v-flex>
-            </v-layout>
-            <v-divider xs12 v-if="needsDivider(index)"></v-divider>
-        </v-layout>
-    </v-layout>
+                </td>
+            </tr>
+            </tbody>
+        </template>
+    </v-simple-table>
 </template>
 <script>
     import MetadataValueDisplay from "./MetadataValueDisplay"
