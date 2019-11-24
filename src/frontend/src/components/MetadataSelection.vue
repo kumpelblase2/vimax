@@ -1,12 +1,12 @@
 <template>
     <v-select class="nav-select single-line" :value="visibleMetadata" :items="orderedMetadata" item-text="name" return-object
-              flat dense multiple @change="onlyShowMetadata" placeholder="No metadata visible" solo>
+              multiple @change="onlyShowMetadata" placeholder="No metadata visible" single-line hide-details>
         <template v-slot:prepend-item>
-            <v-list-tile @click="toggleAll">
-                <v-list-tile-content>
+            <v-list-item @click="toggleAll">
+                <v-list-item-content>
                     {{selectionText}}
-                </v-list-tile-content>
-            </v-list-tile>
+                </v-list-item-content>
+            </v-list-item>
             <v-divider class="mt-2"></v-divider>
         </template>
         <template v-slot:selection="{ item, index }">
@@ -14,7 +14,7 @@
                  &nbsp;+{{visibleMetadata.length - 2}} more
             </span>
             <span v-if="index < 2">
-                {{item.name}}<span v-if="index + 1 < visibleMetadata.length">,&nbsp;</span>
+                {{item.name}}<span v-if="index + 1 < visibleMetadata.length">,</span>
             </span>
         </template>
     </v-select>
@@ -52,7 +52,6 @@
 
 <style scoped>
     .nav-select {
-        padding-top: 10px;
         max-width: 500px;
     }
 </style>

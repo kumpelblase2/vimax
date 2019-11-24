@@ -26,14 +26,14 @@
                 <v-icon>add</v-icon>
             </v-btn>
             <v-list>
-                <v-list-tile v-for="(item, index) in options.values" :key="index">
+                <v-list-item v-for="(item, index) in options.values" :key="index">
                     <v-text-field v-model="item.name" label="Value"></v-text-field>
-                    <v-list-tile-action>
+                    <v-list-item-action>
                         <v-btn icon @click="removeSelection(index)">
                             <v-icon>delete</v-icon>
                         </v-btn>
-                    </v-list-tile-action>
-                </v-list-tile>
+                    </v-list-item-action>
+                </v-list-item>
             </v-list>
             <v-select v-model="options.defaultValue"
                       :items="options.values" item-text="name" label="Default Value" return-object></v-select>

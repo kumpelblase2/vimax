@@ -1,5 +1,5 @@
 <template>
-    <v-select class="nav-select" :items="sortableProperties" item-text="name" solo @change="updateSortingProperty"
+    <v-select class="nav-select" :items="sortableProperties" item-text="name" hide-details @change="updateSortingProperty"
               v-model="sortingProperty"></v-select>
 </template>
 

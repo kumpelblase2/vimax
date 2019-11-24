@@ -5,9 +5,9 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-list>
-                    <v-list-tile v-for="playlist in playlists" @click="select(playlist)">
-                        <v-list-tile-content>{{ playlist.name }}</v-list-tile-content>
-                    </v-list-tile>
+                    <v-list-item v-for="playlist in playlists" @click="select(playlist)">
+                        <v-list-item-content>{{ playlist.name }}</v-list-item-content>
+                    </v-list-item>
                 </v-list>
             </v-card-text>
             <v-card-actions>

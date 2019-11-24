@@ -34,17 +34,17 @@
                 </v-dialog>
             </v-toolbar>
             <v-list>
-                <v-list-tile v-for="library in libraries" :key="library.id">
-                    <v-list-tile-content>
-                        <v-list-tile-title>{{ library.path }}</v-list-tile-title>
-                    </v-list-tile-content>
+                <v-list-item v-for="library in libraries" :key="library.id">
+                    <v-list-item-content>
+                        <v-list-item-title>{{ library.path }}</v-list-item-title>
+                    </v-list-item-content>
 
-                    <v-list-tile-action>
+                    <v-list-item-action>
                         <v-btn icon ripple>
                             <v-icon small @click="deleteItem(library)">delete</v-icon>
                         </v-btn>
-                    </v-list-tile-action>
-                </v-list-tile>
+                    </v-list-item-action>
+                </v-list-item>
             </v-list>
         </div>
     </v-card>
