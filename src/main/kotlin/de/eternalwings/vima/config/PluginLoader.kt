@@ -25,12 +25,13 @@ class PluginLoader(private val metadataRepository: MetadataRepository, private v
         val classLoader = Thread.currentThread().contextClassLoader
         val classpathPluginDir = classLoader.getResource(internalPluginDir).path
         val bindings = pluginBindings.createBindings()
+        val scriptLoader = KtsObjectLoader()
         Files.list(Paths.get(classpathPluginDir)).filter { Files.isRegularFile(it) }
             .filter { it.fileName.toString().endsWith("kts") }
             .map { script -> classLoader.getResourceAsStream(internalPluginDir + File.separator + script.fileName.toString()) }
             .filter { it != null }
             .forEach { script ->
-                val config = script!!.use { KtsObjectLoader().load(it.reader(), bindings, PluginConfig::class.java) }
+                val config = script!!.use { scriptLoader.load(it.reader(), bindings, PluginConfig::class.java) }
                 PluginManager.registerPlugin(config)
                 registerMetadata(config.allMetadata)
             }
