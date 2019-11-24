@@ -4,7 +4,7 @@
             <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" v-bind:src="thumbnailUrl"
                    @mouseenter="startHover"
                    @mouseleave="stopHover">
-                <v-layout row fill-height v-show="hover">
+                <v-layout row fill-height v-show="hover" style="margin: 5px;">
                     <v-btn text icon color="orange" @click="toggleSelection">
                         <v-icon v-if="selected">check_box</v-icon>
                         <v-icon v-else>check_box_outline_blank</v-icon>
