@@ -50,9 +50,11 @@
             </v-layout>
         </v-app-bar>
         <v-content>
-            <router-view></router-view>
+            <v-container fluid>
+                <router-view></router-view>
+            </v-container>
         </v-content>
-        <v-footer app>
+        <v-footer>
             <v-spacer></v-spacer>
             <div>Vima made with ❤️ by kumpelblase2</div>
             <v-spacer></v-spacer>
