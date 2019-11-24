@@ -6,7 +6,9 @@
                 <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
-                    <v-btn slot="activator" color="primary" dark class="mb-2">Add Library</v-btn>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" color="primary" dark class="mb-2">Add Library</v-btn>
+                    </template>
                     <v-card>
                         <v-card-title>
                             <span class="headline">Create Library</span>
@@ -25,8 +27,8 @@
 
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-                            <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
+                            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>

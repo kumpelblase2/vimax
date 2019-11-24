@@ -5,13 +5,13 @@
                    @mouseenter="startHover"
                    @mouseleave="stopHover">
                 <v-layout row fill-height v-show="hover">
-                    <v-btn flat icon color="orange" @click="toggleSelection">
+                    <v-btn text icon color="orange" @click="toggleSelection">
                         <v-icon v-if="selected">check_box</v-icon>
                         <v-icon v-else>check_box_outline_blank</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn flat icon color="orange" :to="watchRoute"><v-icon>play_arrow</v-icon></v-btn>
-                    <v-btn flat icon color="orange" @click="edit"><v-icon>edit</v-icon></v-btn>
+                    <v-btn text icon color="orange" :to="watchRoute"><v-icon>play_arrow</v-icon></v-btn>
+                    <v-btn text icon color="orange" @click="edit"><v-icon>edit</v-icon></v-btn>
                 </v-layout>
             </v-img>
             <v-card-title>{{ video.name }}</v-card-title>

@@ -1,43 +1,43 @@
 <template>
-    <v-app dark>
+    <v-app>
         <v-navigation-drawer v-model="drawer" clipped app temporary>
             <v-list dense>
-                <v-list-tile to="/">
-                    <v-list-tile-action>
+                <v-list-item to="/">
+                    <v-list-item-action>
                         <v-icon>video_library</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Videos</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile to="/playlists">
-                    <v-list-tile-action>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Videos</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/playlists">
+                    <v-list-item-action>
                         <v-icon>settings</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Playlists</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile to="/sorting">
-                    <v-list-tile-action>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Playlists</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/sorting">
+                    <v-list-item-action>
                         <v-icon>sort</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Sorting Mode</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile to="/settings">
-                    <v-list-tile-action>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Sorting Mode</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item to="/settings">
+                    <v-list-item-action>
                         <v-icon>settings</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Settings</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Settings</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar app fixed clipped-left>
-            <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-app-bar app fixed clipped-left>
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>Vima</v-toolbar-title>
             <v-spacer v-if="shouldShowMetadata"></v-spacer>
             <MetadataSelection v-if="shouldShowMetadata"></MetadataSelection>
@@ -48,7 +48,7 @@
             <v-layout v-if="shouldShowSearch" row align-center style="max-width: 650px">
                 <SearchComponent></SearchComponent>
             </v-layout>
-        </v-toolbar>
+        </v-app-bar>
         <v-content>
             <router-view></router-view>
         </v-content>

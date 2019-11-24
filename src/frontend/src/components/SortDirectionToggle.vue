@@ -1,5 +1,5 @@
 <template>
-    <v-btn @click="toggleSortingDirection" flat icon>
+    <v-btn @click="toggleSortingDirection" text icon>
         <v-icon>{{sortingIcon}}</v-icon>
     </v-btn>
 </template>

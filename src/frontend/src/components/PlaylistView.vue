@@ -10,13 +10,15 @@
                     <v-btn color="primary" @click="savePlaylist" :disabled="newPlaylistName.length == 0">Create</v-btn>
                 </v-toolbar>
                 <v-data-table :headers="playlistHeaders" :items="playlists" class="elevation-1" items-per-page="20">
-                    <template slot="items" slot-scope="props">
-                        <td>{{ props.item.id }}</td>
-                        <td>{{ props.item.name }}</td>
-                        <td class="justify-center">
-                            <v-icon small @click="playPlaylist(props.item)">play_arrow</v-icon>
-                            <v-icon small @click="deletePlaylist(props.item)">delete</v-icon>
-                        </td>
+                    <template slot="item" slot-scope="props">
+                        <tr>
+                            <td>{{ props.item.id }}</td>
+                            <td>{{ props.item.name }}</td>
+                            <td class="justify-center">
+                                <v-icon small @click="playPlaylist(props.item)">play_arrow</v-icon>
+                                <v-icon small @click="deletePlaylist(props.item)">delete</v-icon>
+                            </td>
+                        </tr>
                     </template>
                     <template slot="no-data">
                         No Playlists created yet.
@@ -42,14 +44,14 @@
                 return [
                     { text: '#', value: 'id', width: 100 },
                     { text: 'Name', value: 'name' },
-                    { text: 'Actions', value: 'actions', sortable: false, width: 150 },
+                    { text: 'Actions', value: 'actions', sortable: false, width: 150 }
                 ];
             }
         },
         methods: {
             ...mapActions('playlist', ['createPlaylist', 'removePlaylist']),
             savePlaylist() {
-                this.createPlaylist({name: this.newPlaylistName, videos: []});
+                this.createPlaylist({ name: this.newPlaylistName, videos: [] });
                 this.newPlaylistName = "";
             },
             deletePlaylist(playlist) {

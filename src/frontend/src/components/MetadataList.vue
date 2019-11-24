@@ -6,7 +6,9 @@
                 <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
-                    <v-btn slot="activator" color="primary" dark class="mb-2">New Metadata</v-btn>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" color="primary" dark class="mb-2">New Metadata</v-btn>
+                    </template>
                     <v-card>
                         <v-card-title>
                             <span class="headline">{{ formTitle }}</span>
@@ -37,27 +39,31 @@
 
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-                            <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
+                            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
             </v-toolbar>
             <v-data-table :headers="headers" :items="metadatas" class="elevation-1" items-per-page="20">
-                <template slot="items" slot-scope="props">
-                    <td>{{ props.item.displayOrder }}</td>
-                    <td>{{ props.item.name }}</td>
-                    <td>{{ props.item.type }}</td>
-                    <td>{{ defaultValueToText(props.item) }}</td>
-                    <td class="justify-center">
-                        <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
-                                @click="moveDown(props.item)">arrow_downward</v-icon>
-                        <v-icon v-if="props.item.displayOrder > 1" small class="mr-2"
-                                @click="moveUp(props.item)">arrow_upward
-                        </v-icon>
-                        <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-                        <v-icon small @click="deleteItem(props.item)">delete</v-icon>
-                    </td>
+                <template slot="item" slot-scope="props">
+                    <tr>
+                        <td>{{ props.item.displayOrder }}</td>
+                        <td>{{ props.item.name }}</td>
+                        <td>{{ props.item.type }}</td>
+                        <td>{{ defaultValueToText(props.item) }}</td>
+                        <td class="justify-center">
+                            <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
+                                    @click="moveDown(props.item)">arrow_downward
+                            </v-icon>
+                            <v-icon v-if="props.item.displayOrder > 1" small class="mr-2"
+                                    @click="moveUp(props.item)">arrow_upward
+                            </v-icon>
+                            <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)">edit
+                            </v-icon>
+                            <v-icon small @click="deleteItem(props.item)">delete</v-icon>
+                        </td>
+                    </tr>
                 </template>
                 <template slot="no-data">
                     No Metadata configured yet.

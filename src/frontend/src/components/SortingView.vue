@@ -31,7 +31,7 @@
                         <v-card-title>
                             {{nextVideo.name}}
                             <v-spacer></v-spacer>
-                            <v-btn flat icon color="orange" small @click="edit">
+                            <v-btn text icon color="orange" small @click="edit">
                                 <v-icon>edit</v-icon>
                             </v-btn>
                         </v-card-title>
@@ -43,7 +43,7 @@
             </v-layout>
         </div>
         <v-layout align-center justify-center v-if="selectedMetadata != null && empty">
-            <v-flex class="elevation-2" pt-3 xs-4>
+            <v-flex class="elevation-2" pt-4 xs-4>
                 <p class="font-italic text-xs-center">No more videos to sort.</p>
             </v-flex>
         </v-layout>

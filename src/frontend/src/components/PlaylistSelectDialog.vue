@@ -12,7 +12,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-text-field v-model="playlistName" placeholder="Create new..."></v-text-field>
-                <v-btn flat @click="createPlaylistWithVideos"></v-btn>
+                <v-btn text @click="createPlaylistWithVideos"></v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
