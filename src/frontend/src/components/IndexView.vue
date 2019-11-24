@@ -1,11 +1,11 @@
 <template>
     <v-container fluid grid-list>
-        <v-layout row wrap justify-space-around>
+        <v-row wrap justify-space-around>
             <VideoCard v-for="video in videos" :key="video.id" :video-id="video.id"></VideoCard>
             <MugenScroll :handler="loadVideosOfCurrentPage" :should-handle="!isLoading" handle-on-mount>
                 <div class="mugen-loading">Loading...</div>
             </MugenScroll>
-        </v-layout>
+        </v-row>
         <video-edit-dialog></video-edit-dialog>
     </v-container>
 </template>

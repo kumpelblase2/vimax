@@ -16,7 +16,7 @@
 
                         <v-card-text>
                             <v-container grid-list-md>
-                                <v-layout wrap>
+                                <v-row wrap>
                                     <v-flex xs12 sm6>
                                         <v-text-field v-model="editingItem.name" label="Name"></v-text-field>
                                     </v-flex>
@@ -33,7 +33,7 @@
                                         <metadata-options :type="editingItem.type"
                                                           :options="editingItem.options"></metadata-options>
                                     </v-flex>
-                                </v-layout>
+                                </v-row>
                             </v-container>
                         </v-card-text>
 

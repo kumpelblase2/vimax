@@ -7,13 +7,13 @@
             <v-card-text>
                 <v-text-field v-model="video.name" label="Name"></v-text-field>
                 <v-item-group mandatory @change="updateSelectedThumbnail" :value="video.selectedThumbnail">
-                    <v-layout row wrap>
-                        <v-flex v-for="(thumbnail, index) in video.thumbnails" :key="index">
+                    <v-row wrap>
+                        <v-col v-for="(thumbnail, index) in video.thumbnails" :key="index" cols="12" md="4">
                             <v-item active-class="active" class="element">
                                 <v-img :src="thumbnailUrl(thumbnail)" slot-scope="{ active, toggle }" @click="toggle"></v-img>
                             </v-item>
-                        </v-flex>
-                    </v-layout>
+                        </v-col>
+                    </v-row>
                 </v-item-group>
                 <div v-for="(metadata,index) in video.metadata" :key="index">
                     <metadata-value-editor :metadata-definition="metadata.definition"
@@ -81,9 +81,5 @@
 <style scoped>
     .active {
         box-shadow: 0 0 0 5px orange;
-    }
-
-    .element {
-        margin: 10px;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <v-layout fill-height column>
+    <v-col fill-height>
         <v-dialog :value="showDialog">
             <v-card>
                 <v-card-title>
@@ -12,7 +12,7 @@
             </v-card>
         </v-dialog>
         <div v-if="selectedMetadata != null">
-            <v-layout row wrap>
+            <v-row wrap>
                 <v-flex xs12>
                     <v-btn block @click="reset">Reset</v-btn>
                 </v-flex>
@@ -21,8 +21,8 @@
                 </v-flex>
                 <sorting-bucket-component v-bind:key="index" v-for="(bucket,index) in buckets"
                                           :bucket-index="index" @click="assignToBucket(index)"></sorting-bucket-component>
-            </v-layout>
-            <v-layout row v-if="nextVideo" class="selected-video">
+            </v-row>
+            <v-row v-if="nextVideo" class="selected-video">
                 <v-flex xs8>
                     <video-player :video-id="videoId" :autoplay="false" :disable-events="true"></video-player>
                 </v-flex>
@@ -40,15 +40,15 @@
                         </v-card-text>
                     </v-card>
                 </v-flex>
-            </v-layout>
+            </v-row>
         </div>
-        <v-layout align-center justify-center v-if="selectedMetadata != null && empty">
+        <v-row align-center justify-center v-if="selectedMetadata != null && empty">
             <v-flex class="elevation-2" pt-4 xs-4>
                 <p class="font-italic text-xs-center">No more videos to sort.</p>
             </v-flex>
-        </v-layout>
+        </v-row>
         <video-edit-dialog @finish-edit="reloadVideo"></video-edit-dialog>
-    </v-layout>
+    </v-col>
 </template>
 
 <script>

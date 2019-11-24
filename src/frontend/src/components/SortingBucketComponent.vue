@@ -1,7 +1,7 @@
 <template>
     <v-flex xs3>
         <v-sheet class="sorting-card">
-            <v-layout row>
+            <v-row>
                 <v-flex pt-2 pl-2>
                     <p class="title">{{bucketIndex + 1}}</p>
                 </v-flex>
@@ -9,7 +9,7 @@
                 <v-btn icon xs1 @click="deleteCard">
                     <v-icon>close</v-icon>
                 </v-btn>
-            </v-layout>
+            </v-row>
             <metadata-value-editor :metadata-definition="selectedMetadata"
                                    :metadata-value="myBucketAssignedValue"
                                    @change="updateValue({value: $event, index: bucketIndex})" solo></metadata-value-editor>

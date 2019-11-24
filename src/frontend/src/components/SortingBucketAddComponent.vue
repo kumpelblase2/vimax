@@ -1,11 +1,11 @@
 <template>
     <v-flex>
         <v-sheet>
-            <v-layout row justify-center align-center class="sorting-card">
+            <v-row justify-center align-center class="sorting-card">
                 <v-btn @click="addBucket">
                     <v-icon>add</v-icon>
                 </v-btn>
-            </v-layout>
+            </v-row>
         </v-sheet>
     </v-flex>
 </template>

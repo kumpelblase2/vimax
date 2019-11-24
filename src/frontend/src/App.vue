@@ -45,9 +45,9 @@
             <SortSelect v-if="shouldShowSort"></SortSelect>
             <SortDirectionToggle v-if="shouldShowSort"></SortDirectionToggle>
             <v-spacer></v-spacer>
-            <v-layout v-if="shouldShowSearch" row align-center style="max-width: 650px">
+            <v-row v-if="shouldShowSearch" align-center style="max-width: 650px">
                 <SearchComponent></SearchComponent>
-            </v-layout>
+            </v-row>
         </v-app-bar>
         <v-content>
             <v-container fluid>
