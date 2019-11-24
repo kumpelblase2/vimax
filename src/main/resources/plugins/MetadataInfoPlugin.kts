@@ -5,6 +5,8 @@ import de.eternalwings.vima.plugin.registerPlugin
 import net.bramp.ffmpeg.FFprobe
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.domain.Sort.Direction.DESC
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 val undefinedResolution = SelectionValues("Unknown")
 val SD = SelectionValues("SD")
@@ -18,7 +20,7 @@ registerPlugin("Metadata") {
         it.defaultValue = undefinedResolution
     })
     val bitRate = metadata("Bitrate", DESC, NumberMetadataOptions().also { it.defaultValue = 0 })
-    val length = metadata("Length", DESC, NumberMetadataOptions().also { it.defaultValue = 0 })
+    val length = metadata("Length", DESC, DurationMetadataOptions().also { it.defaultValue = Duration.ZERO })
 
     val ffprobe = bindings["ffprobe"] as FFprobe
 
@@ -26,7 +28,7 @@ registerPlugin("Metadata") {
         val probe = ffprobe.probe(it.location)
         val videoStream = probe.streams[0]
         it[bitRate] = videoStream.bit_rate.toInt()
-        it[length] = videoStream.duration.toInt()
+        it[length] = Duration.of(videoStream.duration.toLong(), ChronoUnit.SECONDS)
         it[resolution] = when {
             videoStream.height >= 1080 -> highestRes
             videoStream.height >= 720 -> higherRes
