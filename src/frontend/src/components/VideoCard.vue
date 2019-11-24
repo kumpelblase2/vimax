@@ -1,24 +1,30 @@
 <template>
     <v-flex xs12 sm6 md3 xl2 class="pa-1">
-        <v-card>
-            <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" v-bind:src="thumbnailUrl"
-                   @mouseenter="startHover"
-                   @mouseleave="stopHover">
-                <v-layout row fill-height v-show="hover" style="margin: 5px;">
-                    <v-btn text icon color="orange" @click="toggleSelection">
-                        <v-icon v-if="selected">check_box</v-icon>
-                        <v-icon v-else>check_box_outline_blank</v-icon>
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn text icon color="orange" :to="watchRoute"><v-icon>play_arrow</v-icon></v-btn>
-                    <v-btn text icon color="orange" @click="edit"><v-icon>edit</v-icon></v-btn>
-                </v-layout>
-            </v-img>
-            <v-card-title>{{ video.name }}</v-card-title>
-            <v-card-text v-if="hasVisibleMetadata">
-                <VideoMetadataDisplay :video-metadata="video.metadata"/>
-            </v-card-text>
-        </v-card>
+        <v-lazy>
+            <v-card>
+                <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" v-bind:src="thumbnailUrl"
+                       @mouseenter="startHover"
+                       @mouseleave="stopHover">
+                    <v-row fill-height v-show="hover" style="margin: 5px;">
+                        <v-btn text icon color="orange" @click="toggleSelection">
+                            <v-icon v-if="selected">check_box</v-icon>
+                            <v-icon v-else>check_box_outline_blank</v-icon>
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn text icon color="orange" :to="watchRoute">
+                            <v-icon>play_arrow</v-icon>
+                        </v-btn>
+                        <v-btn text icon color="orange" @click="edit">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
+                    </v-row>
+                </v-img>
+                <v-card-title>{{ video.name }}</v-card-title>
+                <v-card-text v-if="hasVisibleMetadata">
+                    <VideoMetadataDisplay :video-metadata="video.metadata"/>
+                </v-card-text>
+            </v-card>
+        </v-lazy>
     </v-flex>
 </template>
 
