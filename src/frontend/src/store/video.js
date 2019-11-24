@@ -16,13 +16,16 @@ export default {
         videos: [],
         activeVideoId: null,
         editingVideo: null,
-        selectedVideos: [],
+        selectedVideoIds: [],
         isLoading: false,
         currentPage: 0
     },
     getters: {
         activeVideo: (state, getters) => {
             return getters.getVideo(state.activeVideoId);
+        },
+        selectedVideos: (state) => {
+            return state.videos.filter(video => state.selectedVideoIds.includes(video.id));
         },
         getVideo: (state) => {
             return (id) => state.videos.find(video => video.id === id);
@@ -42,6 +45,9 @@ export default {
                     return null;
                 }
             }
+        },
+        isSelected: (state) => {
+            return (id) => state.selectedVideoIds.includes(id);
         }
     },
     mutations: {
@@ -64,14 +70,14 @@ export default {
             }
         },
         [SELECT_VIDEO](state, videoId) {
-            if(state.selectedVideos.findIndex(videoId) < 0) {
-                state.selectedVideos.push(videoId);
+            if(state.selectedVideoIds.indexOf(videoId) < 0) {
+                state.selectedVideoIds.push(videoId);
             }
         },
         [UNSELECT_VIDEO](state, videoId) {
-            const index = state.selectedVideos.findIndex(videoId);
+            const index = state.selectedVideoIds.indexOf(videoId);
             if(index >= 0) {
-                state.selectedVideos.splice(index, 1);
+                state.selectedVideoIds.splice(index, 1);
             }
         },
         changeThumbnailsInEdit(state, thumbnailIndex) {
@@ -105,6 +111,13 @@ export default {
         }
     },
     actions: {
+        toggleSelectVideo({getters, commit}, videoId) {
+            if(getters.isSelected(videoId)) {
+                commit('unselectVideo', videoId);
+            } else {
+                commit('selectVideo', videoId);
+            }
+        },
         async loadRecentVideos({ commit }) {
             commit('setLoading', true);
             const videos = await videoApi.getRecentVideos();
