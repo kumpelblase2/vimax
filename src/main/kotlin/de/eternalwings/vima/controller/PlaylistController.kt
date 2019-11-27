@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
-data class PlaylistInformation(val name: String, val videoIds: List<Int>) {
+data class PlaylistCreateInformation(val name: String, val videoIds: List<Int>)
+
+data class PlaylistInformation(val id: Int, val name: String, val videoIds: List<Int>) {
     companion object {
         fun from(playlist: Playlist): PlaylistInformation {
-            return PlaylistInformation(playlist.name!!, playlist.videos.map { it.id!! })
+            return PlaylistInformation(playlist.id!!, playlist.name!!, playlist.videos.map { it.video!!.id!! })
         }
     }
 }
@@ -32,8 +34,9 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
     }
 
     @PostMapping
-    fun createPlaylist(@RequestBody playlist: PlaylistInformation): PlaylistInformation {
-        val newPlaylist = Playlist(playlist.name, videoRepository.findAllById(playlist.videoIds))
+    fun createPlaylist(@RequestBody playlist: PlaylistCreateInformation): PlaylistInformation {
+        val newPlaylist = Playlist(playlist.name)
+        newPlaylist.addVideos(videoRepository.findAllById(playlist.videoIds))
         return PlaylistInformation.from(playlistRepository.save(newPlaylist))
     }
 
@@ -41,17 +44,17 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
     @PutMapping("/{id}/add")
     fun addVideoToPlaylist(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
         val playlist = playlistRepository.findById(playlistId).orElseThrow { EntityNotFoundException() }
-        val videosToAdd = videos.filter { playlist.videos.none { video -> video.id == it } }
-        playlist.videos.addAll(videoRepository.findAllById(videosToAdd))
+        val videosToAdd = videos.filter { playlist.videos.none { video -> video.video?.id == it } }
+        val lowestPositionBefore = playlistRepository.getLowestPositionIndexFor(playlist.id!!) ?: 0
+        playlist.addVideos(videoRepository.findAllById(videosToAdd), lowestPositionBefore + 1)
         return Companion.from(playlistRepository.save(playlist))
     }
 
     @Transactional
     @PutMapping("/{id}/remove")
     fun removeVideoFromPlaylist(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
-        val playlist = playlistRepository.findById(playlistId).orElseThrow { EntityNotFoundException() }
-        playlist.videos.removeIf { videos.contains(it.id) }
-        return Companion.from(playlistRepository.save(playlist))
+        playlistRepository.deleteFromPlaylist(playlistId, videos)
+        return Companion.from(playlistRepository.save(playlistRepository.getOne(playlistId)))
     }
 
     @DeleteMapping("/{id}")
