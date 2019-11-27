@@ -1,17 +1,24 @@
 <template>
-    <video-player :video-id="videoId" autoplay></video-player>
+    <video-player autoplay></video-player>
 </template>
 
 <script>
     import VideoPlayer from "./VideoPlayer";
+    import { mapActions, mapMutations } from "vuex";
 
     export default {
         name: "WatchView",
         components: { VideoPlayer },
-        computed: {
-            videoId() {
-                return parseInt(this.$route.params.id);
+        async mounted() {
+            if(this.$route.params.id != null) {
+                const videoId = parseInt(this.$route.params.id);
+                await this.loadVideos([videoId]);
+                this.setCurrentVideo(videoId);
             }
+        },
+        methods: {
+            ...mapActions('videos', ['loadVideos']),
+            ...mapMutations('player', ['setCurrentVideo'])
         }
     }
 </script>

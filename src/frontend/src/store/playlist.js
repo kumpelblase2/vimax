@@ -5,7 +5,11 @@ export default {
     state: {
         playlists: []
     },
-    getters: {},
+    getters: {
+        getPlaylist(state) {
+            return (id) => state.playlists.find(playlist => playlist.id === id);
+        }
+    },
     mutations: {
         addOrUpdatePlaylist(state, playlist) {
             const index = state.playlists.findIndex(existing => existing.id === playlist.id);
@@ -28,24 +32,24 @@ export default {
         }
     },
     actions: {
-        async createPlaylist({ commit }, { name, videos }) {
-            const createdPlaylist = await playlists.savePlaylist(name, videos);
+        async createPlaylist({ commit }, { name, videoIds }) {
+            const createdPlaylist = await playlists.savePlaylist(name, videoIds);
             commit('addOrUpdatePlaylist', createdPlaylist);
         },
         async removePlaylist({ commit }, playlistId) {
             await playlists.deletePlaylist(playlistId);
             commit('removePlaylist', playlistId);
         },
-        async loadPlaylists({ commit }) {
-            commit('createPlaylists');
-            const playlists = await playlists.getPlaylists();
-            playlists.forEach(playlist => commit('addOrUpdatePlaylist', playlist));
-        },
-        async addSelectedToPlaylist({ commit, state }, playlistId) {
-            await playlists.addToPlaylist(playlistId, state.selectedVideoIds);
+        async loadPlaylists({ commit, dispatch }) {
+            commit('clearPlaylists');
+            const loaded = await playlists.getPlaylists();
+            loaded.forEach(playlist => commit('addOrUpdatePlaylist', playlist));
+            const videoIds = [...new Set(loaded.flatMap(playlist => playlist.videoIds))];
+            await dispatch('videos/loadVideos', videoIds, { root: true });
         },
         async addToPlaylist({ commit }, { playlistId, videoIds }) {
-            await playlists.addToPlaylist(playlistId, videoIds);
+            const newPlaylist = await playlists.addToPlaylist(playlistId, videoIds);
+            commit('addOrUpdatePlaylist', newPlaylist);
         }
     }
 }

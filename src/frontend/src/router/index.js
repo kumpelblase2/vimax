@@ -4,7 +4,8 @@ import SettingsView from "../components/SettingsView";
 import IndexView from "../components/IndexView";
 import WatchView from "../components/WatchView";
 import SortingView from "../components/SortingView";
-import PlaylistView from "../components/PlaylistView";
+import PlaylistsView from "../components/PlaylistsView";
+import { INDEX, PLAYLISTS, SETTINGS, SORTING, WATCH } from "./views";
 
 Vue.use(Router);
 
@@ -12,27 +13,27 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'Index',
+            name: INDEX,
             component: IndexView
         },
         {
             path: '/playlists',
-            name: 'Playlists',
-            component: PlaylistView
+            name: PLAYLISTS,
+            component: PlaylistsView
         },
         {
             path: '/settings',
-            name: 'Settings',
+            name: SETTINGS,
             component: SettingsView
         },
         {
-            path: '/watch/:id',
-            name: 'Watch',
+            path: '/watch/:id?',
+            name: WATCH,
             component: WatchView
         },
         {
             path: '/sorting',
-            name: 'Sorting',
+            name: SORTING,
             component: SortingView
         }
     ],

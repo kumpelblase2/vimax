@@ -1,4 +1,4 @@
-import { supportsMetadataFilter, supportsOrder, supportsSearch } from "../router/supports";
+import { supportsMetadataFilter, supportsOrder, supportsPlaylist, supportsSearch } from "../router/supports";
 
 export default {
     namespaced: true,
@@ -17,6 +17,9 @@ export default {
         },
         shouldShowSort(state) {
             return supportsOrder(state.view);
+        },
+        shouldShowPlaylistAdd(state) {
+            return supportsPlaylist(state.view);
         }
     },
     mutations: {

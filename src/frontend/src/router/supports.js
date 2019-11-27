@@ -11,3 +11,7 @@ export function supportsOrder(view) {
 export function supportsMetadataFilter(view) {
     return view === INDEX || view === SORTING;
 }
+
+export function supportsPlaylist(view) {
+    return view === INDEX;
+}

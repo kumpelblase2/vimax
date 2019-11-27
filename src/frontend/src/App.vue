@@ -39,6 +39,8 @@
         <v-app-bar app fixed clipped-left>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>Vima</v-toolbar-title>
+            <v-spacer v-if="shouldShowPlaylistAdd"></v-spacer>
+            <AddToPlaylistButton v-if="shouldShowPlaylistAdd"></AddToPlaylistButton>
             <v-spacer v-if="shouldShowMetadata"></v-spacer>
             <MetadataSelection v-if="shouldShowMetadata"></MetadataSelection>
             <v-spacer v-if="shouldShowSort"></v-spacer>
@@ -66,15 +68,17 @@
     import { mapGetters } from "vuex";
     import SortSelect from "./components/SortSelect";
     import SortDirectionToggle from "./components/SortDirectionToggle";
+    import AddToPlaylistButton from "./components/AddToPlaylistButton";
 
     export default {
         name: 'Vima',
-        components: { SortDirectionToggle, SortSelect, MetadataSelection, SearchComponent },
+        components: { AddToPlaylistButton, SortDirectionToggle, SortSelect, MetadataSelection, SearchComponent },
         computed: {
             ...mapGetters('page', [
                 'shouldShowMetadata',
                 'shouldShowSearch',
-                'shouldShowSort'
+                'shouldShowSort',
+                'shouldShowPlaylistAdd'
             ])
         },
         data: () => ({

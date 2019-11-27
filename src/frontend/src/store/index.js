@@ -6,6 +6,7 @@ import sorting from './sorting';
 import page from "./page";
 import search from "./search";
 import playlist from "./playlist";
+import player from "./player";
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
         sorting,
         page,
         search,
-        playlist
+        playlist,
+        player
     }
 });

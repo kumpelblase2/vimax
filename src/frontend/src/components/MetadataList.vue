@@ -45,7 +45,7 @@
                     </v-card>
                 </v-dialog>
             </v-toolbar>
-            <v-data-table :headers="headers" :items="metadatas" class="elevation-1" items-per-page="20">
+            <v-data-table :headers="headers" :items="metadatas" class="elevation-1" :items-per-page="20">
                 <template slot="item" slot-scope="props">
                     <tr>
                         <td>{{ props.item.displayOrder }}</td>

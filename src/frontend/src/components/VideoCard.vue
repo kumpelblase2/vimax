@@ -38,7 +38,7 @@
 <script>
     import { mapActions, mapGetters } from "vuex";
     import VideoMetadataDisplay from "./VideoMetadataDisplay";
-    import { getThumbnailURLForVideo } from "../video";
+    import { getSelectedThumbnailURLForVideo } from "../video";
 
     export default {
         name: "VideoCard",
@@ -51,7 +51,6 @@
         },
         computed: {
             ...mapGetters('videos', [
-                'thumbnailOf',
                 'getVideo',
                 'isSelected'
             ]),
@@ -63,12 +62,7 @@
                 return this.getVideo(this.videoId);
             },
             thumbnailUrl() {
-                let thumbnail = this.thumbnailOf(this.videoId);
-                if(thumbnail == null) {
-                    return "";
-                } else {
-                    return getThumbnailURLForVideo(this.videoId, thumbnail);
-                }
+                return getSelectedThumbnailURLForVideo(this.video);
             },
             watchRoute() {
                 return `/watch/${this.videoId}`;

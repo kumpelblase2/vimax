@@ -6,17 +6,18 @@
                     <v-toolbar-title>Playlists</v-toolbar-title>
                     <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
                     <v-spacer></v-spacer>
-                    <v-text-field style="max-width: 300px" v-model="newPlaylistName"></v-text-field>
-                    <v-btn color="primary" @click="savePlaylist" :disabled="newPlaylistName.length == 0">Create</v-btn>
+                    <v-text-field style="max-width: 300px; margin-right: 20px" v-model="newPlaylistName"
+                                  hide-details></v-text-field>
+                    <v-btn color="primary" @click="savePlaylist" :disabled="newPlaylistName.length === 0">Create</v-btn>
                 </v-toolbar>
-                <v-data-table :headers="playlistHeaders" :items="playlists" class="elevation-1" items-per-page="20">
+                <v-data-table :headers="playlistHeaders" :items="playlists" class="elevation-1" :items-per-page="20">
                     <template slot="item" slot-scope="props">
                         <tr>
                             <td>{{ props.item.id }}</td>
                             <td>{{ props.item.name }}</td>
                             <td class="justify-center">
-                                <v-icon small @click="playPlaylist(props.item)">play_arrow</v-icon>
-                                <v-icon small @click="deletePlaylist(props.item)">delete</v-icon>
+                                <v-icon :disabled="props.item.videoIds.length === 0" @click="startPlaylist(props.item)">play_arrow</v-icon>
+                                <v-icon @click="deletePlaylist(props.item)">delete</v-icon>
                             </td>
                         </tr>
                     </template>
@@ -33,7 +34,7 @@
     import { mapActions, mapState } from "vuex";
 
     export default {
-        name: "PlaylistView",
+        name: "PlaylistsView",
         data: () => ({
             loading: false,
             newPlaylistName: ""
@@ -48,17 +49,22 @@
                 ];
             }
         },
+        mounted() {
+            this.loadPlaylists();
+        },
         methods: {
-            ...mapActions('playlist', ['createPlaylist', 'removePlaylist']),
+            ...mapActions('playlist', ['createPlaylist', 'removePlaylist', 'loadPlaylists']),
+            ...mapActions('player', ['playPlaylist']),
             savePlaylist() {
-                this.createPlaylist({ name: this.newPlaylistName, videos: [] });
+                this.createPlaylist({ name: this.newPlaylistName, videoIds: [] });
                 this.newPlaylistName = "";
             },
             deletePlaylist(playlist) {
                 this.removePlaylist(playlist.id);
             },
-            playPlaylist(playlist) {
-
+            startPlaylist(playlist) {
+                this.playPlaylist(playlist);
+                this.$router.push({ path: `/watch` });
             }
         }
     }

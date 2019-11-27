@@ -1,37 +1,30 @@
 import videoApi from "../api/videos";
+import { getSelectedThumbnail } from "../video";
 
 const APPEND_VIDEO = 'addOrUpdateVideo';
 const CLEAR_VIDEOS = 'clearVideos';
-const SET_ACTIVE_VIDEO = 'updateActiveVideo';
 const SET_EDITING_VIDEO = 'editVideo';
 
 const SELECT_VIDEO = 'selectVideo';
 const UNSELECT_VIDEO = 'unselectVideo';
 
-export const MUTATIONS = { APPEND_VIDEO, CLEAR_VIDEOS, SET_ACTIVE_VIDEO, SET_EDITING_VIDEO, SELECT_VIDEO, UNSELECT_VIDEO };
+export const MUTATIONS = { APPEND_VIDEO, CLEAR_VIDEOS, SET_EDITING_VIDEO, SELECT_VIDEO, UNSELECT_VIDEO };
 
 export default {
     namespaced: true,
     state: {
         videos: [],
-        activeVideoId: null,
         editingVideo: null,
         selectedVideoIds: [],
         isLoading: false,
         currentPage: 0
     },
     getters: {
-        activeVideo: (state, getters) => {
-            return getters.getVideo(state.activeVideoId);
-        },
         selectedVideos: (state) => {
             return state.videos.filter(video => state.selectedVideoIds.includes(video.id));
         },
         getVideo: (state) => {
             return (id) => state.videos.find(video => video.id === id);
-        },
-        editingVideo: (state, getters) => {
-            return getters.getVideo(state.editingId);
         },
         videoThumbnail: (state, getters) => {
             return (videoId) => getters.thumbnailOf(videoId);
@@ -39,15 +32,14 @@ export default {
         thumbnailOf: (state, getters) => {
             return (id) => {
                 const video = getters.getVideo(id);
-                if(video != null) {
-                    return video.thumbnails[video.selectedThumbnail];
-                } else {
-                    return null;
-                }
+                return getSelectedThumbnail(video);
             }
         },
         isSelected: (state) => {
             return (id) => state.selectedVideoIds.includes(id);
+        },
+        hasVideo: (state) => {
+            return (id) => state.videos.findIndex(video => video.id === id) >= 0;
         }
     },
     mutations: {
@@ -58,9 +50,6 @@ export default {
             } else {
                 state.videos.push(video);
             }
-        },
-        [SET_ACTIVE_VIDEO](state, videoId) {
-            state.activeVideoId = videoId;
         },
         [SET_EDITING_VIDEO](state, videoId) {
             if(videoId == null) {
@@ -78,6 +67,11 @@ export default {
             const index = state.selectedVideoIds.indexOf(videoId);
             if(index >= 0) {
                 state.selectedVideoIds.splice(index, 1);
+            }
+        },
+        clearSelectedVideos(state) {
+            while(state.selectedVideoIds.length > 0) {
+                state.selectedVideoIds.pop();
             }
         },
         changeThumbnailsInEdit(state, thumbnailIndex) {
@@ -111,7 +105,7 @@ export default {
         }
     },
     actions: {
-        toggleSelectVideo({getters, commit}, videoId) {
+        toggleSelectVideo({ getters, commit }, videoId) {
             if(getters.isSelected(videoId)) {
                 commit('unselectVideo', videoId);
             } else {
@@ -143,11 +137,6 @@ export default {
             });
             commit('setLoading', false);
         },
-        async makeVideoActive({ commit }, videoId) {
-            commit(SET_ACTIVE_VIDEO, videoId);
-            const video = await videoApi.getVideo(videoId);
-            commit(APPEND_VIDEO, video);
-        },
         async editVideo({ commit }, videoId) {
             commit(SET_EDITING_VIDEO, videoId);
             if(videoId != null) {
@@ -178,6 +167,15 @@ export default {
         async reloadVideo({ commit }, videoId) {
             const video = await videoApi.getVideo(videoId);
             commit(APPEND_VIDEO, video);
+        },
+        async loadVideos({ commit, getters }, videoIds = []) {
+            const videosToLoad = videoIds.filter(videoId => !getters.hasVideo(videoId));
+            if(videosToLoad.length > 0) {
+                const videos = await videoApi.getVideosById(videosToLoad);
+                videos.forEach(video => {
+                    commit(APPEND_VIDEO, video);
+                });
+            }
         }
     }
 };
