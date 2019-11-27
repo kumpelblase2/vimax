@@ -50,9 +50,7 @@
             </v-row>
         </v-app-bar>
         <v-content>
-            <v-container fluid>
-                <router-view></router-view>
-            </v-container>
+            <router-view></router-view>
         </v-content>
         <v-footer>
             <v-spacer></v-spacer>
