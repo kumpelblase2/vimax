@@ -38,7 +38,7 @@
 <script>
     import { mapActions, mapGetters } from "vuex";
     import VideoMetadataDisplay from "./VideoMetadataDisplay";
-    import { getSelectedThumbnailURLForVideo } from "../video";
+    import { getSelectedThumbnailURLForVideo } from "../../video";
 
     export default {
         name: "VideoCard",

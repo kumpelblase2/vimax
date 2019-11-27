@@ -7,7 +7,7 @@
 
 <script>
     import LibraryList from "./LibraryList";
-    import MetadataList from "./MetadataList";
+    import MetadataList from "./metadata/MetadataList";
 
     export default {
         name: "SettingsView",

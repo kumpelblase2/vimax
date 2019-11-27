@@ -14,7 +14,7 @@
     </v-simple-table>
 </template>
 <script>
-    import MetadataValueDisplay from "./MetadataValueDisplay"
+    import MetadataValueDisplay from "../metadata/MetadataValueDisplay"
     import { mapGetters } from "vuex";
 
     function valueOrDefault(metadataValue, definition) {

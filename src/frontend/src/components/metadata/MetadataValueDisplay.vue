@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import { canBeDisplayedAsText, toDisplayValue } from "../helpers/metadata-display-helper";
+    import { canBeDisplayedAsText, toDisplayValue } from "../../helpers/metadata-display-helper";
 
     export default {
         name: "MetadataValueDisplay",

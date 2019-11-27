@@ -53,11 +53,11 @@
 
 <script>
     import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
-    import SortingBucketComponent from "./SortingBucketComponent";
-    import SortingBucketAddComponent from "./SortingBucketAddComponent";
+    import SortingBucketComponent from "./sortview/SortingBucketComponent";
+    import SortingBucketAddComponent from "./sortview/SortingBucketAddComponent";
     import VideoPlayer from "./VideoPlayer";
-    import VideoMetadataDisplay from "./VideoMetadataDisplay";
-    import VideoEditDialog from "./VideoEditDialog";
+    import VideoMetadataDisplay from "./video/VideoMetadataDisplay";
+    import VideoEditDialog from "./video/VideoEditDialog";
 
     export default {
         name: "SortingView",

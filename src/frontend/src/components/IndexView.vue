@@ -13,8 +13,8 @@
 <script>
     import MugenScroll from 'vue-mugen-scroll'
     import { mapActions, mapState } from 'vuex';
-    import VideoCard from "./VideoCard";
-    import VideoEditDialog from "./VideoEditDialog";
+    import VideoCard from "./video/VideoCard";
+    import VideoEditDialog from "./video/VideoEditDialog";
 
     export default {
         name: "Library",

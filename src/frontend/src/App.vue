@@ -63,12 +63,12 @@
 </template>
 
 <script>
-    import SearchComponent from "./components/SearchComponent";
-    import MetadataSelection from "./components/MetadataSelection";
+    import SearchComponent from "./components/video/SearchComponent";
+    import MetadataSelection from "./components/metadata/MetadataSelection";
     import { mapGetters } from "vuex";
-    import SortSelect from "./components/SortSelect";
-    import SortDirectionToggle from "./components/SortDirectionToggle";
-    import AddToPlaylistButton from "./components/AddToPlaylistButton";
+    import SortSelect from "./components/metadata/SortSelect";
+    import SortDirectionToggle from "./components/metadata/SortDirectionToggle";
+    import AddToPlaylistButton from "./components/playlist/AddToPlaylistButton";
 
     export default {
         name: 'Vima',

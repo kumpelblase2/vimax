@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import metadataApi from "../api/metadata";
+    import metadataApi from "../../api/metadata";
 
     export default {
         name: "MetadataValueEditor",

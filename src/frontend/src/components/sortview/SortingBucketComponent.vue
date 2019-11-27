@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    import MetadataValueEditor from "./MetadataValueEditor";
+    import MetadataValueEditor from "../metadata/MetadataValueEditor";
     import { mapGetters, mapMutations, mapState } from 'vuex';
 
     export default {

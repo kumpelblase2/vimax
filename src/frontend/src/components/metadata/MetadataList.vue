@@ -76,7 +76,7 @@
 <script>
     import { mapActions, mapState } from 'vuex';
     import MetadataOptions from "./MetadataOptions";
-    import { toDisplayValue } from "../helpers/metadata-display-helper";
+    import { toDisplayValue } from "../../helpers/metadata-display-helper";
 
     export default {
         name: "MetadataList",

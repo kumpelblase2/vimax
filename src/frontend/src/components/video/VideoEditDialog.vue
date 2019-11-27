@@ -34,7 +34,7 @@
 
 <script>
     import { mapActions, mapState } from "vuex";
-    import MetadataValueEditor from "./MetadataValueEditor";
+    import MetadataValueEditor from "../metadata/MetadataValueEditor";
 
     export default {
         name: "VideoEditDialog",
