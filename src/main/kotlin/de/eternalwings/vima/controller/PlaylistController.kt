@@ -17,7 +17,7 @@ import javax.transaction.Transactional
 data class PlaylistCreation(val name: String, val videoIds: List<Int>)
 
 @RestController
-@RequestMapping("/api/playlist")
+@RequestMapping("/api/playlists")
 class PlaylistController(private val playlistRepository: PlaylistRepository, private val videoRepository: VideoRepository) {
     @GetMapping
     fun getAll(): List<Playlist> {
