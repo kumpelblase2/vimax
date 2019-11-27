@@ -12,7 +12,7 @@
                 </v-list-item>
                 <v-list-item to="/playlists">
                     <v-list-item-action>
-                        <v-icon>settings</v-icon>
+                        <v-icon>playlist_play</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
                         <v-list-item-title>Playlists</v-list-item-title>
