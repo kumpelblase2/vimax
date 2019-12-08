@@ -8,7 +8,10 @@
                 <v-list-item v-for="video in videosInQueue" :key="video.id">
                     <v-list-item-avatar><v-img :src="_thumbnailForVideo(video)"></v-img></v-list-item-avatar>
                     <v-list-item-content>
-                        <v-list-item-title>{{video.name}}</v-list-item-title>
+                        <v-list-item-title>
+                            <v-icon v-if="currentVideo.id === video.id">play_arrow</v-icon>
+                            {{video.name}}
+                        </v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>
                         <v-flex column>

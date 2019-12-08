@@ -8,8 +8,22 @@ export default {
         currentVideo(state, _getters, _rootState, rootGetters) {
             return rootGetters['videos/getVideo'](state.currentlyPlayingVideo);
         },
-        nextUp(state, _getters, _rootState, rootGetters) {
-            return rootGetters['videos/getVideo'](state.playQueue[0]);
+        nextUp(state, getters, _rootState, rootGetters) {
+            const nextId = getters.nextVideoId;
+            if(nextId != null) {
+                return rootGetters['videos/getVideo'](nextId);
+            } else {
+                return null;
+            }
+        },
+        nextVideoId(state) {
+            const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideo);
+            const nextIndex = currentIndex + 1;
+            if(nextIndex < state.playQueue.length) {
+                return state.playQueue[nextIndex];
+            } else {
+                return null;
+            }
         },
         hasQueue(state) {
             return state.playQueue.length > 0;
@@ -18,7 +32,7 @@ export default {
             return state.currentlyPlayingVideo >= 0;
         },
         containsVideo(state) {
-            return (id) => state.currentlyPlayingVideo === id || state.playQueue.includes(id);
+            return (id) => state.playQueue.includes(id);
         },
         videosInQueue(state, _getters, _rootState, rootGetters) {
             return state.playQueue.map(videoId => rootGetters['videos/getVideo'](videoId));
@@ -27,9 +41,6 @@ export default {
     mutations: {
         setCurrentVideo(state, video) {
             state.currentlyPlayingVideo = video;
-        },
-        dropHeadVideo(state) {
-            state.playQueue.splice(0, 1);
         },
         removeVideoFromQueue(state, videoIdToRemove) {
             const index = state.playQueue.findIndex(video => video === videoIdToRemove);
@@ -48,10 +59,9 @@ export default {
     },
     actions: {
         nextVideo({ commit, getters }) {
-            const next = getters.nextUp;
+            const next = getters.nextVideoId;
             if(next != null) {
-                commit('dropHeadVideo');
-                commit('setCurrentVideo', next.id);
+                commit('setCurrentVideo', next);
             }
         },
         playPlaylist({ commit, getters, dispatch }, playlist) {
@@ -61,11 +71,9 @@ export default {
             });
             dispatch('nextVideo');
         },
-        skipToVideo({dispatch,state,getters}, videoId) {
-            if(getters.containsVideo(videoId)){
-                while(state.currentlyPlayingVideo !== videoId) {
-                    dispatch('nextVideo');
-                }
+        skipToVideo({ commit, getters }, videoId) {
+            if(getters.containsVideo(videoId)) {
+                commit('setCurrentVideo', videoId);
             }
         }
     }
