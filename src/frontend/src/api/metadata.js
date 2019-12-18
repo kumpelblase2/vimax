@@ -14,6 +14,6 @@ export default {
     },
 
     getMetadataValues(id) {
-        return axios.get(`/api/metadata/${id}/values`).then(response => response.data.map(value => value.value));
+        return axios.get(`/api/metadata/${id}/values`).then(response => response.data);
     }
 };

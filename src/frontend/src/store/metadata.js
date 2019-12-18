@@ -39,7 +39,8 @@ export default {
             options: {
                 values: []
             }
-        }
+        },
+        possibleValues: {}
     },
     getters: {
         orderedMetadata(state) {
@@ -53,6 +54,9 @@ export default {
         },
         sortableMetadata(state) {
             return state.visibleMetadatas.filter(metadata => isSortable(metadata.type));
+        },
+        possibleValues(state) {
+            return (id) => state.possibleValues[id] || [];
         }
     },
     actions: {
@@ -117,6 +121,10 @@ export default {
             state.metadata.forEach(metadata => {
                 commit('showMetadata', metadata);
             });
+        },
+        async loadValuesFor({ commit }, metadataId) {
+            const values = await metadataApi.getMetadataValues(metadataId);
+            commit('setPossibleValues', { id: metadataId, values });
         }
     },
     mutations: {
@@ -153,6 +161,13 @@ export default {
         setOrder(state, { metadataId, order }) {
             const found = state.metadata.find(existing => existing.id === metadataId);
             found.displayOrder = order;
+        },
+        setPossibleValues(state, { id, values }) {
+            state.possibleValues[id] = values;
+        },
+        addPossibleValue(state, { id, value }) {
+            state.possibleValues[id] = state.possibleValues[id] || [];
+            state.possibleValues[id].push(value);
         }
     }
 };
