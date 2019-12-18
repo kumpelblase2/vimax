@@ -16,7 +16,7 @@
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
                     @change="update" chips clearable multiple :items="tagValues" :solo="solo">
             <template #selection="data">
-                <v-chip :selected="data.selected" close @input="removeTag(data.item)">
+                <v-chip :value="data.selected" close @input="removeTag(data.item)">
                     {{ data.item }}
                 </v-chip>
             </template>
