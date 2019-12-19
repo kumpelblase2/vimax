@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-combobox v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
-                    :items="autocompleteValues" :label="metadataDefinition.name" :value="metadataValue"
+                    :items="values" :label="metadataDefinition.name" :value="metadataValue"
                     :loading="isLoading" @change="update" :solo="solo"></v-combobox>
         <v-text-field v-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
                       :label="metadataDefinition.name" :value="metadataValue" @change="update" :solo="solo"></v-text-field>
@@ -14,7 +14,7 @@
                   @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
                   item-text="name" return-object :solo="solo" :search-input.sync="search"></v-select>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
-                    @change="update" chips clearable multiple :items="autocompleteValues" :solo="solo">
+                    @change="update" chips clearable multiple :items="values" :solo="solo">
             <template #selection="data">
                 <v-chip :value="data.selected" close @input="removeTag(data.item)">
                     {{ data.item }}
@@ -25,30 +25,25 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+    import metadataApi from "../../api/metadata";
 
     export default {
         name: "MetadataValueEditor",
         props: ['metadata-definition', 'metadata-value', 'solo'],
         data() {
             return {
-                tagValues: [],
+                values: [],
                 isLoading: false,
                 search: null
             }
         },
         computed: {
-            ...mapGetters('settings/metadata', ['possibleValues']),
             withSuggestions() {
                 return this.metadataDefinition.type === 'TAGLIST' || this.metadataDefinition.type === 'TEXT' &&
                     this.metadataDefinition.options.suggest;
-            },
-            autocompleteValues() {
-                return this.possibleValues(this.metadataDefinition.id);
             }
         },
         methods: {
-            ...mapActions('settings/metadata', ['loadValuesFor']),
             update(ev) {
                 this.$emit('change', ev);
                 if(this.metadataDefinition.type === 'TAGLIST') {
@@ -72,7 +67,9 @@
             }
 
             if(this.withSuggestions) {
-                this.loadValuesFor(this.metadataDefinition.id);
+                metadataApi.getMetadataValues(this.metadataDefinition.id).then(values => {
+                    values.forEach(value => this.values.push(value));
+                });
             }
         }
     }

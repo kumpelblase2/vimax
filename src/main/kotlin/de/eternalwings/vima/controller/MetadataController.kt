@@ -1,7 +1,11 @@
 package de.eternalwings.vima.controller
 
+import de.eternalwings.vima.MetadataType.BOOLEAN
+import de.eternalwings.vima.MetadataType.SELECTION
+import de.eternalwings.vima.MetadataType.TAGLIST
+import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.domain.Metadata
-import de.eternalwings.vima.domain.SelectionValues
+import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.process.VideoMetadataUpdater
 import de.eternalwings.vima.repository.MetadataContainerRepository
 import de.eternalwings.vima.repository.MetadataRepository
@@ -47,15 +51,14 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     }
 
     @GetMapping("/metadata/{id}/values")
-    fun getPossibleValues(@PathVariable("id") metadataId: Int): List<Any> {
-        val values = metadataValueRepository.findByDefinition(metadataRepository.getOne(metadataId)).asSequence()
-            .mapNotNull { it.value }.filter { it.value != null }.mapNotNull { it.value }
-        return values.flatMap {
-            when (it) {
-                is List<*> -> it.asSequence() as Sequence<Any>
-                is SelectionValues -> sequenceOf(it.name!!)
-                else -> sequenceOf(it)
-            }
-        }.filterNotNull().distinct().toList()
+    fun getPossibleValues(@PathVariable("id") metadataId: Int): Set<String> {
+        val metadata = metadataRepository.getOne(metadataId)
+        return when (metadata.type) {
+            BOOLEAN -> setOf("true", "false")
+            SELECTION -> (metadata.options as SelectionMetadataOptions).values.mapNotNull { it.name }.toSet()
+            TAGLIST -> metadataValueRepository.getTagValuesFor(metadataId)
+            TEXT -> metadataValueRepository.getStringValuesFor(metadataId)
+            else -> emptySet()
+        }
     }
 }
