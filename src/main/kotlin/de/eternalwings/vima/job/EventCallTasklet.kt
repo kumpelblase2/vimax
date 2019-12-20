@@ -11,10 +11,10 @@ import org.springframework.batch.repeat.RepeatStatus.FINISHED
 import org.springframework.stereotype.Component
 
 @Component
-class EventCallTasklet(private val videoRepository: VideoRepository) : Tasklet {
+class EventCallTasklet(private val videoRepository: VideoRepository, private val pluginManager: PluginManager) : Tasklet {
     override fun execute(contribution: StepContribution, context: ChunkContext): RepeatStatus? {
         val video = videoRepository.getOne(getVideoIdFromContext(context))
-        PluginManager.callEvent(CREATE, video)
+        pluginManager.callEvent(CREATE, video)
         return FINISHED
     }
 

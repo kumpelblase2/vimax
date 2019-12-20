@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/event")
-class EventController(private val videoRepository: VideoRepository) {
+class EventController(private val videoRepository: VideoRepository, private val pluginManager: PluginManager) {
     @PostMapping
     fun call(
             @RequestParam(required = true, name = "type") eventType: EventType,
             @RequestParam(required = true, name = "video") videoId: Int
     ) {
         val video = videoRepository.getOne(videoId)
-        PluginManager.callEvent(eventType, video)
+        pluginManager.callEvent(eventType, video)
         videoRepository.save(video)
     }
 }

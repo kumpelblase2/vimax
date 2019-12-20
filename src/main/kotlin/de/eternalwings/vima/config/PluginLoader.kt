@@ -1,11 +1,8 @@
 package de.eternalwings.vima.config
 
-import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.plugin.PluginBindings
 import de.eternalwings.vima.plugin.PluginConfig
 import de.eternalwings.vima.plugin.PluginManager
-import de.eternalwings.vima.process.VideoMetadataUpdater
-import de.eternalwings.vima.repository.MetadataRepository
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import org.springframework.stereotype.Component
 import java.io.File
@@ -16,8 +13,7 @@ import javax.annotation.PostConstruct
 import javax.script.Bindings
 
 @Component
-class PluginLoader(private val metadataRepository: MetadataRepository, private val videoMetadataUpdater: VideoMetadataUpdater,
-                   private val pluginBindings: PluginBindings) {
+class PluginLoader(private val pluginBindings: PluginBindings, private val pluginManager: PluginManager) {
     private val internalPluginDir = "plugins"
 
     @PostConstruct
@@ -32,23 +28,10 @@ class PluginLoader(private val metadataRepository: MetadataRepository, private v
             .filter { it != null }
             .forEach { script ->
                 val config = script!!.use { scriptLoader.load(it.reader(), bindings, PluginConfig::class.java) }
-                PluginManager.registerPlugin(config)
-                registerMetadata(config.allMetadata)
+                pluginManager.registerPlugin(config)
             }
     }
 
     fun <T> KtsObjectLoader.load(reader: Reader, bindings: Bindings, returnType: Class<T>): T =
             safeEval { engine.eval(reader, bindings) } as T
-
-    private fun registerMetadata(metadata: Collection<Metadata>) {
-        var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
-        val existingMetadata = metadataRepository.findAll()
-        val newMetadata = metadata.filter { new -> existingMetadata.none { it.name == new.name } }
-        for (newMetadatum in newMetadata) {
-            highestDisplayOrder += 1
-            newMetadatum.displayOrder = highestDisplayOrder
-        }
-        val saved = metadataRepository.saveAll(newMetadata)
-        saved.forEach { videoMetadataUpdater.addMetadata(it) }
-    }
 }

@@ -39,7 +39,8 @@ import javax.persistence.EntityNotFoundException
 class VideoController(private val videoRepository: VideoRepository,
                       private val thumbnailRepository: ThumbnailRepository,
                       private val metadataRepository: MetadataRepository,
-                      private val videoProcess: VideoProcess) {
+                      private val videoProcess: VideoProcess,
+                      private val pluginManager: PluginManager) {
 
     private val videoLocationCache: Cache<Int, String> = CacheBuilder.newBuilder().maximumSize(100).build()
 
@@ -120,7 +121,7 @@ class VideoController(private val videoRepository: VideoRepository,
                 }
             }
 
-            PluginManager.callEvent(UPDATE, oldVideo)
+            pluginManager.callEvent(UPDATE, oldVideo)
 
             videoRepository.save(oldVideo)
         }.orElseThrow {
