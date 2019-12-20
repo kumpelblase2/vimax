@@ -1,6 +1,3 @@
-import de.eternalwings.vima.domain.DurationMetadataOptions
-import de.eternalwings.vima.domain.NumberMetadataOptions
-import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValues
 import de.eternalwings.vima.plugin.registerPlugin
 import net.bramp.ffmpeg.FFprobe
@@ -17,11 +14,9 @@ val highestRes = SelectionValues("1080p")
 
 registerPlugin("Metadata") {
     val allResolutions = listOf(undefinedResolution, SD, lowRes, higherRes, highestRes)
-    val resolution = metadata("Resolution", ASC, SelectionMetadataOptions(allResolutions).also {
-        it.defaultValue = undefinedResolution
-    })
-    val bitRate = metadata("Bitrate", DESC, NumberMetadataOptions().also { it.defaultValue = 0 })
-    val length = metadata("Length", DESC, DurationMetadataOptions().also { it.defaultValue = Duration.ZERO })
+    val resolution = selection("Resolution", ASC, allResolutions, undefinedResolution)
+    val bitRate = int("Bitrate", DESC, 0)
+    val length = duration("Length", DESC, Duration.ZERO)
 
     val ffprobe = bindings["ffprobe"] as FFprobe
 

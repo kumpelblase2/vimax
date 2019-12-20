@@ -1,14 +1,22 @@
 package de.eternalwings.vima.plugin
 
+import de.eternalwings.vima.domain.BooleanMetadataOptions
+import de.eternalwings.vima.domain.DurationMetadataOptions
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.MetadataOptions
 import de.eternalwings.vima.domain.MetadataValue
+import de.eternalwings.vima.domain.NumberMetadataOptions
+import de.eternalwings.vima.domain.SelectionMetadataOptions
+import de.eternalwings.vima.domain.SelectionValues
+import de.eternalwings.vima.domain.TaglistMetadataOptions
+import de.eternalwings.vima.domain.TextMetadataOptions
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.plugin.EventType.CREATE
 import de.eternalwings.vima.plugin.EventType.FINISH_WATCHING
 import de.eternalwings.vima.plugin.EventType.START_WATCHING
 import de.eternalwings.vima.plugin.EventType.UPDATE
 import org.springframework.data.domain.Sort.Direction
+import java.time.Duration
 import java.util.Collections
 
 fun registerPlugin(name: String, setup: PluginConfig.() -> Unit): PluginConfig {
@@ -32,6 +40,26 @@ class PluginConfig internal constructor(val pluginName: String) {
         allMetadata = allMetadata + metadata
         return MetadataReference(name)
     }
+
+    fun int(name: String, order: Direction, defaultValue: Int) = metadata(name, order, NumberMetadataOptions().also {
+        it.defaultValue = defaultValue
+    })
+
+    fun text(name: String, order: Direction, defaultValue: String) = metadata(name, order, TextMetadataOptions().also {
+        it.defaultValue = defaultValue
+    })
+
+    fun taglist(name: String, order: Direction, defaultValue: List<String> = emptyList()) =
+            metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = emptyList() })
+
+    fun selection(name: String, order: Direction, values: List<SelectionValues>, defaultValue: SelectionValues) =
+            metadata(name, order, SelectionMetadataOptions(values).also { it.defaultValue = defaultValue })
+
+    fun duration(name: String, order: Direction, defaultValue: Duration) =
+            metadata(name, order, DurationMetadataOptions().also { it.defaultValue = defaultValue })
+
+    fun boolean(name: String, order: Direction, defaultValue: Boolean) =
+            metadata(name, order, BooleanMetadataOptions().also { it.defaultValue = defaultValue })
 
     private fun addHandler(eventType: EventType, handler: VideoHandler) {
         val handlers = eventHandlers.computeIfAbsent(eventType) { arrayListOf() }
