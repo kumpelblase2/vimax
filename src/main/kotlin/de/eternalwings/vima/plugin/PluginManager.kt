@@ -40,16 +40,20 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
 
     fun disablePlugin(name: String) {
         val found = plugins.find { it.first.name == name } ?: return
-        found.first.disable()
-        pluginRepository.updateEnabledState(name, found.first.enabled, found.first.enabledAt, found.first.disabledAt)
+        if(found.first.enabled) {
+            found.first.disable()
+            pluginRepository.updateEnabledState(name, found.first.enabled, found.first.enabledAt, found.first.disabledAt)
+        }
     }
 
     fun enablePlugin(name: String) {
         val found = plugins.find { it.first.name == name } ?: return
-        val disabledAt = found.first.disabledAt
-        updateMissedVideos(found.second, disabledAt ?: LocalDateTime.now())
-        found.first.enable()
-        pluginRepository.updateEnabledState(name, found.first.enabled, found.first.enabledAt, found.first.disabledAt)
+        if (!found.first.enabled) {
+            val disabledAt = found.first.disabledAt
+            updateMissedVideos(found.second, disabledAt ?: LocalDateTime.now())
+            found.first.enable()
+            pluginRepository.updateEnabledState(name, found.first.enabled, found.first.enabledAt, found.first.disabledAt)
+        }
     }
 
     private fun updateMissedVideos(pluginConfig: PluginConfig, afterTime: LocalDateTime) {

@@ -21,14 +21,16 @@ class PluginController(private val pluginRepository: PluginInformationRepository
 
     @Transactional
     @PostMapping("/{name}/disable")
-    fun disablePlugin(@PathVariable name: String) {
+    fun disablePlugin(@PathVariable name: String): PluginInformation? {
         pluginManager.disablePlugin(name)
+        return pluginRepository.findByName(name)
     }
 
     @Transactional
     @PostMapping("{name}/enable")
-    fun enablePlugin(@PathVariable name: String) {
+    fun enablePlugin(@PathVariable name: String): PluginInformation? {
         pluginManager.enablePlugin(name)
+        return pluginRepository.findByName(name)
     }
 
 }

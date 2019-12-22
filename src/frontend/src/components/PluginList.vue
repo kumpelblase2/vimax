@@ -10,7 +10,7 @@
                 <template slot="item" slot-scope="props">
                     <tr>
                         <td>{{ props.item.name }}</td>
-                        <td><v-switch v-model="props.item.enabled" @change="toggle(props.item, $event)"></v-switch></td>
+                        <td><v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)"></v-switch></td>
                         <td>{{ props.item.creationTime }}</td>
                         <td>{{ props.item.enabledAt }}</td>
                         <td>{{ props.item.disabledAt }}</td>
@@ -25,36 +25,23 @@
 </template>
 
 <script>
-    import pluginApi from "../api/plugin";
+    import { mapActions, mapState } from "vuex";
 
     export default {
         name: "PluginList",
         data() {
             return {
-                headers: [
-                    { text: "Name", value: "name" },
-                    { text: "Enabled", value: "enabled" },
-                    { text: "Added On", value: "createdAt" },
-                    { text: "Enabled On", value: "enabledAt" },
-                    { text: "Disabled On", value: "disabledAt" }
-                ],
-                plugins: [],
                 loading: true
             }
         },
+        computed: {
+            ...mapState('settings/plugin', ['plugins', 'headers'])
+        },
         methods: {
-            async toggle(plugin, newValue) {
-                if(!newValue) {
-                    await pluginApi.disable(plugin.name);
-                } else {
-                    await pluginApi.enable(plugin.name);
-                }
-            }
+            ...mapActions('settings/plugin', ['togglePlugin', 'loadPlugins'])
         },
         async mounted() {
-            const plugins = await pluginApi.getPlugins();
-            plugins.forEach(plugin => this.plugins.push(plugin));
-            this.loading = false;
+            this.loadPlugins().then(() => this.loading = false);
         }
     }
 </script>
