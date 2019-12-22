@@ -24,18 +24,18 @@ interface VideoRepository : JpaRepository<Video, Int> {
     @Query("SELECT v.id FROM Video v")
     fun getAllIds() : List<Int>
 
-    @Query("SELECT v FROM Video v WHERE v.id in ?1")
-    fun findVideosSortedByOwnProperty(ids: Collection<Int>, pageable: Pageable): List<Video>
+    @Query("SELECT v.id FROM Video v WHERE v.id in ?1")
+    fun findVideoIdsSortedByOwnProperty(ids: Collection<Int>, pageable: Pageable): List<Int>
 
-    @Query("SELECT v.* FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
+    @Query("SELECT v.id FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
             "WHERE v.id IN ?1 ORDER BY json_extract(vm.value, '$.value') ASC LIMIT ?4 OFFSET ?3",
             nativeQuery = true)
-    fun findVideosSortedByAsc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Video>
+    fun findVideoIdsSortedByAsc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
 
-    @Query("SELECT v.* FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
+    @Query("SELECT v.id FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
             "WHERE v.id IN ?1 ORDER BY json_extract(vm.value, '$.value') DESC LIMIT ?4 OFFSET ?3",
             nativeQuery = true)
-    fun findVideosSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Video>
+    fun findVideoIdsSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
 
     fun findVideosByUpdateTimeAfter(timestamp: LocalDateTime): List<Video>
 

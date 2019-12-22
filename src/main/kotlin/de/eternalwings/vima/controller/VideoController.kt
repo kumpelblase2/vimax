@@ -48,7 +48,7 @@ class VideoController(private val videoRepository: VideoRepository,
     fun getVideos(@RequestParam("query", required = false, defaultValue = "") query: String,
                   @RequestParam("page", required = false, defaultValue = "0") page: Int,
                   @RequestParam("sortby", required = false, defaultValue = "name") sortProperty: String,
-                  @RequestParam("sortdir", required = false) sortDirection: Direction?): List<Video> {
+                  @RequestParam("sortdir", required = false) sortDirection: Direction?): List<Int> {
         val videoIds = if (query.isNotBlank()) {
             videoProcess.searchFor(query.trim())
         } else {
@@ -58,12 +58,12 @@ class VideoController(private val videoRepository: VideoRepository,
         val sorting = Sort.by(sortDirection ?: ASC, sortProperty.toLowerCase())
         val paging = PageRequest.of(page, 80, sorting)
         return if (sortProperty == "Name") {
-            videoRepository.findVideosSortedByOwnProperty(videoIds, paging)
+            videoRepository.findVideoIdsSortedByOwnProperty(videoIds, paging)
         } else {
             val metadata = metadataRepository.findByName(sortProperty) ?: throw EntityNotFoundException()
             return when(sortDirection ?: ASC) {
-                ASC -> videoRepository.findVideosSortedByAsc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
-                DESC -> videoRepository.findVideosSortedByDesc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
+                ASC -> videoRepository.findVideoIdsSortedByAsc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
+                DESC -> videoRepository.findVideoIdsSortedByDesc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
             }
         }
     }

@@ -1,8 +1,8 @@
 <template>
     <v-container fluid grid-list>
         <v-row wrap justify-space-around>
-            <VideoCard v-for="video in videos" :key="video.id" :video-id="video.id"></VideoCard>
-            <MugenScroll :handler="loadVideosOfCurrentPage" :should-handle="!isLoading" handle-on-mount>
+            <VideoCard v-for="video in displayedVideos" :key="video.id" :video-id="video.id"></VideoCard>
+            <MugenScroll v-if="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading" handle-on-mount>
                 <div class="mugen-loading">Loading...</div>
             </MugenScroll>
         </v-row>
@@ -12,30 +12,25 @@
 
 <script>
     import MugenScroll from 'vue-mugen-scroll'
-    import { mapActions, mapState } from 'vuex';
+    import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
     import VideoCard from "./video/VideoCard";
     import VideoEditDialog from "./video/VideoEditDialog";
 
     export default {
         name: "Library",
         components: { VideoEditDialog, VideoCard, MugenScroll },
-        mounted() {
-            this.loadMetadata();
+        async mounted() {
+            this.resetPage();
+            await this.loadMetadata();
         },
         computed: {
-            ...mapState('videos', [
-                'videos',
-                'isLoading'
-            ])
+            ...mapState('videos', ['isLoading','hasMoreVideos']),
+            ...mapGetters('videos', ['displayedVideos'])
         },
         methods: {
-            ...mapActions('videos', [
-                'loadRecentVideos',
-                'loadVideosOfCurrentPage'
-            ]),
-            ...mapActions('settings/metadata',[
-                'loadMetadata'
-            ]),
+            ...mapActions('videos', ['loadVideosOfCurrentPage']),
+            ...mapMutations('videos', ['resetPage']),
+            ...mapActions('settings/metadata',['loadMetadata'])
         }
     }
 </script>

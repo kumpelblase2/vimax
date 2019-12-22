@@ -8,6 +8,8 @@ const SET_EDITING_VIDEO = 'editVideo';
 const SELECT_VIDEO = 'selectVideo';
 const UNSELECT_VIDEO = 'unselectVideo';
 
+const MAX_VIDEOS = 80;
+
 export const MUTATIONS = { APPEND_VIDEO, CLEAR_VIDEOS, SET_EDITING_VIDEO, SELECT_VIDEO, UNSELECT_VIDEO };
 
 export default {
@@ -17,6 +19,8 @@ export default {
         editingVideo: null,
         selectedVideoIds: [],
         isLoading: false,
+        displayVideoIds: [],
+        hasMoreVideos: true,
         currentPage: 0
     },
     getters: {
@@ -40,6 +44,9 @@ export default {
         },
         hasVideo: (state) => {
             return (id) => state.videos.findIndex(video => video.id === id) >= 0;
+        },
+        displayedVideos: (state,getters) => {
+            return state.displayVideoIds.map(id => getters.getVideo(id));
         }
     },
     mutations: {
@@ -90,8 +97,8 @@ export default {
             state.editingVideo.thumbnails = thumbnails;
         },
         [CLEAR_VIDEOS](state) {
-            while(state.videos.length) {
-                state.videos.pop();
+            while(state.displayVideoIds.length) {
+                state.displayVideoIds.pop();
             }
         },
         setLoading(state, value) {
@@ -102,6 +109,13 @@ export default {
         },
         resetPage(state) {
             state.currentPage = 0;
+            state.hasMoreVideos = true;
+        },
+        addDisplayVideos(state, videoIds) {
+            videoIds.forEach(id => state.displayVideoIds.push(id));
+        },
+        noMoreVideos(state) {
+            state.hasMoreVideos = false;
         }
     },
     actions: {
@@ -112,29 +126,15 @@ export default {
                 commit('selectVideo', videoId);
             }
         },
-        async loadRecentVideos({ commit }) {
+        async loadVideosOfCurrentPage({ commit, state, dispatch, rootState }) {
             commit('setLoading', true);
-            const videos = await videoApi.getRecentVideos();
-            videos.forEach(video => {
-                commit(APPEND_VIDEO, video);
-            });
-            commit('setLoading', false);
-        },
-        async loadAllVideos({ commit }) {
-            commit('setLoading', true);
-            const videos = await videoApi.getAllVideos();
-            videos.forEach(video => {
-                commit(APPEND_VIDEO, video);
-            });
-            commit('setLoading', false);
-        },
-        async loadVideosOfCurrentPage({ commit, state, rootState }) {
-            commit('setLoading', true);
-            const videos = await videoApi.getVideosByPage(state.currentPage, rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+            const videoIds = await videoApi.getVideosByPage(state.currentPage, rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
             commit('nextPage');
-            videos.forEach(video => {
-                commit(APPEND_VIDEO, video);
-            });
+            await dispatch('loadVideos', videoIds);
+            commit('addDisplayVideos', videoIds);
+            if(videoIds.length < MAX_VIDEOS) {
+                commit('noMoreVideos');
+            }
             commit('setLoading', false);
         },
         async editVideo({ commit }, videoId) {
