@@ -16,10 +16,10 @@ export default {
             { text: 'Switch', value: 'BOOLEAN' }
         ],
         headers: [
-            { text: 'Order', value: 'displayOrder' },
-            { text: 'Name', value: 'name' },
-            { text: 'Type', value: 'type' },
-            { text: 'Default Value', values: 'defaultValue' },
+            { text: 'Order', value: 'displayOrder', sortable: false },
+            { text: 'Name', value: 'name', sortable: false },
+            { text: 'Type', value: 'type', sortable: false },
+            { text: 'Default Value', values: 'defaultValue', sortable: false },
             { text: 'Actions', value: 'actions', sortable: false, width: 150 }
         ],
         editingItem: {

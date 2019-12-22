@@ -45,7 +45,8 @@
                     </v-card>
                 </v-dialog>
             </v-toolbar>
-            <v-data-table :headers="headers" :items="metadatas" class="elevation-1" :items-per-page="20">
+            <v-data-table :headers="headers" :items="metadatas" class="elevation-1" :items-per-page="20"
+                          :custom-sort="sort">
                 <template slot="item" slot-scope="props">
                     <tr>
                         <td>{{ props.item.displayOrder }}</td>
@@ -56,7 +57,7 @@
                             <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
                                     @click="moveDown(props.item)">arrow_downward
                             </v-icon>
-                            <v-icon v-if="props.item.displayOrder > 1" small class="mr-2"
+                            <v-icon v-if="props.item.displayOrder > 0" small class="mr-2"
                                     @click="moveUp(props.item)">arrow_upward
                             </v-icon>
                             <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)">edit
@@ -109,6 +110,9 @@
             ])
         },
         methods: {
+            sort(items) {
+                return items.sort((a, b) => a.displayOrder - b.displayOrder);
+            },
             editItem(item) {
                 this.editedIndex = this.metadatas.indexOf(item);
                 this.startEditItem(item);
