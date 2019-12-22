@@ -20,7 +20,8 @@ data class PlaylistCreateInformation(val name: String, val videoIds: List<Int>)
 data class PlaylistInformation(val id: Int, val name: String, val videoIds: List<Int>) {
     companion object {
         fun from(playlist: Playlist): PlaylistInformation {
-            return PlaylistInformation(playlist.id!!, playlist.name!!, playlist.videos.map { it.video!!.id!! })
+            val videoIds = ArrayList(playlist.videos).sortedBy { it.position }.mapNotNull { it.video?.id }
+            return PlaylistInformation(playlist.id!!, playlist.name!!, videoIds)
         }
     }
 }
@@ -54,11 +55,21 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
     @PutMapping("/{id}/remove")
     fun removeVideoFromPlaylist(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
         playlistRepository.deleteFromPlaylist(playlistId, videos)
-        return Companion.from(playlistRepository.save(playlistRepository.getOne(playlistId)))
+        return Companion.from(playlistRepository.getOne(playlistId))
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") playlistId: Int) {
         playlistRepository.deleteById(playlistId)
+    }
+
+    @Transactional
+    @PutMapping("/{id}/order")
+    fun updatePlaylistOrder(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
+        val playlist = playlistRepository.findById(playlistId).orElseThrow { EntityNotFoundException() }
+        playlist.videos.forEach { playlistPosition ->
+            playlistPosition.position = videos.indexOf(playlistPosition.video?.id)
+        }
+        return Companion.from(playlistRepository.save(playlist))
     }
 }

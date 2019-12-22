@@ -14,9 +14,13 @@
                     <template slot="item" slot-scope="props">
                         <tr>
                             <td>{{ props.item.id }}</td>
-                            <td>{{ props.item.name }}</td>
+                            <td>
+                                <router-link :to="playlistRoute(props.item)">{{ props.item.name }}</router-link>
+                            </td>
                             <td class="justify-center">
-                                <v-icon :disabled="props.item.videoIds.length === 0" @click="startPlaylist(props.item)">play_arrow</v-icon>
+                                <v-icon :disabled="props.item.videoIds.length === 0" @click="startPlaylist(props.item)">
+                                    play_arrow
+                                </v-icon>
                                 <v-icon @click="deletePlaylist(props.item)">delete</v-icon>
                             </td>
                         </tr>
@@ -58,6 +62,9 @@
             savePlaylist() {
                 this.createPlaylist({ name: this.newPlaylistName, videoIds: [] });
                 this.newPlaylistName = "";
+            },
+            playlistRoute(playlist) {
+                return "/playlist/" + playlist.id;
             },
             deletePlaylist(playlist) {
                 this.removePlaylist(playlist.id);

@@ -13,7 +13,15 @@ export default {
         return axios.delete("/api/playlists/" + id).then(response => response.data);
     },
 
+    deleteFromPlaylist(id, videoIds) {
+        return axios.put(`/api/playlists/${id}/remove`, videoIds).then(response => response.data);
+    },
+
     addToPlaylist(id, videoIds) {
         return axios.put(`/api/playlists/${id}/add`, videoIds).then(response => response.data);
+    },
+
+    updateOrderOf(id, videoIds) {
+        return axios.put(`/api/playlists/${id}/order`, videoIds).then(response => response.data);
     }
 };

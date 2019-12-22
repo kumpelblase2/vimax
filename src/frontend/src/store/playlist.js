@@ -50,6 +50,14 @@ export default {
         async addToPlaylist({ commit }, { playlistId, videoIds }) {
             const newPlaylist = await playlists.addToPlaylist(playlistId, videoIds);
             commit('addOrUpdatePlaylist', newPlaylist);
+        },
+        async removeFromPlaylist({commit}, {playlistId,videoIds}) {
+            const newPlaylist = await playlists.deleteFromPlaylist(playlistId, videoIds);
+            commit('addOrUpdatePlaylist', newPlaylist);
+        },
+        async updateOrder({commit}, { playlistId, videoIds }) {
+            const newPlaylist = await playlists.updateOrderOf(playlistId, videoIds);
+            commit('addOrUpdatePlaylist', newPlaylist);
         }
     }
 }
