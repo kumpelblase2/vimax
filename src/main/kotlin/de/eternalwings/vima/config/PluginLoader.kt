@@ -30,6 +30,8 @@ class PluginLoader(private val pluginBindings: PluginBindings, private val plugi
                 val config = script!!.use { scriptLoader.load(it.reader(), bindings, PluginConfig::class.java) }
                 pluginManager.registerPlugin(config)
             }
+
+        pluginManager.disableUnloaded()
     }
 
     fun <T> KtsObjectLoader.load(reader: Reader, bindings: Bindings, returnType: Class<T>): T =

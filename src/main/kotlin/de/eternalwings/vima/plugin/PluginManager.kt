@@ -81,6 +81,14 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
         }
     }
 
+    fun disableUnloaded() {
+        val allPlugins = pluginRepository.findAll()
+        val notRegisteredPlugins = allPlugins.filter { all -> enabledPlugins.none { it.first.id == all.id } }
+        notRegisteredPlugins.forEach { plugin ->
+            pluginRepository.updateEnabledState(plugin.name!!, false, null, LocalDateTime.now())
+        }
+    }
+
     companion object {
         private val LOGGER = LoggerFactory.getLogger(PluginManager::class.java)
     }
