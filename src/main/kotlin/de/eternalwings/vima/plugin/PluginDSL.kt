@@ -36,7 +36,7 @@ class PluginConfig internal constructor(val pluginName: String) {
         private set
 
     fun <T> metadata(name: String, order: Direction, options: MetadataOptions<T>): MetadataReference<T> {
-        val metadata = Metadata(name = name, type = options.type, systemSpecified = true, ordering = order, options = options)
+        val metadata = Metadata(name = name, type = options.type, ordering = order, options = options)
         allMetadata = allMetadata + metadata
         return MetadataReference(name)
     }

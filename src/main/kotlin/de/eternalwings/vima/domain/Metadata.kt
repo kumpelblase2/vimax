@@ -9,6 +9,8 @@ import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType.STRING
 import javax.persistence.Enumerated
+import javax.persistence.FetchType.LAZY
+import javax.persistence.ManyToOne
 import javax.validation.constraints.NotBlank
 
 @Entity
@@ -20,8 +22,8 @@ data class Metadata(
         @Enumerated(STRING)
         var ordering: Direction = ASC,
         var readOnly: Boolean = false,
-        @Column(updatable = false)
-        var systemSpecified: Boolean = false,
+        @ManyToOne(fetch = LAZY)
+        var owner: PluginInformation? = null,
         @Column(columnDefinition = "text")
         @Convert(converter = SQLiteMetadataOptionsJsonConverter::class)
         var options: MetadataOptions<*>? = null,
@@ -30,4 +32,7 @@ data class Metadata(
     fun toValue(): MetadataValueContainer {
         return MetadataValueContainer(null, this, options!!.toValue())
     }
+
+    val isSystemSpecified: Boolean
+        get() = owner != null
 }

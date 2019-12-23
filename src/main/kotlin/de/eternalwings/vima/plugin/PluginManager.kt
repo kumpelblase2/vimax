@@ -21,15 +21,14 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
     fun registerPlugin(pluginConfig: PluginConfig) {
         if (getPlugin(pluginConfig.pluginName) != null) throw PluginAlreadyRegisteredException(pluginConfig.pluginName)
         val plugin = pluginRepository.findByName(pluginConfig.pluginName) ?: createPlugin(pluginConfig)
+        registerMetadata(plugin, pluginConfig.allMetadata)
 
         plugins = plugins + (plugin.copy() to pluginConfig)
         LOGGER.debug("Registered plugin " + pluginConfig.pluginName)
     }
 
     private fun createPlugin(pluginConfig: PluginConfig): PluginInformation {
-        val createdPlugin = pluginRepository.save(PluginInformation(pluginConfig.pluginName))
-        registerMetadata(pluginConfig.allMetadata)
-        return createdPlugin
+        return pluginRepository.save(PluginInformation(pluginConfig.pluginName))
     }
 
     fun getPlugin(name: String) = plugins.find { it.second.pluginName == name }
@@ -60,16 +59,26 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
         // TODO
     }
 
-    private fun registerMetadata(metadata: Collection<Metadata>) {
-        var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
+    private fun registerMetadata(owner: PluginInformation, metadata: Collection<Metadata>) {
         val existingMetadata = metadataRepository.findAll()
         val newMetadata = metadata.filter { new -> existingMetadata.none { it.name == new.name } }
-        for (newMetadatum in newMetadata) {
-            highestDisplayOrder += 1
-            newMetadatum.displayOrder = highestDisplayOrder
+        val oldMetadata = existingMetadata.filter { old -> metadata.any { it.name == old.name } }
+        val withoutOwner = oldMetadata.filter { it.owner == null }
+        if (withoutOwner.isNotEmpty()) {
+            withoutOwner.forEach { it.owner = owner }
+            metadataRepository.saveAll(withoutOwner)
         }
-        val saved = metadataRepository.saveAll(newMetadata)
-        saved.forEach { videoMetadataUpdater.addMetadata(it) }
+
+        if(newMetadata.isNotEmpty()) {
+            var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
+            for (newMetadatum in newMetadata) {
+                highestDisplayOrder += 1
+                newMetadatum.displayOrder = highestDisplayOrder
+                newMetadatum.owner = owner
+            }
+            val saved = metadataRepository.saveAll(newMetadata)
+            saved.forEach { videoMetadataUpdater.addMetadata(it) }
+        }
     }
 
     companion object {

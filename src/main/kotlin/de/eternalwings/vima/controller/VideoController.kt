@@ -111,7 +111,7 @@ class VideoController(private val videoRepository: VideoRepository,
             oldVideo.selectedThumbnail = newVideo.selectedThumbnail
             oldVideo.name = newVideo.name
             newVideo.metadata?.forEach { metadataValue ->
-                if(metadataValue.definition?.systemSpecified == false) { // Only update non-system metadata
+                if(metadataValue.definition?.isSystemSpecified == false) { // Only update non-system metadata
                     // I can't do the following without those ugly casts. These two values _should_ be of the
                     // same type. And if they aren't we should fail because something is horribly wrong.
                     val existingValue: MetadataValue<Any> = oldVideo.metadata?.find { existing ->
