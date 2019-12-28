@@ -1,16 +1,6 @@
 package de.eternalwings.vima.plugin
 
-import de.eternalwings.vima.domain.BooleanMetadataOptions
-import de.eternalwings.vima.domain.DurationMetadataOptions
-import de.eternalwings.vima.domain.Metadata
-import de.eternalwings.vima.domain.MetadataOptions
-import de.eternalwings.vima.domain.MetadataValue
-import de.eternalwings.vima.domain.NumberMetadataOptions
-import de.eternalwings.vima.domain.SelectionMetadataOptions
-import de.eternalwings.vima.domain.SelectionValues
-import de.eternalwings.vima.domain.TaglistMetadataOptions
-import de.eternalwings.vima.domain.TextMetadataOptions
-import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.domain.*
 import de.eternalwings.vima.plugin.EventType.CREATE
 import de.eternalwings.vima.plugin.EventType.FINISH_WATCHING
 import de.eternalwings.vima.plugin.EventType.START_WATCHING
@@ -60,6 +50,9 @@ class PluginConfig internal constructor(val pluginName: String) {
 
     fun boolean(name: String, order: Direction, defaultValue: Boolean) =
             metadata(name, order, BooleanMetadataOptions().also { it.defaultValue = defaultValue })
+
+    fun float(name: String, order: Direction, defaultValue: Double) =
+            metadata(name, order, FloatMetadataOptions().also { it.defaultValue = defaultValue })
 
     private fun addHandler(eventType: EventType, handler: VideoHandler) {
         val handlers = eventHandlers.computeIfAbsent(eventType) { arrayListOf() }
