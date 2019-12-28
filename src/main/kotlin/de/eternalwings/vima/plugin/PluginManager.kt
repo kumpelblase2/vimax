@@ -9,6 +9,7 @@ import de.eternalwings.vima.repository.PluginInformationRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
@@ -88,6 +89,7 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
         }
     }
 
+    @Transactional
     fun disableUnloaded() {
         val allPlugins = pluginRepository.findAll()
         val notRegisteredPlugins = allPlugins.filter { all -> enabledPlugins.none { it.first.id == all.id } }
