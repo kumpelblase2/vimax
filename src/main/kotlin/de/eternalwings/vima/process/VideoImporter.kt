@@ -12,8 +12,7 @@ import java.util.concurrent.CompletableFuture
 
 @Component
 class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
-
-    private val maxImport = 10
+    private val maxImport = 0
     private var imported = 0
 
     @Async
