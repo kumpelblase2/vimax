@@ -5,6 +5,7 @@ import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.query.VideoSearcher
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.stereotype.Component
+import java.nio.file.Path
 import java.nio.file.Paths
 import javax.transaction.Transactional
 
@@ -28,4 +29,9 @@ class VideoProcess(private val videoRepository: VideoRepository,
     }
 
     fun searchFor(query: String) = videoSearcher.search(query)
+
+    fun deleteVideoAt(path: Path) {
+        val video = videoRepository.findVideoByLocation(path.toString()) ?: return
+        videoRepository.delete(video)
+    }
 }

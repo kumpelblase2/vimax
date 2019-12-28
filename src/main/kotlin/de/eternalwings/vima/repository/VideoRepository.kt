@@ -38,4 +38,6 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun findVideosSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Video>
 
     fun findVideosByUpdateTimeAfter(timestamp: LocalDateTime): List<Video>
+
+    fun findVideoByLocation(location: String): Video?
 }

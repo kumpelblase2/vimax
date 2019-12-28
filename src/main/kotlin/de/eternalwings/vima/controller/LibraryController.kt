@@ -1,9 +1,12 @@
 package de.eternalwings.vima.controller
 
 import de.eternalwings.vima.domain.Library
+import de.eternalwings.vima.event.LibraryCreateEvent
+import de.eternalwings.vima.event.LibraryDeleteEvent
 import de.eternalwings.vima.process.VideoLoader
 import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.repository.LibraryRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,7 +22,8 @@ import javax.persistence.EntityNotFoundException
 @RequestMapping("/api/library")
 class LibraryController(private val libraryRepository: LibraryRepository,
                         private val videoLoader: VideoLoader,
-                        private val videoProcess: VideoProcess) {
+                        private val videoProcess: VideoProcess,
+                        private val eventPublisher: ApplicationEventPublisher) {
 
     @PostMapping
     fun saveLibrary(@RequestBody library: Library): Library {
@@ -43,6 +47,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
             if (existing == null) {
                 val newLibrary = libraryRepository.save(library)
                 videoLoader.scanLibrary(newLibrary)
+                eventPublisher.publishEvent(LibraryCreateEvent(this, newLibrary))
                 return newLibrary
             } else {
                 throw IllegalStateException("Already exists.")
@@ -57,6 +62,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
     fun deleteLibrary(@PathVariable("id") id: Int): Int {
         val library = libraryRepository.getOne(id)
         videoProcess.deleteAllVideosInLibrary(library)
+        eventPublisher.publishEvent(LibraryDeleteEvent(this, library))
         libraryRepository.delete(library)
         return id
     }

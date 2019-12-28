@@ -8,6 +8,7 @@ import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import java.nio.file.Path
+import java.util.concurrent.CompletableFuture
 
 @Component
 class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
@@ -16,16 +17,19 @@ class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
     private var imported = 0
 
     @Async
-    fun considerForImport(videoPath: Path, library: Library? = null) {
-        if (imported >= maxImport) return
+    fun considerForImport(videoPath: Path, library: Library): CompletableFuture<Unit> {
+        return considerForImport(videoPath, library.id!!)
+    }
+
+    @Async
+    fun considerForImport(videoPath: Path, libraryId: Int): CompletableFuture<Unit> {
+        if (imported >= maxImport) return CompletableFuture.failedFuture(IllegalStateException("Reached import limit."))
         imported += 1
-        val parameterBuilder = JobParametersBuilder().addString("path", videoPath.toString())
-        if(library != null) {
-            parameterBuilder.addLong("library", library.id!!.toLong())
-        }
-        val parameters = parameterBuilder.toJobParameters()
+        val parameters = JobParametersBuilder().addString("path", videoPath.toString())
+                .addLong("library", libraryId.toLong()).toJobParameters()
         val execution = jobLauncher.run(importJob, parameters)
         LOGGER.debug("Started import job with id ${execution.jobId}")
+        return CompletableFuture.completedFuture(null)
     }
 
     companion object {
