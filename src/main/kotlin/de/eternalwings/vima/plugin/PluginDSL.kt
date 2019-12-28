@@ -96,9 +96,13 @@ class PluginConfig internal constructor(val pluginName: String) {
     }
 
     operator fun <T> Video.get(metadata: MetadataReference<T>): T? {
+        return getValue<T>(metadata.name)
+    }
+
+    fun <T> Video.getValue(name: String): T? {
         val existingMetadata = this.metadata ?: return null
         val existingContainer = existingMetadata.find { valueContainer ->
-            valueContainer.definition?.name == metadata.name
+            valueContainer.definition?.name == name
         } ?: return null
         return (existingContainer.value as MetadataValue<T>).value ?: null
     }
