@@ -62,7 +62,7 @@
                             </v-icon>
                             <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)">edit
                             </v-icon>
-                            <v-icon small @click="deleteItem(props.item)">delete</v-icon>
+                            <v-icon v-if="!props.item.systemSpecified" small @click="deleteItem(props.item)">delete</v-icon>
                         </td>
                     </tr>
                 </template>
