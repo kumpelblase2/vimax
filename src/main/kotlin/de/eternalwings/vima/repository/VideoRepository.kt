@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 interface VideoRepository : JpaRepository<Video, Int> {
@@ -35,4 +36,6 @@ interface VideoRepository : JpaRepository<Video, Int> {
             "WHERE v.id IN ?1 ORDER BY json_extract(vm.value, '$.value') DESC LIMIT ?4 OFFSET ?3",
             nativeQuery = true)
     fun findVideosSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Video>
+
+    fun findVideosByUpdateTimeAfter(timestamp: LocalDateTime): List<Video>
 }

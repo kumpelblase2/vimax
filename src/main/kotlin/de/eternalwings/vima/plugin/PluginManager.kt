@@ -6,13 +6,14 @@ import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.process.VideoMetadataUpdater
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.PluginInformationRepository
+import de.eternalwings.vima.repository.VideoRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
 class PluginManager(private val pluginRepository: PluginInformationRepository, private val metadataRepository: MetadataRepository,
-                    private val videoMetadataUpdater: VideoMetadataUpdater) {
+                    private val videoMetadataUpdater: VideoMetadataUpdater, private val videoRepository: VideoRepository) {
     private var plugins: List<Pair<PluginInformation, PluginConfig>> = emptyList()
 
     private val enabledPlugins: List<Pair<PluginInformation, PluginConfig>>
@@ -39,7 +40,7 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
 
     fun disablePlugin(name: String) {
         val found = plugins.find { it.first.name == name } ?: return
-        if(found.first.enabled) {
+        if (found.first.enabled) {
             found.first.disable()
             pluginRepository.updateEnabledState(name, found.first.enabled, found.first.enabledAt, found.first.disabledAt)
         }
@@ -56,7 +57,13 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
     }
 
     private fun updateMissedVideos(pluginConfig: PluginConfig, afterTime: LocalDateTime) {
-        // TODO
+        val missedVideos = videoRepository.findVideosByUpdateTimeAfter(afterTime)
+        if (pluginConfig.hasHandlerFor(EventType.UPDATE)) {
+            missedVideos.forEach { pluginConfig.callHandlerFor(EventType.UPDATE, it) }
+        } else {
+            val createdVideos = missedVideos.filter { it.creationTime!! > afterTime }
+            createdVideos.forEach { pluginConfig.callHandlerFor(EventType.CREATE, it) }
+        }
     }
 
     private fun registerMetadata(owner: PluginInformation, metadata: Collection<Metadata>) {
@@ -69,7 +76,7 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
             metadataRepository.saveAll(withoutOwner)
         }
 
-        if(newMetadata.isNotEmpty()) {
+        if (newMetadata.isNotEmpty()) {
             var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
             for (newMetadatum in newMetadata) {
                 highestDisplayOrder += 1

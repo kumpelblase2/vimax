@@ -79,6 +79,10 @@ class PluginConfig internal constructor(val pluginName: String) {
         eventHandlers.getOrDefault(eventType, Collections.emptyList()).forEach { it(video) }
     }
 
+    fun hasHandlerFor(eventType: EventType): Boolean {
+        return eventHandlers.getOrDefault(eventType, Collections.emptyList()).isNotEmpty()
+    }
+
     operator fun <T> Video.set(metadata: MetadataReference<T>, value: T) {
         check(hasMetadata(metadata.name))
         val existingMetadata = this.metadata ?: throw IllegalStateException()
