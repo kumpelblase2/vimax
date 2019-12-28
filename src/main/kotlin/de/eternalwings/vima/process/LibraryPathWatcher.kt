@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.nio.file.FileSystems
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 
@@ -35,7 +36,7 @@ class LibraryPathWatcher(private val videoImporter: VideoImporter,
     }
 
     fun startWatching(library: Library) {
-        val path = Path.of(library.path!!)
+        val path = Paths.get(library.path!!)
         val registration = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE)
         watches = watches + LibraryWatch(library.id!!, path, registration)
     }
