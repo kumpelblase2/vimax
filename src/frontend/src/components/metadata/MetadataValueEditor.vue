@@ -3,7 +3,7 @@
         <v-combobox v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
                     :items="values" :label="metadataDefinition.name" :value="metadataValue"
                     :loading="isLoading" @change="update" :solo="solo"></v-combobox>
-        <v-text-field v-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
+        <v-text-field v-else-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
                       :label="metadataDefinition.name" :value="metadataValue" @change="update" :solo="solo"></v-text-field>
         <v-switch v-else-if="metadataDefinition.type === 'BOOLEAN'" @change="update"
                   :label="metadataDefinition.name" :value="metadataValue" :solo="solo"></v-switch>
@@ -21,6 +21,10 @@
                 </v-chip>
             </template>
         </v-combobox>
+        <v-slider v-else-if="metadataDefinition.type === 'RANGE'" :label="metadataDefinition.name"
+                  :value="metadataValue" @change="updateNumber" :solo="solo" :min="metadataDefinition.options.min"
+                  :max="metadataDefinition.options.max" thumb-label>
+        </v-slider>
     </div>
 </template>
 
