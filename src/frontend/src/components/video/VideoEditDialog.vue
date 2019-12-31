@@ -16,7 +16,8 @@
                     </v-row>
                 </v-item-group>
                 <div v-for="(metadata,index) in video.metadata" :key="index">
-                    <metadata-value-editor :metadata-definition="metadata.definition"
+                    <metadata-value-editor v-if="metadata.definition.owner === null"
+                                           :metadata-definition="metadata.definition"
                                            :metadata-value="metadata.value.value"
                                            @change="handleMetadataUpdate(index, $event)"></metadata-value-editor>
                 </div>
