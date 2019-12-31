@@ -79,25 +79,17 @@ export default {
         startEditItem({ commit }, item) {
             commit('setEditItem', item);
         },
-        async moveMetadataUp({ commit, state }, metadata) {
-            const currentOrder = metadata.displayOrder;
-            const nextOrder = metadata.displayOrder - 1;
-            const metadataToMove = state.metadata.find(existing => existing.displayOrder === nextOrder);
-            commit('setOrder', { metadataId: metadata.id, order: nextOrder });
-            commit('setOrder', { metadataId: metadataToMove.id, order: currentOrder });
+        async moveMetadataUp({ commit, getters }, metadata) {
+            const currentPos = getters.orderedMetadata.indexOf(metadata);
+            const changedMetadatas = await metadataApi.insertAt(metadata.id, currentPos - 1);
 
-            await metadataApi.saveMetadata(metadata);
-            await metadataApi.saveMetadata(metadataToMove);
+            changedMetadatas.forEach(changed => commit('addOrUpdateMetadata', changed));
         },
-        async moveMetadataDown({ commit, state }, metadata) {
-            const currentOrder = metadata.displayOrder;
-            const nextOrder = metadata.displayOrder + 1;
-            const metadataToMove = state.metadata.find(existing => existing.displayOrder === nextOrder);
-            commit('setOrder', { metadataId: metadata.id, order: nextOrder });
-            commit('setOrder', { metadataId: metadataToMove.id, order: currentOrder });
+        async moveMetadataDown({ commit, getters }, metadata) {
+            const currentPos = getters.orderedMetadata.indexOf(metadata);
+            const changedMetadatas = await metadataApi.insertAt(metadata.id, currentPos + 1);
 
-            await metadataApi.saveMetadata(metadata);
-            await metadataApi.saveMetadata(metadataToMove);
+            changedMetadatas.forEach(changed => commit('addOrUpdateMetadata', changed));
         },
         onlyShowMetadata({ commit, state }, newVisibleMetadata) {
             state.metadata.forEach(metadata => {
@@ -149,10 +141,6 @@ export default {
         },
         setEditItem(state, item) {
             state.editingItem = Object.assign({}, item);
-        },
-        setOrder(state, { metadataId, order }) {
-            const found = state.metadata.find(existing => existing.id === metadataId);
-            found.displayOrder = order;
         }
     }
 };

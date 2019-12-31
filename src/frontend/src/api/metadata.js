@@ -15,5 +15,9 @@ export default {
 
     getMetadataValues(id) {
         return axios.get(`/api/metadata/${id}/values`).then(response => response.data);
+    },
+
+    insertAt(id, newPos) {
+        return axios.put(`/api/metadata/${id}/insertAt/${newPos}`).then(response => response.data);
     }
 };
