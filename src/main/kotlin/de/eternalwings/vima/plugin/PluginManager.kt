@@ -92,7 +92,7 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
     @Transactional
     fun disableUnloaded() {
         val allPlugins = pluginRepository.findAll()
-        val notRegisteredPlugins = allPlugins.filter { all -> enabledPlugins.none { it.first.id == all.id } }
+        val notRegisteredPlugins = allPlugins.filter { all -> plugins.none { it.first.id == all.id } }
         notRegisteredPlugins.forEach { plugin ->
             pluginRepository.updateEnabledState(plugin.name!!, false, null, LocalDateTime.now())
         }
