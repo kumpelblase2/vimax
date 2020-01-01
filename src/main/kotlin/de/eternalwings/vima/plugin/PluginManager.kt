@@ -61,9 +61,11 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
         val missedVideos = videoRepository.findVideosByUpdateTimeAfter(afterTime)
         if (pluginConfig.hasHandlerFor(EventType.UPDATE)) {
             missedVideos.forEach { pluginConfig.callHandlerFor(EventType.UPDATE, it) }
+            videoRepository.saveAll(missedVideos)
         } else {
             val createdVideos = missedVideos.filter { it.creationTime!! > afterTime }
             createdVideos.forEach { pluginConfig.callHandlerFor(EventType.CREATE, it) }
+            videoRepository.saveAll(createdVideos)
         }
     }
 
