@@ -27,6 +27,6 @@ class PluginInformation(
     }
 
     fun copy(): PluginInformation {
-        return PluginInformation(name, enabled, disabledAt, enabledAt, settings)
+        return PluginInformation(name, enabled, disabledAt, enabledAt, settings).also { it.id = this.id }
     }
 }
