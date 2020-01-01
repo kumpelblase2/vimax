@@ -5,10 +5,10 @@ export default {
     state: {
         headers: [
             { text: "Name", value: "name" },
-            { text: "Enabled", value: "enabled" },
-            { text: "Added On", value: "createdAt" },
-            { text: "Enabled On", value: "enabledAt" },
-            { text: "Disabled On", value: "disabledAt" }
+            { text: "Enabled", value: "enabled", width: 150 },
+            { text: "Added On", value: "createdAt", width: 400 },
+            { text: "Enabled On", value: "enabledAt", width: 400 },
+            { text: "Disabled On", value: "disabledAt", width: 400 }
         ],
         plugins: []
     },
