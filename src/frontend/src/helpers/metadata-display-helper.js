@@ -2,6 +2,7 @@ export function canBeDisplayedAsText(type) {
     switch(type) {
         case 'TEXT':
         case 'NUMBER':
+        case 'FLOAT':
         case 'RANGE':
         case 'BOOLEAN':
         case 'SELECTION':
@@ -16,6 +17,7 @@ export function isSortable(type) {
     switch(type) {
         case 'TEXT':
         case 'NUMBER':
+        case 'FLOAT':
         case 'RANGE':
         case 'BOOLEAN':
         case 'DURATION':
@@ -30,6 +32,7 @@ export function toDisplayValue(type, value) {
         switch(type) {
             case 'TEXT':
             case 'NUMBER':
+            case 'FLOAT':
             case 'RANGE':
                 return value.toString();
             case 'BOOLEAN':
