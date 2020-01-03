@@ -52,7 +52,7 @@ export default {
             return state.visibleMetadatas.length > 0;
         },
         sortableMetadata(state) {
-            return state.visibleMetadatas.filter(metadata => isSortable(metadata.type));
+            return state.metadata.filter(metadata => isSortable(metadata.type));
         }
     },
     actions: {
