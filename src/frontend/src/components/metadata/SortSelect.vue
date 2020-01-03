@@ -1,10 +1,10 @@
 <template>
-    <v-select class="nav-select" :items="sortableProperties" item-text="name" hide-details @change="updateSortingProperty"
+    <v-select class="nav-select" :items="sortableProperties" item-text="name" hide-details @change="updateSortingAndReload"
               v-model="sortingProperty"></v-select>
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
 
     export default {
         name: "SortSelect",
@@ -16,7 +16,12 @@
             }
         },
         methods: {
-            ...mapMutations('search', ['updateSortingProperty'])
+            ...mapMutations('search', ['updateSortingProperty']),
+            ...mapActions('videos', ['search']),
+            updateSortingAndReload(property) {
+                this.updateSortingProperty(property);
+                this.search();
+            }
         }
     }
 </script>

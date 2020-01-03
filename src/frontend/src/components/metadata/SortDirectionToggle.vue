@@ -5,7 +5,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
 
     export default {
         name: "SortDirectionToggle",
@@ -17,9 +17,11 @@
         },
         methods: {
             ...mapMutations('search', ['updateSortingDirection']),
+            ...mapActions('videos', ['search']),
             toggleSortingDirection() {
                 let targetDirection = (this.sortingDirection === 'ASC' ? 'DESC' : 'ASC');
                 this.updateSortingDirection(targetDirection);
+                this.search();
             }
         }
     }
