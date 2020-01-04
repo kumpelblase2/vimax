@@ -3,6 +3,7 @@ package de.eternalwings.vima.plugin
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.PluginInformation
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.plugin.EventType.UPDATE
 import de.eternalwings.vima.process.VideoMetadataUpdater
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.PluginInformationRepository
@@ -67,6 +68,13 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
             createdVideos.forEach { pluginConfig.callHandlerFor(EventType.CREATE, it) }
             videoRepository.saveAll(createdVideos)
         }
+    }
+
+    fun refreshPlugin(name: String) {
+        val plugin = plugins.find { it.first.name == name } ?: return
+        val videos = videoRepository.findAll()
+        videos.forEach { plugin.second.callHandlerFor(UPDATE, it) }
+        videoRepository.saveAll(videos)
     }
 
     private fun registerMetadata(owner: PluginInformation, metadata: Collection<Metadata>) {

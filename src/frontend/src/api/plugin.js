@@ -11,5 +11,9 @@ export default {
 
     enable(name) {
         return axios.post(`/api/plugin/${name}/enable`).then(response => response.data);
+    },
+
+    refresh(name) {
+        return axios.post(`/api/plugin/${name}/refresh`).then(response => response.data);
     }
 };

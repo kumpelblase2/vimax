@@ -27,10 +27,15 @@ class PluginController(private val pluginRepository: PluginInformationRepository
     }
 
     @Transactional
-    @PostMapping("{name}/enable")
+    @PostMapping("/{name}/enable")
     fun enablePlugin(@PathVariable name: String): PluginInformation? {
         pluginManager.enablePlugin(name)
         return pluginRepository.findByName(name)
     }
 
+    @Transactional
+    @PostMapping("/{name}/refresh")
+    fun refreshPlugin(@PathVariable name: String) {
+        pluginManager.refreshPlugin(name)
+    }
 }

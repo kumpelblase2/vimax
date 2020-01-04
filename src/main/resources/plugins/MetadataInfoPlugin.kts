@@ -1,4 +1,5 @@
 import de.eternalwings.vima.domain.SelectionValues
+import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.plugin.registerPlugin
 import net.bramp.ffmpeg.FFprobe
 import org.springframework.data.domain.Sort.Direction.ASC
@@ -20,7 +21,7 @@ registerPlugin("Metadata") {
 
     val ffprobe = bindings["ffprobe"] as FFprobe
 
-    onCreate {
+    val update: (Video) -> Unit = {
         val probe = ffprobe.probe(it.location)
         val videoStream = probe.streams[0]
         it[bitRate] = videoStream.bit_rate.toInt()
@@ -30,6 +31,14 @@ registerPlugin("Metadata") {
             videoStream.height >= 720 -> higherRes
             videoStream.height >= 480 -> lowRes
             else -> SD
+        }
+    }
+
+    onCreate(update)
+
+    onUpdate {
+        if (it[bitRate] == null || it[bitRate] == 0) {
+            update(it)
         }
     }
 }
