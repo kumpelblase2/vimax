@@ -52,9 +52,7 @@ export default {
             state.playQueue.push(videoId);
         },
         clearPlaylist(state) {
-            while(state.playQueue.length > 0) {
-                state.playQueue.pop();
-            }
+            state.playQueue = [];
         }
     },
     actions: {

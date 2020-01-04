@@ -26,9 +26,7 @@ export default {
             }
         },
         clearPlaylists(state) {
-            while(state.playlists.length > 0) {
-                state.playlists.pop();
-            }
+            state.playlists = [];
         }
     },
     actions: {

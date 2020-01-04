@@ -41,9 +41,7 @@ export default {
             state.buckets.splice(index, 1);
         },
         clearBuckets(state) {
-            while(state.buckets.length > 0) {
-                state.buckets.pop();
-            }
+            state.buckets = [];
         },
         updateMetadata(state, metadata) {
             state.selectedMetadata = metadata;

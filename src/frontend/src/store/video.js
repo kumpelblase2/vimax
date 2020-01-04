@@ -77,9 +77,7 @@ export default {
             }
         },
         clearSelectedVideos(state) {
-            while(state.selectedVideoIds.length > 0) {
-                state.selectedVideoIds.pop();
-            }
+            state.selectedVideoIds = [];
         },
         changeThumbnailsInEdit(state, thumbnailIndex) {
             state.editingVideo.selectedThumbnail = thumbnailIndex;
@@ -97,9 +95,7 @@ export default {
             state.editingVideo.thumbnails = thumbnails;
         },
         [CLEAR_VIDEOS](state) {
-            while(state.displayVideoIds.length) {
-                state.displayVideoIds.pop();
-            }
+            state.displayVideoIds = [];
         },
         setLoading(state, value) {
             state.isLoading = value;
