@@ -45,6 +45,13 @@
                 videoWatcher: null
             };
         },
+        watch: {
+            currentVideoThumbnail(newValue) {
+                if(newValue != null && newValue.length > 0) {
+                    this.player.poster(newValue);
+                }
+            }
+        },
         computed: {
             ...mapGetters('player', ['currentVideo', 'videosInQueue', 'hasQueue']),
             ...mapGetters('videos', [
