@@ -19,15 +19,16 @@ used or whatnot. It provided a lot of flexibility when initially developing the 
 
 So how is Vimax gonna fix these?
 
-Vimax is written in a compiled language and will be provided as a single artifact (Jar). Secondly, it uses SQLite to store the 
-data which doesn't require any setup from the user. And there will be no need to edit a config file - it would all be done in
-the client.
+Vimax is written in a compiled language and will be provided as a single artifact (in this case: Jar). Secondly, it uses SQLite to
+ store the data which doesn't require any setup from the user. And there will be no need to edit a config file as it would all
+be done in the client.
 
 ## Requirements
 
-You need FFmpeg installed in the `PATH` of your system.
+You need FFmpeg installed in the `PATH` of your system. FFmpeg is used to generate the thumbnails for the videos and to provide
+ metadata like resolution or bitrate if the `MetadataInfoPlugin` is enabled.
 
-## How to use
+## How to use (developer instructions)
 
 To start the backend you can run:
 
