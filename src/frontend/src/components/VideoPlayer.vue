@@ -1,7 +1,7 @@
 <template>
     <v-flex row xs12 fill-height>
         <v-flex column fill-height>
-            <video ref="videoPlayer" class="video-js" @ended="onVideoFinished" @playing="onVideoStarted"></video>
+            <video ref="videoPlayer" class="video-js vjs-big-play-centered" @ended="onVideoFinished" @playing="onVideoStarted"></video>
         </v-flex>
         <v-flex column xs2 fill-height v-if="hasQueue" style="max-height: 90vh; overflow-y: scroll;">
             <v-list>
