@@ -14,7 +14,7 @@
                                    :metadata-value="myBucketAssignedValue"
                                    @change="updateValue({value: $event, index: bucketIndex})" solo></metadata-value-editor>
 
-            <v-btn @click="$emit('click', $event)">Assign</v-btn>
+            <v-btn @click="selectBucket($event)">Assign</v-btn>
         </v-sheet>
     </v-flex>
 </template>
@@ -49,6 +49,11 @@
             ]),
             deleteCard() {
                 this.deleteBucket(this.bucketIndex);
+            },
+            selectBucket(event) {
+                setTimeout(() => {
+                    this.$emit('click', event);
+                }, 100);
             }
         }
     }
