@@ -7,6 +7,7 @@ import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
@@ -22,6 +23,7 @@ class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
 
     @Async
     fun considerForImport(videoPath: Path, libraryId: Int): CompletableFuture<Unit> {
+        if (!isVideoFile(videoPath)) return CompletableFuture.completedFuture(null)
         if (imported >= maxImport && maxImport > 0) return fail(IllegalStateException("Reached import limit."))
         imported += 1
         val parameters = JobParametersBuilder().addString("path", videoPath.toString())
@@ -35,6 +37,10 @@ class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
         val future = CompletableFuture<T>()
         future.completeExceptionally(throwable)
         return future
+    }
+
+    private fun isVideoFile(possibleVideoFile: Path): Boolean {
+        return Files.isRegularFile(possibleVideoFile) && possibleVideoFile.fileName.toString().endsWith(".mp4")
     }
 
     companion object {

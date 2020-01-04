@@ -25,11 +25,9 @@ class VideoLoader(
 
     fun scanLibraries(libraries: List<Library>) {
         val existingVideos = videoRepository.findAll()
-        val existingPaths = existingVideos.map { Paths.get(it.location) }.toSet()
+        val existingPaths = existingVideos.map { Paths.get(it.location!!) }.toSet()
         libraries.forEach { library ->
-            Files.walk(Paths.get(library.path), 1, FOLLOW_LINKS)
-                .filter { Files.isRegularFile(it) }
-                .filter { isVideoFile(it) }
+            Files.walk(Paths.get(library.path!!), 1, FOLLOW_LINKS)
                 .filter { !existingPaths.contains(it) }
                 .forEach { videoImporter.considerForImport(it, library) }
         }
@@ -37,10 +35,6 @@ class VideoLoader(
 
     fun scanLibrary(library: Library) {
         scanLibraries(listOf(library))
-    }
-
-    private fun isVideoFile(possibleVideoFile: Path): Boolean {
-        return possibleVideoFile.fileName.toString().endsWith(".mp4")
     }
 
 }
