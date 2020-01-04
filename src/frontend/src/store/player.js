@@ -1,12 +1,12 @@
 export default {
     namespaced: true,
     state: {
-        currentlyPlayingVideo: -1,
+        currentlyPlayingVideoId: -1,
         playQueue: []
     },
     getters: {
         currentVideo(state, _getters, _rootState, rootGetters) {
-            return rootGetters['videos/getVideo'](state.currentlyPlayingVideo);
+            return rootGetters['videos/getVideo'](state.currentlyPlayingVideoId);
         },
         nextUp(state, getters, _rootState, rootGetters) {
             const nextId = getters.nextVideoId;
@@ -17,9 +17,9 @@ export default {
             }
         },
         nextVideoId(state) {
-            const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideo);
+            const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideoId);
             const nextIndex = currentIndex + 1;
-            if(nextIndex < state.playQueue.length) {
+            if(currentIndex > -1 && nextIndex < state.playQueue.length) {
                 return state.playQueue[nextIndex];
             } else {
                 return null;
@@ -29,7 +29,7 @@ export default {
             return state.playQueue.length > 0;
         },
         hasVideoPlaying(state) {
-            return state.currentlyPlayingVideo >= 0;
+            return state.currentlyPlayingVideoId >= 0;
         },
         containsVideo(state) {
             return (id) => state.playQueue.includes(id);
@@ -39,8 +39,8 @@ export default {
         }
     },
     mutations: {
-        setCurrentVideo(state, video) {
-            state.currentlyPlayingVideo = video;
+        setCurrentVideo(state, videoId) {
+            state.currentlyPlayingVideoId = videoId;
         },
         removeVideoFromQueue(state, videoIdToRemove) {
             const index = state.playQueue.findIndex(video => video === videoIdToRemove);

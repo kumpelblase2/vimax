@@ -24,7 +24,7 @@
             </v-row>
             <v-row v-if="nextVideo" class="selected-video">
                 <v-flex xs8>
-                    <video-player :video-id="videoId" :autoplay="false" :disable-events="true"></video-player>
+                    <video-player :autoplay="false" :disable-events="true"></video-player>
                 </v-flex>
                 <v-flex xs4 style="overflow-y: scroll">
                     <v-card>
@@ -72,20 +72,18 @@
                 'selectedMetadata',
                 'buckets'
             ]),
-            ...mapGetters('sorting', ['nextVideo', "empty"]),
+            ...mapGetters('sorting', ['nextVideoId', 'nextVideo', "empty"]),
             ...mapGetters('settings/metadata', ['orderedMetadata']),
-            videoId() {
-                return this.nextVideo.id;
-            },
             showDialog() {
                 return this.selectedMetadata == null;
-            },
+            }
         },
         methods: {
             ...mapActions('settings/metadata', ["loadMetadata"]),
-            ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket","assignVideoToNothing","reloadVideo"]),
+            ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket", "assignVideoToNothing", "reloadVideo"]),
             ...mapMutations('sorting', ['updateMetadata', 'deleteBucket', 'clearBuckets']),
             ...mapActions('videos', ['editVideo']),
+            ...mapMutations('player', ['clearPlaylist', 'setCurrentVideo']),
             reset() {
                 this.updateMetadata(null);
                 this.clearBuckets();
@@ -98,7 +96,7 @@
                 }
             },
             edit() {
-                this.editVideo(this.nextVideo.id);
+                this.editVideo(this.nextVideoId);
             }
         },
         watch: {
@@ -118,6 +116,10 @@
                 }
             };
             window.addEventListener('keyup', this.listener);
+
+            this.$store.watch(() => this.nextVideoId, newValue => {
+                this.setCurrentVideo(newValue);
+            })
         },
         destroyed() {
             window.removeEventListener('keyup', this.listener);

@@ -5,14 +5,14 @@ const CLEAR_VIDEOS = 'clearVideos';
 const SKIP_VIDEO = 'skipVideo';
 const SET_SORTABLE_VIDEOS = 'setSortableVideos';
 
+const LOAD_THRESHOLD = 3;
+
 export default {
     namespaced: true,
     state: {
         selectedMetadata: null,
         buckets: [],
-        sortingVideoQueue: [],
-        sortingVideoIds: [],
-        remaining: true
+        sortingVideoIds: []
     },
     getters: {
         bucket: (state) => (index) => {
@@ -24,14 +24,21 @@ export default {
         bucketAssignedValue: (state, getters) => (index) => {
             return getters.bucket(index).value;
         },
-        nextVideo: (state) => {
-            if(state.sortingVideoQueue.length > 0) {
-                return state.sortingVideoQueue[0];
+        nextVideoId: (state) => {
+            if(state.sortingVideoIds.length > 0) {
+                return state.sortingVideoIds[0];
             } else {
                 return null;
             }
         },
-        empty: (state) => !state.remaining && state.sortingVideoQueue.length === 0
+        nextVideo(state, getters, _rootState, rootGetters) {
+            return rootGetters['videos/getVideo'](getters.nextVideoId);
+        },
+        needsToLoadMore(state, getters, _rootState, rootGetters) {
+            if(LOAD_THRESHOLD >= state.sortingVideoIds.length) return false;
+            return !rootGetters['videos/hasVideo'](state.sortingVideoIds[LOAD_THRESHOLD]);
+        },
+        empty: (state) => state.sortingVideoIds.length === 0
     },
     mutations: {
         addBucket(state) {
@@ -49,59 +56,46 @@ export default {
         updateValue(state, { value, index }) {
             state.buckets[index].value = value;
         },
-        [APPEND_VIDEO](state, video) {
-            state.sortingVideoQueue.push(video);
+        [APPEND_VIDEO](state, videoId) {
+            state.sortingVideoIds.push(videoId);
         },
         [CLEAR_VIDEOS](state) {
-            while(state.sortingVideoQueue.length > 0) {
-                state.sortingVideoQueue.shift();
-            }
+            state.sortingVideoIds = [];
         },
         [SKIP_VIDEO](state) {
-            state.sortingVideoQueue.shift();
+            state.sortingVideoIds.shift();
         },
-        [SET_SORTABLE_VIDEOS](state,value) {
-            state.sortingVideoIds = value;
-            state.remaining = value.length > 0;
-        },
-        updateCurrentVideo(state,video) {
-            Object.assign(state.sortingVideoQueue[0], video);
+        [SET_SORTABLE_VIDEOS](state, videoIds) {
+            videoIds.forEach(id => state.sortingVideoIds.push(id));
         }
     },
     actions: {
-        async reloadVideo({state,commit}) {
-            const video = await videos.getVideo(state.sortingVideoQueue[0].id);
-            commit('updateCurrentVideo', video);
-        },
         async loadSortableVideos({ getters, commit, dispatch }) {
             commit(CLEAR_VIDEOS);
             const availableVideoIds = await videos.getSortableVideosFor(getters.selectedMetadata);
             commit(SET_SORTABLE_VIDEOS, availableVideoIds);
             dispatch('loadNextSortableBatch');
         },
-        async loadNextSortableBatch({commit, state}) {
+        async loadNextSortableBatch({ state, dispatch }) {
             const videosToLoad = state.sortingVideoIds.slice(0, 25);
-            const remainingVideoIds = state.sortingVideoIds.slice(25);
-            commit(SET_SORTABLE_VIDEOS, remainingVideoIds);
-            const loadedVideos = await videos.getVideosById(videosToLoad);
-            loadedVideos.forEach(video => commit(APPEND_VIDEO, video));
+            await dispatch('videos/loadVideos', videosToLoad, { root: true });
         },
         async assignVideoToBucket({ getters, commit, state, dispatch }, index) {
             const bucket = getters.bucket(index);
             if(bucket == null) return;
-            const video = state.sortingVideoQueue[0];
+            const video = getters.nextVideo;
             const assigningMetadata = state.selectedMetadata;
             const metadataToUpdate = video.metadata.find(metadata => metadata.definition.id === assigningMetadata.id);
             metadataToUpdate.value.value = bucket.value;
             await videos.saveVideo(video);
             commit(SKIP_VIDEO);
-            if(state.sortingVideoQueue.length === 0) {
+            if(getters.needsToLoadMore) {
                 dispatch('loadNextSortableBatch');
             }
         },
-        async assignVideoToNothing({ commit, dispatch, state }) {
+        async assignVideoToNothing({ commit, dispatch, getters }) {
             commit(SKIP_VIDEO);
-            if(state.sortingVideoQueue.length === 0) {
+            if(getters.needsToLoadMore) {
                 dispatch('loadNextSortableBatch');
             }
         }
