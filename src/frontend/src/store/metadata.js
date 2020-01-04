@@ -99,16 +99,6 @@ export default {
                     commit('hideMetadata', metadata);
                 }
             })
-        },
-        hideAllMetadata({ commit, state }) {
-            state.metadata.forEach(metadata => {
-                commit('hideMetadata', metadata);
-            });
-        },
-        showAllMetadata({ commit, state }) {
-            state.metadata.forEach(metadata => {
-                commit('showMetadata', metadata);
-            });
         }
     },
     mutations: {
@@ -116,7 +106,7 @@ export default {
             const existingIndex = state.visibleMetadatas.findIndex(existing => metadata.id === existing.id);
             if(existingIndex < 0) {
                 state.visibleMetadatas.push(metadata);
-                state.visibleMetadatas.sort((first, second) => first.displayOrder - second.displayOrder)
+                state.visibleMetadatas.sort((first, second) => first.displayOrder - second.displayOrder);
             }
         },
         hideMetadata(state, metadata) {
@@ -141,6 +131,13 @@ export default {
         },
         setEditItem(state, item) {
             state.editingItem = Object.assign({}, item);
+        },
+        hideAllMetadata(state) {
+            state.visibleMetadatas = [];
+        },
+        showAllMetadata(state) {
+            state.visibleMetadatas = state.metadata.slice();
+            state.visibleMetadatas.sort((first, second) => first.displayOrder - second.displayOrder);
         }
     }
 };

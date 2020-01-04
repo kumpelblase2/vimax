@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapActions } from 'vuex';
+    import { mapGetters, mapActions, mapMutations } from 'vuex';
 
     export default {
         name: "MetadataSelection",
@@ -38,7 +38,8 @@
             }
         },
         methods: {
-            ...mapActions('settings/metadata', ['onlyShowMetadata', 'showAllMetadata', 'hideAllMetadata']),
+            ...mapActions('settings/metadata', ['onlyShowMetadata']),
+            ...mapMutations('settings/metadata', ['showAllMetadata', 'hideAllMetadata']),
             toggleAll() {
                 if(this.allSelected) {
                     this.hideAllMetadata();
