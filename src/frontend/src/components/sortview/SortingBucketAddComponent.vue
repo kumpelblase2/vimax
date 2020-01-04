@@ -1,8 +1,8 @@
 <template>
     <v-flex>
         <v-sheet>
-            <v-row justify-center align-center class="sorting-card">
-                <v-btn @click="addBucket">
+            <v-row justify="center" align="center" class="sorting-card">
+                <v-btn @click="addBucket" x-large>
                     <v-icon>add</v-icon>
                 </v-btn>
             </v-row>

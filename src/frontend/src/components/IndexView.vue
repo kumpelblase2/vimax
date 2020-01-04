@@ -1,6 +1,6 @@
 <template>
     <v-container fluid grid-list>
-        <v-row wrap justify-space-around>
+        <v-row wrap justify="space-around">
             <VideoCard v-for="video in displayedVideos" :key="video.id" :video-id="video.id"></VideoCard>
             <MugenScroll v-if="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading" handle-on-mount>
                 <div class="mugen-loading">Loading...</div>

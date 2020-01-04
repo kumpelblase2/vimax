@@ -42,7 +42,7 @@
                 </v-flex>
             </v-row>
         </div>
-        <v-row align-center justify-center v-if="selectedMetadata != null && empty">
+        <v-row align="center" justify="center" v-if="selectedMetadata != null && empty">
             <v-flex class="elevation-2" pt-4 xs-4>
                 <p class="font-italic text-xs-center">No more videos to sort.</p>
             </v-flex>
