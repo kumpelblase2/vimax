@@ -30,6 +30,7 @@ class VideoProcess(private val videoRepository: VideoRepository,
 
     fun searchFor(query: String) = videoSearcher.search(query)
 
+    @Transactional
     fun deleteVideoAt(path: Path) {
         val video = videoRepository.findVideoByLocation(path.toString()) ?: return
         videoRepository.delete(video)
