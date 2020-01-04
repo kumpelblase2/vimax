@@ -16,7 +16,7 @@
                 <v-flex xs12>
                     <v-btn block @click="reset">Reset</v-btn>
                 </v-flex>
-                <v-flex v-if="buckets.length < 8" xs3>
+                <v-flex v-if="buckets.length < 8" xs3 class="pa-2">
                     <sorting-bucket-add-component></sorting-bucket-add-component>
                 </v-flex>
                 <sorting-bucket-component v-bind:key="index" v-for="(bucket,index) in buckets"

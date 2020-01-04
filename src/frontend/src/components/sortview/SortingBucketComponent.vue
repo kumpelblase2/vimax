@@ -1,6 +1,6 @@
 <template>
-    <v-flex xs3>
-        <v-sheet class="sorting-card">
+    <v-flex xs3 class="pa-2">
+        <v-sheet class="sorting-card px-3 py-1">
             <v-row>
                 <v-flex pt-2 pl-2>
                     <p class="title">{{bucketIndex + 1}}</p>
@@ -62,5 +62,9 @@
 <style scoped>
     .sorting-card {
         min-height: 200px;
+    }
+
+    .row {
+        margin: 0 !important;
     }
 </style>
