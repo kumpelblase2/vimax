@@ -11,6 +11,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
@@ -37,6 +38,7 @@ class LibraryPathWatcher(private val videoImporter: VideoImporter,
 
     fun startWatching(library: Library) {
         val path = Paths.get(library.path!!)
+        if (!Files.exists(path) || !Files.isDirectory(path)) return
         val registration = path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE)
         watches = watches + LibraryWatch(library.id!!, path, registration)
     }
@@ -68,8 +70,10 @@ class LibraryPathWatcher(private val videoImporter: VideoImporter,
                 val file = event.context() as Path
                 val absoluteFile = watchPair.path.resolve(file)
                 if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+                    LOGGER.debug("Noticed new file at $absoluteFile. Considering for import.")
                     videoImporter.considerForImport(absoluteFile, watchPair.libraryId)
                 } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+                    LOGGER.debug("File at $absoluteFile was deleted. Removing from db.")
                     videoProcess.deleteVideoAt(absoluteFile)
                 }
             }
