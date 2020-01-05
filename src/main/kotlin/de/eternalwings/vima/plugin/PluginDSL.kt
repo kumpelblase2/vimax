@@ -40,7 +40,7 @@ class PluginConfig internal constructor(val pluginName: String) {
     })
 
     fun taglist(name: String, order: Direction, defaultValue: List<String> = emptyList()) =
-            metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = emptyList() })
+            metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue })
 
     fun selection(name: String, order: Direction, values: List<SelectionValues>, defaultValue: SelectionValues) =
             metadata(name, order, SelectionMetadataOptions(values).also { it.defaultValue = defaultValue })
