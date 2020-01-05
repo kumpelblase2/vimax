@@ -6,7 +6,7 @@
         <v-text-field v-else-if="metadataDefinition.type === 'TEXT' && !metadataDefinition.options.suggest"
                       :label="metadataDefinition.name" :value="metadataValue" @change="update" :solo="solo"></v-text-field>
         <v-switch v-else-if="metadataDefinition.type === 'BOOLEAN'" @change="update"
-                  :label="metadataDefinition.name" :value="metadataValue" :solo="solo"></v-switch>
+                  :label="metadataDefinition.name" :input-value="metadataValue" :solo="solo"></v-switch>
         <v-text-field v-else-if="metadataDefinition.type === 'NUMBER'" type="number"
                       :label="metadataDefinition.name" :value="metadataValue"
                       @change="updateNumber" :solo="solo"></v-text-field>
