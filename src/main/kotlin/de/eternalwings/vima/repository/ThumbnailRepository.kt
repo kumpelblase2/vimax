@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ThumbnailRepository : JpaRepository<Thumbnail, Long> {
+interface ThumbnailRepository : JpaRepository<Thumbnail, Int> {
     @Modifying
     @Query("INSERT INTO thumbnail(location, video_id) VALUES(?1, ?2)", nativeQuery = true)
     fun insertThumbnailForVideo(location: String, videoId: Int)
