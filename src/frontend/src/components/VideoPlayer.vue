@@ -50,6 +50,15 @@
                 if(newValue != null && newValue.length > 0) {
                     this.player.poster(newValue);
                 }
+            },
+            currentVideoStream(newValue) {
+                if(newValue != null && newValue.length > 0) {
+                    this.player.src({
+                        src: newValue,
+                        type: 'video/mp4'
+                    });
+                    this.player.thumbnails().src(newValue);
+                }
             }
         },
         computed: {
