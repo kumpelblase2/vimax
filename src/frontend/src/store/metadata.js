@@ -61,10 +61,7 @@ export default {
     actions: {
         async loadMetadata({ commit }) {
             const metadatas = await metadataApi.getMetadata();
-            metadatas.forEach(metadata => {
-                commit('addOrUpdateMetadata', metadata);
-                commit('showMetadata', metadata);
-            });
+            commit('addAll', metadatas);
         },
         async saveMetadata({ commit }, metadata) {
             metadata.options.type = metadata.type;
@@ -125,6 +122,16 @@ export default {
             } else {
                 state.metadata.push(metadata);
             }
+        },
+        addAll(state,metadatas) {
+            metadatas.forEach(metadata => {
+                const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
+                if(existingIndex >= 0) {
+                    Object.assign(state.metadata[existingIndex], metadata);
+                } else {
+                    state.metadata.push(metadata);
+                }
+            });
         },
         removeMetadata(state, metadata) {
             const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);

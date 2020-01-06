@@ -58,6 +58,9 @@ export default {
                 state.videos.push(video);
             }
         },
+        addVideos(state, videos) {
+            state.videos.push(...videos);
+        },
         [SET_EDITING_VIDEO](state, videoId) {
             if(videoId == null) {
                 state.editingVideo = null;
@@ -108,7 +111,7 @@ export default {
             state.hasMoreVideos = true;
         },
         addDisplayVideos(state, videoIds) {
-            videoIds.forEach(id => state.displayVideoIds.push(id));
+            state.displayVideoIds.push(...videoIds);
         },
         noMoreVideos(state) {
             state.hasMoreVideos = false;
@@ -133,11 +136,14 @@ export default {
             }
             commit('setLoading', false);
         },
-        async editVideo({ commit }, videoId) {
-            commit(SET_EDITING_VIDEO, videoId);
-            if(videoId != null) {
-                const video = await videoApi.getVideo(videoId);
-                commit(APPEND_VIDEO, video);
+        async editVideo({ commit,getters, dispatch }, videoId) {
+            if(videoId == null) {
+                commit(SET_EDITING_VIDEO, null);
+            } else {
+                if(!getters.hasVideo(videoId)) {
+                    await dispatch('reloadVideo', videoId);
+                }
+                commit(SET_EDITING_VIDEO, videoId);
             }
         },
         async saveEditingVideo({ commit, state }) {
@@ -168,9 +174,7 @@ export default {
             const videosToLoad = videoIds.filter(videoId => !getters.hasVideo(videoId));
             if(videosToLoad.length > 0) {
                 const videos = await videoApi.getVideosById(videosToLoad);
-                videos.forEach(video => {
-                    commit(APPEND_VIDEO, video);
-                });
+                commit('addVideos', videos);
             }
         }
     }
