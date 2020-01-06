@@ -1,10 +1,12 @@
 package de.eternalwings.vima.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import de.eternalwings.vima.sqlite.SQLiteMetadataValueJsonConverter
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Column
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.FetchType.LAZY
 import javax.persistence.GeneratedValue
@@ -18,27 +20,24 @@ data class Video(
         @field:Column(updatable = false)
         var location: String? = null,
         var name: String? = null,
-        @ManyToOne
+        @field:ManyToOne(optional = false)
         var library: Library? = null,
-        @OneToMany(cascade = [ALL], mappedBy = "video")
-        var metadata: MutableList<MetadataValueContainer>? = mutableListOf(),
-        @OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
+        @Suppress("JpaAttributeTypeInspection")
+        @field:Column(columnDefinition = "text", name = "metadata_values")
+        @field:Convert(converter = SQLiteMetadataValueJsonConverter::class)
+        var metadata: MutableMap<Int, MetadataValue<*>>? = null,
+        @field:OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
         var thumbnails: MutableList<Thumbnail> = mutableListOf(),
         var selectedThumbnail: Int? = 0
 ) : BasePersistable<Int>() {
 
-    fun addMetadataValue(value: MetadataValueContainer) {
-        metadata?.add(value)
-        value.video = this
+    fun addMetadataValue(metadataId: Int, value: MetadataValue<*>) {
+        metadata?.put(metadataId, value)
     }
 
-    fun hasMetadata(metadataToCheck: Metadata) = metadata?.any { existing ->
-        existing.definition?.id == metadataToCheck.id
-    } ?: false
+    fun hasMetadata(metadataToCheck: Metadata) = hasMetadata(metadataToCheck.id!!)
 
-    fun hasMetadata(metadataToCheck: String) = metadata?.any { existing ->
-        existing.definition?.name == metadataToCheck
-    } ?: false
+    fun hasMetadata(metadataId: Int) = metadata?.containsKey(metadataId) ?: false
 }
 
 @Entity

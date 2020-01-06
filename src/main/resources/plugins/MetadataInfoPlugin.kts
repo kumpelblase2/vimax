@@ -1,7 +1,6 @@
 import de.eternalwings.vima.domain.SelectionValues
-import de.eternalwings.vima.domain.Video
-import de.eternalwings.vima.plugin.registerPlugin
-import net.bramp.ffmpeg.FFprobe
+import de.eternalwings.vima.plugin.PluginRegistration
+import de.eternalwings.vima.plugin.VideoContainer
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.domain.Sort.Direction.DESC
 import java.time.Duration
@@ -13,15 +12,15 @@ val lowRes = SelectionValues("480p")
 val higherRes = SelectionValues("720p")
 val highestRes = SelectionValues("1080p")
 
-registerPlugin("Metadata") {
+PluginRegistration.register("Metadata") {
     val allResolutions = listOf(undefinedResolution, SD, lowRes, higherRes, highestRes)
     val resolution = selection("Resolution", ASC, allResolutions, undefinedResolution)
     val bitRate = int("Bitrate", DESC, 0)
     val length = duration("Length", DESC, Duration.ZERO)
 
-    val ffprobe = bindings["ffprobe"] as FFprobe
+    val ffprobe = context.fFprobe
 
-    val update: (Video) -> Unit = {
+    val update: (VideoContainer) -> Unit = {
         val probe = ffprobe.probe(it.location)
         val videoStream = probe.streams[0]
         it[bitRate] = videoStream.bit_rate.toInt()

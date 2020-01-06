@@ -8,20 +8,20 @@ import javax.persistence.AttributeConverter
 import javax.persistence.Converter
 
 @Converter(autoApply = true)
-class SQLiteMetadataValueJsonConverter : AttributeConverter<MetadataValue<*>, String> {
+class SQLiteMetadataValueJsonConverter : AttributeConverter<Map<Int,MetadataValue<*>>, String> {
     private val objectMapper = ObjectMapper()
-    private val type: TypeReference<MetadataValue<*>> = object : TypeReference<MetadataValue<*>>() {}
+    private val type: TypeReference<Map<Int, MetadataValue<*>>> = object : TypeReference<Map<Int, MetadataValue<*>>>() {}
 
     init {
         objectMapper.findAndRegisterModules()
     }
 
-    override fun convertToDatabaseColumn(attribute: MetadataValue<*>?): String {
+    override fun convertToDatabaseColumn(attribute: Map<Int, MetadataValue<*>>?): String {
         if (attribute == null) return ""
-        return objectMapper.writeValueAsString(attribute)
+        return objectMapper.writer().forType(type).writeValueAsString(attribute)
     }
 
-    override fun convertToEntityAttribute(dbData: String?): MetadataValue<*> {
+    override fun convertToEntityAttribute(dbData: String?): Map<Int, MetadataValue<*>> {
         if (StringUtils.isEmpty(dbData)) {
             throw IllegalStateException()
         }

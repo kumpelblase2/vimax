@@ -11,7 +11,6 @@ import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.ThumbnailRepository
 import de.eternalwings.vima.repository.VideoRepository
-import org.apache.commons.io.IOUtils
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
@@ -20,7 +19,6 @@ import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.http.HttpStatus.OK
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.nio.file.Files
 import java.util.Collections
 import javax.persistence.EntityNotFoundException
+import javax.transaction.Transactional
 
 @RestController
 @RequestMapping("/api")
@@ -43,6 +41,7 @@ class VideoController(private val videoRepository: VideoRepository,
                       private val pluginManager: PluginManager) {
 
     private val videoLocationCache: Cache<Int, String> = CacheBuilder.newBuilder().maximumSize(100).build()
+    private val thumbnailLocationCache: Cache<Int, String> = CacheBuilder.newBuilder().maximumSize(100).build()
 
     @GetMapping("/videos")
     fun getVideos(@RequestParam("query", required = false, defaultValue = "") query: String,
@@ -61,7 +60,7 @@ class VideoController(private val videoRepository: VideoRepository,
             videoRepository.findVideoIdsSortedByOwnProperty(videoIds, paging)
         } else {
             val metadata = metadataRepository.findByName(sortProperty) ?: throw EntityNotFoundException()
-            return when(sortDirection ?: ASC) {
+            return when (sortDirection ?: ASC) {
                 ASC -> videoRepository.findVideoIdsSortedByAsc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
                 DESC -> videoRepository.findVideoIdsSortedByDesc(videoIds, metadata.id!!, paging.offset.toInt(), paging.pageSize)
             }
@@ -104,28 +103,27 @@ class VideoController(private val videoRepository: VideoRepository,
         return ResponseEntity.ok(FileSystemResource(thumbnail.locationPath))
     }
 
+    @Transactional
     @PutMapping("/video/{id}")
     fun updateVideo(@RequestBody newVideo: Video, @PathVariable("id") id: Int): Video {
-        return videoRepository.findById(id).map { oldVideo ->
-            oldVideo.selectedThumbnail = newVideo.selectedThumbnail
-            oldVideo.name = newVideo.name
-            newVideo.metadata?.forEach { metadataValue ->
-                if(metadataValue.definition?.isSystemSpecified == false) { // Only update non-system metadata
-                    // I can't do the following without those ugly casts. These two values _should_ be of the
-                    // same type. And if they aren't we should fail because something is horribly wrong.
-                    val existingValue: MetadataValue<Any> = oldVideo.metadata?.find { existing ->
-                        existing.definition?.id == metadataValue.definition?.id
-                    }?.value as? MetadataValue<Any> ?: return@forEach
-                    existingValue.copyFrom(metadataValue.value as MetadataValue<Any>)
-                }
+        val existing = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
+        val metadata = metadataRepository.findAll()
+        existing.selectedThumbnail = newVideo.selectedThumbnail
+        existing.name = newVideo.name
+        newVideo.metadata?.forEach { metadataId, value ->
+            val definition = metadata.find { it.id == metadataId } ?: return@forEach
+            if (!definition.isSystemSpecified) { // Only update non-system metadata
+                val existingValue = existing.metadata?.get(metadataId) ?: throw IllegalStateException("Missing metadata")
+                @Suppress("UNCHECKED_CAST") // Can't do it without the cast :(
+                (existingValue as MetadataValue<Any>).value = value.value
             }
-
-            pluginManager.callEvent(UPDATE, oldVideo)
-
-            videoRepository.save(oldVideo)
-        }.orElseThrow {
-            EntityNotFoundException()
         }
+
+        existing.metadata!!.entries.removeIf { entry -> metadata.none { it.id == entry.key } }
+
+        pluginManager.callEvent(UPDATE, existing)
+
+        return videoRepository.save(existing)
     }
 
     @PostMapping("/video/{id}/refresh")

@@ -12,25 +12,28 @@ import javax.persistence.Enumerated
 import javax.persistence.FetchType.LAZY
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 @Entity
 data class Metadata(
-        @NotBlank
+        @field:NotBlank
+        @field:Column(updatable = false)
         var name: String? = null,
-        @NotBlank
+        @field:NotNull
+        @field:Column(updatable = false)
         var type: MetadataType? = null,
-        @Enumerated(STRING)
+        @field:Enumerated(STRING)
         var ordering: Direction = ASC,
         var readOnly: Boolean = false,
-        @ManyToOne(fetch = LAZY)
+        @field:ManyToOne(fetch = LAZY)
         var owner: PluginInformation? = null,
-        @Column(columnDefinition = "text")
-        @Convert(converter = SQLiteMetadataOptionsJsonConverter::class)
+        @field:Column(columnDefinition = "text")
+        @field:Convert(converter = SQLiteMetadataOptionsJsonConverter::class)
         var options: MetadataOptions<*>? = null,
         var displayOrder: Int = 0
 ) : BasePersistable<Int>() {
-    fun toValue(): MetadataValueContainer {
-        return MetadataValueContainer(null, this, options!!.toValue())
+    fun toValue(): MetadataValue<*> {
+        return options!!.toValue()
     }
 
     val isSystemSpecified: Boolean

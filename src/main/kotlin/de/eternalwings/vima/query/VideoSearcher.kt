@@ -18,7 +18,10 @@ class VideoSearcher(@PersistenceContext private val entityManager: EntityManager
         }
 
         val finalQuery = this.databaseQueryCreator.createQueryFrom(userQueryAst)
-        val dbQuery = entityManager.createNativeQuery(finalQuery)
+        val dbQuery = entityManager.createNativeQuery(finalQuery.first)
+        finalQuery.second.parameterMap.forEach {
+            dbQuery.setParameter(it.first, it.second)
+        }
 
         return (dbQuery.resultStream as Stream<Int>).toList()
     }

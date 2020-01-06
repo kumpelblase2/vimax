@@ -5,6 +5,7 @@ import de.eternalwings.vima.domain.Video
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -14,30 +15,46 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun findAllByOrderByCreationTimeDesc(pageable: Pageable): Page<Video>
     fun findByLocation(location: String): Video?
     fun findByLibrary(library: Library): List<Video>
-    @Query("SELECT DISTINCT v.id FROM video v WHERE " +
-            "NOT EXISTS(SELECT * FROM video_metadata vm " +
-            "WHERE vm.video_id = v.id AND vm.definition_id = ?1 AND vm.value IS NOT NULL " +
-            "AND json_extract(vm.value, '$.value') IS NOT NULL) ORDER BY v.name",
+    @Query("SELECT DISTINCT v.id FROM video v WHERE json_extract(v.metadata_values, '$.' || ?1 || '.value') IS NULL ORDER BY v.name",
             nativeQuery = true)
     fun findVideosWithMissingMetadata(metadataId: Int): List<Int>
 
     @Query("SELECT v.id FROM Video v")
-    fun getAllIds() : List<Int>
+    fun getAllIds(): List<Int>
 
     @Query("SELECT v.id FROM Video v WHERE v.id in ?1")
     fun findVideoIdsSortedByOwnProperty(ids: Collection<Int>, pageable: Pageable): List<Int>
 
-    @Query("SELECT v.id FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
-            "WHERE v.id IN ?1 ORDER BY json_extract(vm.value, '$.value') ASC LIMIT ?4 OFFSET ?3",
+    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') ASC LIMIT ?4 OFFSET ?3",
             nativeQuery = true)
     fun findVideoIdsSortedByAsc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
 
-    @Query("SELECT v.id FROM video v LEFT JOIN video_metadata vm ON vm.video_id = v.id AND vm.definition_id = ?2 " +
-            "WHERE v.id IN ?1 ORDER BY json_extract(vm.value, '$.value') DESC LIMIT ?4 OFFSET ?3",
+    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') DESC LIMIT ?4 OFFSET ?3",
             nativeQuery = true)
     fun findVideoIdsSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
 
     fun findVideosByUpdateTimeAfter(timestamp: LocalDateTime): List<Video>
 
     fun findVideoByLocation(location: String): Video?
+
+    @Query("SELECT DISTINCT json_extract(v.metadata_values, '$.' || ?1 || '.value') AS value FROM video v WHERE value IS NOT NULL",
+            nativeQuery = true)
+    fun loadStringValuesFor(metadataId: Int): MutableSet<String>
+
+    @Query("SELECT DISTINCT json_each.value AS value FROM video v, json_each(v.metadata_values, '$.' || ?1 || '.value') WHERE value IS NOT NULL",
+            nativeQuery = true)
+    fun loadTagValuesFor(metadataId: Int): MutableSet<String>
+
+    @Query("SELECT DISTINCT v.id FROM video v WHERE json_extract(v.metadata_values, '$.' || ?1 || ?3) = ?2",
+            nativeQuery = true)
+    fun findVideosWithMetadataValue(metadataId: Int, metadataValue: Any?, path: String): List<Int>
+
+    @Modifying
+    @Query("UPDATE video SET metadata_values = json_insert(metadata_values, '$.' || ?1, json_object('meta-type', json_extract((SELECT m.options FROM metadata m WHERE m.id = ?1), '$.type'), 'value', json_extract((SELECT m.options FROM metadata m WHERE m.id = ?1), '$.defaultValue')))",
+            nativeQuery = true)
+    fun addDefaultValueForMetadataIfNotExist(metadataId: Int)
+
+    @Modifying
+    @Query("UPDATE video SET metadata_values = json_remove(metadata_values, '$.' || ?1)", nativeQuery = true)
+    fun removeMetadataValueOf(metadataId: Int)
 }

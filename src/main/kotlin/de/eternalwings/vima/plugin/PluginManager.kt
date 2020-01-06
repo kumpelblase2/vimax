@@ -1,11 +1,9 @@
 package de.eternalwings.vima.plugin
 
-import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.PluginInformation
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.plugin.EventType.UPDATE
-import de.eternalwings.vima.process.VideoMetadataUpdater
-import de.eternalwings.vima.repository.MetadataRepository
+import de.eternalwings.vima.process.MetadataProcess
 import de.eternalwings.vima.repository.PluginInformationRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.slf4j.LoggerFactory
@@ -14,30 +12,39 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Component
-class PluginManager(private val pluginRepository: PluginInformationRepository, private val metadataRepository: MetadataRepository,
-                    private val videoMetadataUpdater: VideoMetadataUpdater, private val videoRepository: VideoRepository) {
+class PluginManager(private val pluginRepository: PluginInformationRepository,
+                    private val videoRepository: VideoRepository,
+                    private val metadataProcess: MetadataProcess,
+                    pluginBindings: PluginBindings) {
     private var plugins: List<Pair<PluginInformation, PluginConfig>> = emptyList()
+
+    init {
+        PluginRegistration.setup(this, metadataProcess, pluginBindings)
+    }
 
     private val enabledPlugins: List<Pair<PluginInformation, PluginConfig>>
         get() = plugins.filter { it.first.enabled }
 
-    fun registerPlugin(pluginConfig: PluginConfig) {
-        if (getPlugin(pluginConfig.pluginName) != null) throw PluginAlreadyRegisteredException(pluginConfig.pluginName)
-        val plugin = pluginRepository.findByName(pluginConfig.pluginName) ?: createPlugin(pluginConfig)
-        registerMetadata(plugin, pluginConfig.allMetadata)
-
-        plugins = plugins + (plugin.copy() to pluginConfig)
-        LOGGER.debug("Registered plugin " + pluginConfig.pluginName)
+    fun getOrCreatePlugin(name: String): PluginInformation {
+        return pluginRepository.findByName(name) ?: createPlugin(name)
     }
 
-    private fun createPlugin(pluginConfig: PluginConfig): PluginInformation {
-        return pluginRepository.save(PluginInformation(pluginConfig.pluginName))
+    fun addPlugin(information: PluginInformation, pluginConfig: PluginConfig) {
+        if (plugins.any { it.first.name == information.name }) throw PluginAlreadyRegisteredException(information.name)
+        LOGGER.info("Loaded plugin ${information.name}")
+        plugins = plugins + (information to pluginConfig)
     }
 
-    fun getPlugin(name: String) = plugins.find { it.second.pluginName == name }
+    private fun createPlugin(name: String): PluginInformation {
+        return pluginRepository.save(PluginInformation(name))
+    }
 
     fun callEvent(eventType: EventType, video: Video) {
-        enabledPlugins.forEach { it.second.callHandlerFor(eventType, video) }
+        callEvent(eventType, listOf(video))
+    }
+
+    fun callEvent(eventType: EventType, videos: List<Video>) {
+        enabledPlugins.forEach { it.second.callHandlerFor(eventType, videos) }
     }
 
     fun disablePlugin(name: String) {
@@ -60,8 +67,8 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
 
     private fun updateMissedVideos(pluginConfig: PluginConfig, afterTime: LocalDateTime) {
         val missedVideos = videoRepository.findVideosByUpdateTimeAfter(afterTime)
-        if (pluginConfig.hasHandlerFor(EventType.UPDATE)) {
-            missedVideos.forEach { pluginConfig.callHandlerFor(EventType.UPDATE, it) }
+        if (pluginConfig.hasHandlerFor(UPDATE)) {
+            missedVideos.forEach { pluginConfig.callHandlerFor(UPDATE, it) }
             videoRepository.saveAll(missedVideos)
         } else {
             val createdVideos = missedVideos.filter { it.creationTime!! > afterTime }
@@ -71,32 +78,17 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
     }
 
     fun refreshPlugin(name: String) {
+        LOGGER.info("Refreshing videos for plugin $name...")
         val plugin = plugins.find { it.first.name == name } ?: return
+        metadataProcess.enableCache(true)
         val videos = videoRepository.findAll()
-        videos.forEach { plugin.second.callHandlerFor(UPDATE, it) }
+        val chunked = videos.chunked(100)
+        chunked.forEachIndexed { index, chunk ->
+            plugin.second.callHandlerFor(UPDATE, chunk)
+            LOGGER.info("Refresh: ${index * 100 + chunk.size}/${videos.size} done.")
+        }
         videoRepository.saveAll(videos)
-    }
-
-    private fun registerMetadata(owner: PluginInformation, metadata: Collection<Metadata>) {
-        val existingMetadata = metadataRepository.findAll()
-        val newMetadata = metadata.filter { new -> existingMetadata.none { it.name == new.name } }
-        val oldMetadata = existingMetadata.filter { old -> metadata.any { it.name == old.name } }
-        val withoutOwner = oldMetadata.filter { it.owner == null }
-        if (withoutOwner.isNotEmpty()) {
-            withoutOwner.forEach { it.owner = owner }
-            metadataRepository.saveAll(withoutOwner)
-        }
-
-        if (newMetadata.isNotEmpty()) {
-            var highestDisplayOrder = metadataRepository.getHighestDisplayOrder() ?: 0
-            for (newMetadatum in newMetadata) {
-                highestDisplayOrder += 1
-                newMetadatum.displayOrder = highestDisplayOrder
-                newMetadatum.owner = owner
-            }
-            val saved = metadataRepository.saveAll(newMetadata)
-            saved.forEach { videoMetadataUpdater.addMetadata(it) }
-        }
+        metadataProcess.enableCache(false)
     }
 
     @Transactional
@@ -113,5 +105,5 @@ class PluginManager(private val pluginRepository: PluginInformationRepository, p
     }
 }
 
-data class PluginAlreadyRegisteredException(val name: String) :
+data class PluginAlreadyRegisteredException(val name: String?) :
         IllegalArgumentException("Plugin with name $name is already registered.")

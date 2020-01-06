@@ -15,11 +15,10 @@
                         </v-col>
                     </v-row>
                 </v-item-group>
-                <div v-for="(metadata,index) in video.metadata" :key="index">
-                    <metadata-value-editor v-if="metadata.definition.owner === null"
-                                           :metadata-definition="metadata.definition"
-                                           :metadata-value="metadata.value.value"
-                                           @change="handleMetadataUpdate(index, $event)"></metadata-value-editor>
+                <div v-for="metadata in editableMetadata" :key="metadata.id">
+                    <metadata-value-editor :metadata-definition="metadata"
+                                           :metadata-value="video.metadata[metadata.id].value"
+                                           @change="handleMetadataUpdate(metadata.id, $event)"></metadata-value-editor>
                 </div>
             </v-card-text>
             <v-divider></v-divider>
@@ -34,16 +33,15 @@
 </template>
 
 <script>
-    import { mapActions, mapState } from "vuex";
+    import { mapActions, mapGetters, mapState } from "vuex";
     import MetadataValueEditor from "../metadata/MetadataValueEditor";
 
     export default {
         name: "VideoEditDialog",
         components: { MetadataValueEditor },
         computed: {
-            ...mapState('videos', [
-                'editingVideo'
-            ]),
+            ...mapState('videos', ['editingVideo']),
+            ...mapGetters('settings/metadata', ['editableMetadata']),
             dialog() {
                 return this.editingVideo != null;
             },
@@ -72,8 +70,8 @@
             updateSelectedThumbnail(thumbnailIndex) {
                 this.changeSelectedThumbnail(thumbnailIndex);
             },
-            handleMetadataUpdate(index, event) {
-                this.setEditingMetadataValue({index, value: event});
+            handleMetadataUpdate(id, event) {
+                this.setEditingMetadataValue({ id, value: event });
             }
         }
     }

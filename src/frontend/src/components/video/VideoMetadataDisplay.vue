@@ -18,8 +18,7 @@
     import { mapGetters } from "vuex";
 
     function valueOrDefault(metadataValue, definition) {
-        return metadataValue != null && metadataValue.value != null && metadataValue.value.value != null ?
-            metadataValue.value.value : definition.options.defaultValue;
+        return metadataValue != null && metadataValue.value != null ? metadataValue.value : definition.options.defaultValue;
     }
 
     export default {
@@ -35,7 +34,7 @@
             metadatas() {
                 return this.visibleMetadata.map(definition => {
                     return {
-                        value: valueOrDefault(this.videoMetadata.find(metadata => metadata.definition.id === definition.id), definition),
+                        value: valueOrDefault(this.videoMetadata[definition.id], definition),
                         definition
                     }
                 });

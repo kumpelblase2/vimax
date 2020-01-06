@@ -6,9 +6,9 @@ import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.SelectionMetadataOptions
-import de.eternalwings.vima.process.VideoMetadataUpdater
-import de.eternalwings.vima.repository.MetadataContainerRepository
+import de.eternalwings.vima.process.MetadataProcess
 import de.eternalwings.vima.repository.MetadataRepository
+import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,25 +24,16 @@ import kotlin.math.min
 @RestController
 @RequestMapping("/api")
 class MetadataController(private val metadataRepository: MetadataRepository,
-                         private val metadataValueRepository: MetadataContainerRepository,
-                         private val videoMetadataUpdater: VideoMetadataUpdater) {
+                         private val videoRepository: VideoRepository,
+                         private val metadataProcess: MetadataProcess) {
     @GetMapping("/metadata")
     fun getAll(): List<Metadata> = metadataRepository.findAll()
 
     @PostMapping("/metadata")
     @Transactional
     fun createOrUpdateMetadata(@RequestBody metadata: Metadata): Metadata {
-        val isNew = metadata.isNew
-        if (isNew) {
-            val existingSequenceNumber = metadataRepository.getHighestDisplayOrder() ?: 0
-            metadata.displayOrder = existingSequenceNumber + 1
-        }
-
-        val savedMetadata = metadataRepository.save(metadata)
-        if (isNew) {
-            videoMetadataUpdater.addMetadata(savedMetadata)
-        }
-        return savedMetadata
+        if(metadata.isSystemSpecified) throw IllegalArgumentException("Cannot update system metadata.")
+        return metadataProcess.createOrUpdate(metadata)
     }
 
     @DeleteMapping("/metadata/{id}")
@@ -51,6 +42,7 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         val metadata = this.metadataRepository.getOne(metadataId)
         if (metadata.isSystemSpecified) throw IllegalArgumentException("Metadata is system specified metadata.")
         this.metadataRepository.delete(metadata)
+        this.videoRepository.removeMetadataValueOf(metadataId)
         return metadataId
     }
 
@@ -60,8 +52,8 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         return when (metadata.type) {
             BOOLEAN -> setOf("true", "false")
             SELECTION -> (metadata.options as SelectionMetadataOptions).values.mapNotNull { it.name }.toSet()
-            TAGLIST -> metadataValueRepository.getTagValuesFor(metadataId)
-            TEXT -> metadataValueRepository.getStringValuesFor(metadataId)
+            TAGLIST -> videoRepository.loadTagValuesFor(metadataId)
+            TEXT -> videoRepository.loadStringValuesFor(metadataId)
             else -> emptySet()
         }
     }

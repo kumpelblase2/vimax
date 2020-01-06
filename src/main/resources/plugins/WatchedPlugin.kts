@@ -1,7 +1,7 @@
-import de.eternalwings.vima.plugin.registerPlugin
+import de.eternalwings.vima.plugin.PluginRegistration
 import org.springframework.data.domain.Sort.Direction.DESC
 
-registerPlugin("Watched") {
+PluginRegistration.register("Watched") {
     val watchedMetadata = boolean("Watched", DESC, false)
 
     onStartWatching { video ->

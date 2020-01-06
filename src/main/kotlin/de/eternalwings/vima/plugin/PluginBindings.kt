@@ -9,13 +9,8 @@ import javax.script.SimpleBindings
 @Component
 class PluginBindings(private val ffmpeg: FFmpeg, private val ffprobe: FFprobe) {
 
-    fun createBindings(): Bindings {
-        val bindings = SimpleBindings()
-
-        bindings["ffmpeg"] = ffmpeg
-        bindings["ffprobe"] = ffprobe
-
-        return bindings
+    fun createBindings(): PluginExecutionContext {
+        return PluginExecutionContext(ffmpeg, ffprobe)
     }
 
 }

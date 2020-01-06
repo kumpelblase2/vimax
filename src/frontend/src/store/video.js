@@ -82,8 +82,8 @@ export default {
         changeThumbnailsInEdit(state, thumbnailIndex) {
             state.editingVideo.selectedThumbnail = thumbnailIndex;
         },
-        setEditingMetadataValue(state, { index, value }) {
-            state.editingVideo.metadata[index].value.value = value;
+        setEditingMetadataValue(state, { id, value }) {
+            state.editingVideo.metadata[id].value = value;
         },
         updateThumbnail(state, { videoId, thumbnails }) {
             const video = state.videos.find(video => video.id === videoId);
@@ -147,8 +147,8 @@ export default {
         changeSelectedThumbnail({ commit }, thumbnailIndex) {
             commit('changeThumbnailsInEdit', thumbnailIndex);
         },
-        setEditingMetadataValue({ commit }, { index, value }) {
-            commit('setEditingMetadataValue', { index, value });
+        setEditingMetadataValue({ commit }, { id, value }) {
+            commit('setEditingMetadataValue', { id, value });
         },
         async refreshThumbnails({ commit, state }) {
             const newThumbnails = await videoApi.refreshThumbnails(state.editingVideo);

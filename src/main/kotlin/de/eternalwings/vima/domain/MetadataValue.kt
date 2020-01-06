@@ -38,10 +38,6 @@ sealed class MetadataValue<T> {
         return true
     }
 
-    fun copyFrom(other: MetadataValue<T>) {
-        this.value = other.value
-    }
-
     override fun hashCode(): Int {
         return value.hashCode()
     }

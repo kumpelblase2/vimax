@@ -10,4 +10,7 @@ interface MetadataRepository : JpaRepository<Metadata,Int> {
     @Query("SELECT max(m.displayOrder) FROM Metadata m")
     fun getHighestDisplayOrder(): Int?
     fun findByName(name: String): Metadata?
+
+    @Query("SELECT m.id FROM Metadata m")
+    fun getAllIds():List<Int>
 }

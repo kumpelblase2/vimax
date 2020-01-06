@@ -32,7 +32,7 @@ class LoadVideoTasklet(private val videoRepository: VideoRepository,
     }
 
     private fun appendMetadataTo(video: Video) {
-        metadataRepository.findAll().map { it.toValue() }.forEach { video.addMetadataValue(it) }
+        metadataRepository.findAll().forEach { video.addMetadataValue(it.id!!, it.toValue()) }
     }
 
     fun getVideoPathFromContext(chunkContext: ChunkContext): Path {

@@ -45,6 +45,9 @@ export default {
         orderedMetadata(state) {
             return [...state.metadata].sort((first, second) => first.displayOrder - second.displayOrder);
         },
+        editableMetadata(state) {
+            return state.metadata.filter(metadata => metadata.owner == null).sort((first, second) => first.displayOrder - second.displayOrder)
+        },
         visibleMetadata(state) {
             return state.visibleMetadatas;
         },
