@@ -45,8 +45,8 @@ export default {
         hasVideo: (state) => {
             return (id) => state.videos.findIndex(video => video.id === id) >= 0;
         },
-        displayedVideos: (state,getters) => {
-            return state.displayVideoIds.map(id => getters.getVideo(id));
+        hasVideosToDisplay(state) {
+            return state.displayVideoIds.length > 0;
         }
     },
     mutations: {

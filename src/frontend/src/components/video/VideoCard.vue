@@ -1,9 +1,8 @@
 <template>
     <v-flex xs12 sm6 md3 xl2 class="pa-1">
             <v-card>
-                <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" v-bind:src="thumbnailUrl"
-                       @mouseenter="startHover"
-                       @mouseleave="stopHover">
+                <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" :src="thumbnailUrl"
+                       @mouseenter="startHover" @mouseleave="stopHover">
                     <v-row fill-height v-show="hover" style="margin: 5px;">
                         <v-btn text icon color="orange" @click="toggleSelection">
                             <v-icon v-if="selected">check_box</v-icon>
@@ -19,7 +18,7 @@
                     </v-row>
                 </v-img>
                 <v-card-title>{{ video.name }}</v-card-title>
-                <v-card-text v-if="hasVisibleMetadata">
+                <v-card-text v-show="hasVisibleMetadata">
                     <VideoMetadataDisplay :video-metadata="video.metadata"/>
                 </v-card-text>
             </v-card>

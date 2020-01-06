@@ -1,13 +1,18 @@
 <template>
-    <v-container fluid grid-list>
-        <v-row wrap justify="space-around">
-            <VideoCard v-for="video in displayedVideos" :key="video.id" :video-id="video.id"></VideoCard>
-            <MugenScroll v-if="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading" handle-on-mount>
-                <div class="mugen-loading">Loading...</div>
-            </MugenScroll>
-        </v-row>
-        <video-edit-dialog></video-edit-dialog>
-    </v-container>
+    <div>
+        <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
+            <v-row wrap justify="space-around">
+                <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId" />
+                <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading">
+                    <div class="mugen-loading">Loading...</div>
+                </MugenScroll>
+            </v-row>
+            <video-edit-dialog />
+        </v-container>
+        <v-container v-else>
+            <v-row>No videos found</v-row>
+        </v-container>
+    </div>
 </template>
 
 <script>
@@ -22,10 +27,11 @@
         async mounted() {
             this.resetPage();
             await this.loadMetadata();
+            return this.loadVideosOfCurrentPage();
         },
         computed: {
-            ...mapState('videos', ['isLoading','hasMoreVideos']),
-            ...mapGetters('videos', ['displayedVideos'])
+            ...mapState('videos', ['isLoading','hasMoreVideos','displayVideoIds']),
+            ...mapGetters('videos', ['hasVideosToDisplay'])
         },
         methods: {
             ...mapActions('videos', ['loadVideosOfCurrentPage']),
