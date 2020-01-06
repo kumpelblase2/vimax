@@ -15,9 +15,12 @@
                   item-text="name" return-object :solo="solo" :search-input.sync="search"></v-select>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
                     @change="update" chips clearable multiple :items="values" :solo="solo">
-            <template #selection="data">
-                <v-chip :value="data.selected" close @input="removeTag(data.item)">
-                    {{ data.item }}
+            <template v-slot:selection="{item, selected}">
+                <v-chip :value="selected">
+                    <span class="pr-2">
+                        {{ item }}
+                    </span>
+                    <v-icon small @click="removeTag(item)">close</v-icon>
                 </v-chip>
             </template>
         </v-combobox>
@@ -50,13 +53,6 @@
         methods: {
             update(ev) {
                 this.$emit('change', ev);
-                if(this.metadataDefinition.type === 'TAGLIST') {
-                    for(let elem of ev) {
-                        if(!this.tagValues.includes(elem)) {
-                            this.tagValues.push(elem);
-                        }
-                    }
-                }
             },
             updateNumber(ev) {
                 this.$emit('change', parseInt(ev));
@@ -67,7 +63,7 @@
         },
         mounted() {
             if(this.metadataDefinition.type === 'TAGLIST' && this.metadataValue != null) {
-                this.tagValues = [...this.metadataValue];
+                this.metadataValue.forEach(value => this.values.push(value));
             }
 
             if(this.withSuggestions) {
