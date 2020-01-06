@@ -95,12 +95,13 @@ class VideoController(private val videoRepository: VideoRepository,
             .mapNotNull { it.id }
     }
 
-    @GetMapping("/video/{id}/thumbnail/{thumb}")
-    fun getThumbnail(@PathVariable("id") videoId: Int,
-                     @PathVariable("thumb") thumbnailId: Int): ResponseEntity<Resource> {
-        val video = videoRepository.findById(videoId).orElseThrow { EntityNotFoundException() }
-        val thumbnail = video.thumbnails.find { it.id == thumbnailId } ?: throw EntityNotFoundException()
-        return ResponseEntity.ok(FileSystemResource(thumbnail.locationPath))
+    @GetMapping("/video/thumbnail/{thumb}")
+    fun getThumbnail(@PathVariable("thumb") thumbnailId: Int): ResponseEntity<Resource> {
+        val location = thumbnailLocationCache.get(thumbnailId) {
+            val thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow { EntityNotFoundException() }
+            thumbnail.location!!
+        }
+        return ResponseEntity.ok(FileSystemResource(location))
     }
 
     @Transactional

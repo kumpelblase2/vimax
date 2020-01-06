@@ -1,10 +1,10 @@
 export function getSelectedThumbnailURLForVideo(video) {
-    return getThumbnailURLForVideo(video, getSelectedThumbnail(video));
+    return getThumbnailURL(getSelectedThumbnail(video));
 }
 
-export function getThumbnailURLForVideo(video, thumbnail) {
-    if(thumbnail == null || video == null) return "";
-    return `/api/video/${video.id}/thumbnail/${thumbnail.id}`;
+export function getThumbnailURL(thumbnail) {
+    if(thumbnail == null) return "";
+    return `/api/video/thumbnail/${thumbnail.id}`;
 }
 
 export function getStreamURLForVideo(video) {
