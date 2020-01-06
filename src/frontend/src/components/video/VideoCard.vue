@@ -1,6 +1,5 @@
 <template>
     <v-flex xs12 sm6 md3 xl2 class="pa-1">
-        <v-lazy>
             <v-card>
                 <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" v-bind:src="thumbnailUrl"
                        @mouseenter="startHover"
@@ -24,7 +23,6 @@
                     <VideoMetadataDisplay :video-metadata="video.metadata"/>
                 </v-card-text>
             </v-card>
-        </v-lazy>
     </v-flex>
 </template>
 
@@ -50,10 +48,7 @@
             }
         },
         computed: {
-            ...mapGetters('videos', [
-                'getVideo',
-                'isSelected'
-            ]),
+            ...mapGetters('videos', ['getVideo', 'isSelected']),
             ...mapGetters('settings/metadata', ['hasVisibleMetadata']),
             selected() {
                 return this.isSelected(this.videoId);
