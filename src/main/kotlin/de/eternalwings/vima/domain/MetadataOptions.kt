@@ -54,18 +54,10 @@ class RangeMetadataOptions(val min: Int? = null, val max: Int? = null, val step:
 class DurationMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
         MetadataOptions<Duration>(DURATION, ::DurationMetadataValue)
 
-class SelectionMetadataOptions(val values: List<SelectionValues> = emptyList()) :
-        MetadataOptions<SelectionValues>(SELECTION, ::SelectionMetadataValue)
+class SelectionMetadataOptions(val values: List<SelectionValue> = emptyList()) :
+        MetadataOptions<SelectionValue>(SELECTION, ::SelectionMetadataValue)
 
-class SelectionValues {
-    var name: String? = null
-
-    constructor() {}
-
-    constructor(name: String) {
-        this.name = name
-    }
-}
+data class SelectionValue(var name: String? = null)
 
 class TaglistMetadataOptions : MetadataOptions<List<String>>(TAGLIST, ::TaglistMetadataValue)
 

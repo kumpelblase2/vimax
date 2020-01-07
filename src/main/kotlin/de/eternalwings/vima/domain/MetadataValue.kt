@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
-import de.eternalwings.vima.ext.PropertyDelegate
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import javax.persistence.OneToOne
 import javax.persistence.Transient
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "meta-type", visible = false)
@@ -64,7 +62,7 @@ data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) 
 data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>() {
 }
 
-data class SelectionMetadataValue(override var value: SelectionValues? = null) : MetadataValue<SelectionValues>() {
+data class SelectionMetadataValue(override var value: SelectionValue? = null) : MetadataValue<SelectionValue>() {
 }
 
 data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>() {

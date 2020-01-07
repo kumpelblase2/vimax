@@ -8,7 +8,7 @@ import de.eternalwings.vima.domain.MetadataOptions
 import de.eternalwings.vima.domain.NumberMetadataOptions
 import de.eternalwings.vima.domain.PluginInformation
 import de.eternalwings.vima.domain.SelectionMetadataOptions
-import de.eternalwings.vima.domain.SelectionValues
+import de.eternalwings.vima.domain.SelectionValue
 import de.eternalwings.vima.domain.TaglistMetadataOptions
 import de.eternalwings.vima.domain.TextMetadataOptions
 import de.eternalwings.vima.plugin.EventType.CREATE
@@ -58,7 +58,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
     fun taglist(name: String, order: Direction, defaultValue: List<String> = emptyList()) =
             metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue })
 
-    fun selection(name: String, order: Direction, values: List<SelectionValues>, defaultValue: SelectionValues) =
+    fun selection(name: String, order: Direction, values: List<SelectionValue>, defaultValue: SelectionValue) =
             metadata(name, order, SelectionMetadataOptions(values).also { it.defaultValue = defaultValue })
 
     fun duration(name: String, order: Direction, defaultValue: Duration) =
