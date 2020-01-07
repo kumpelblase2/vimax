@@ -9,7 +9,14 @@ class VideoContainer(
         val location: String,
         val metadata: Map<Int,MetadataValue<*>>
 ) {
+    var changed: Set<Int> = emptySet()
+        private set
+
     fun hasMetadata(id: Int) = metadata.containsKey(id)
+
+    fun markChanged(metadataId: Int) {
+        changed = changed + metadataId
+    }
 
     companion object {
         fun fromVideo(video: Video): VideoContainer {

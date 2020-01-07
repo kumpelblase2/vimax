@@ -34,6 +34,7 @@ sealed class MetadataContainer<T>(protected val metadata: MetadataInfo<T>) {
             val existingMetadata = video.metadata
             val existingContainer = existingMetadata[this.metadata.id] ?: throw IllegalStateException()
             (existingContainer as MetadataValue<T>).value = value
+            video.markChanged(this.metadata.id)
         }
     }
 }
