@@ -10,7 +10,8 @@
                     <v-row wrap>
                         <v-col v-for="(thumbnail, index) in video.thumbnails" :key="index" cols="12" md="4">
                             <v-item active-class="active" class="element">
-                                <v-img :src="thumbnailUrl(thumbnail)" slot-scope="{ active, toggle }" @click="toggle"></v-img>
+                                <v-img :src="thumbnailUrl(thumbnail)" :aspect-ratio="16/10" slot-scope="{ active, toggle }"
+                                       @click="toggle"></v-img>
                             </v-item>
                         </v-col>
                     </v-row>
@@ -35,6 +36,7 @@
 <script>
     import { mapActions, mapGetters, mapState } from "vuex";
     import MetadataValueEditor from "../metadata/MetadataValueEditor";
+    import { getThumbnailURL } from "../../video";
 
     export default {
         name: "VideoEditDialog",
@@ -65,7 +67,7 @@
                 this.$emit('finish-edit');
             },
             thumbnailUrl(thumbnail) {
-                return `/api/video/${this.editingVideo.id}/thumbnail/${thumbnail.id}`;
+                return getThumbnailURL(thumbnail);
             },
             updateSelectedThumbnail(thumbnailIndex) {
                 this.changeSelectedThumbnail(thumbnailIndex);
