@@ -109,8 +109,11 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
     private fun createTextQuery(textQuery: TextQuery, metadataList: List<Metadata>, context: QueryContext,
                                 inverse: Boolean = false): String {
         val searchableMetadata = metadataList.textSearchable
-        val queries = searchableMetadata.map { textQueryOrDefault(it.id!!, textQuery.text, context, false, inverse) }
-        return queries.joinToString(separator = if (inverse) " AND " else " OR ", prefix = "(", postfix = ")")
+        val searchText = textQuery.text
+        val queries = searchableMetadata.map { textQueryOrDefault(it.id!!, searchText, context, false, inverse) }
+        val comparator = if(inverse) "NOT LIKE" else "LIKE"
+        val nameQuery = "$VIDEO_MODEL_NAME.name $comparator ?${context.newVar("%$searchText%")}"
+        return (queries + nameQuery).joinToString(separator = if (inverse) " AND " else " OR ", prefix = "(", postfix = ")")
     }
 
     private fun arraySizeQueryOrDefault(metadataId: Int, comparator: Comparator, size: Int, context: QueryContext): String {
