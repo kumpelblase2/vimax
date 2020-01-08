@@ -41,20 +41,37 @@ abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val me
                                   var defaultValue: T? = null) {
     @JsonIgnore
     fun toValue(): MetadataValue<T> = metadataConstructor(defaultValue)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is MetadataOptions<*>) return false
+
+        if (type != other.type) return false
+        if (defaultValue != other.defaultValue) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + (defaultValue?.hashCode() ?: 0)
+        return result
+    }
+
 }
 
-class TextMetadataOptions(val suggest: Boolean = false) : MetadataOptions<String>(TEXT, ::StringMetadataValue)
+data class TextMetadataOptions(val suggest: Boolean = false) : MetadataOptions<String>(TEXT, ::StringMetadataValue)
 
-class NumberMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+data class NumberMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
         MetadataOptions<Int>(NUMBER, ::NumberMetadataValue)
 
-class RangeMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+data class RangeMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
         MetadataOptions<Int>(RANGE, ::NumberMetadataValue)
 
-class DurationMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
+data class DurationMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
         MetadataOptions<Duration>(DURATION, ::DurationMetadataValue)
 
-class SelectionMetadataOptions(val values: List<SelectionValue> = emptyList()) :
+data class SelectionMetadataOptions(val values: List<SelectionValue> = emptyList()) :
         MetadataOptions<SelectionValue>(SELECTION, ::SelectionMetadataValue)
 
 data class SelectionValue(var name: String? = null)
