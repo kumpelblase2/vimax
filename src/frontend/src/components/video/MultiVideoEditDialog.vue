@@ -47,8 +47,8 @@
                 this.resetMultiEdit();
                 this.selected = [];
             },
-            save() {
-                this.saveMultiVideoEdit(this.selected);
+            async save() {
+                await this.saveMultiVideoEdit(this.selected);
                 this.$emit('finish-edit');
                 this.selected = [];
             },
