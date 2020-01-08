@@ -47,7 +47,7 @@
                 <p class="font-italic text-xs-center">No more videos to sort.</p>
             </v-flex>
         </v-row>
-        <video-edit-dialog @finish-edit="reloadVideo"></video-edit-dialog>
+        <video-edit-dialog/>
     </v-col>
 </template>
 
@@ -68,10 +68,7 @@
         },
         components: { VideoMetadataDisplay, VideoPlayer, SortingBucketAddComponent, SortingBucketComponent, VideoEditDialog },
         computed: {
-            ...mapState('sorting', [
-                'selectedMetadata',
-                'buckets'
-            ]),
+            ...mapState('sorting', ['selectedMetadata', 'buckets']),
             ...mapGetters('sorting', ['nextVideoId', 'nextVideo', "empty"]),
             ...mapGetters('settings/metadata', ['orderedMetadata']),
             showDialog() {
@@ -80,7 +77,7 @@
         },
         methods: {
             ...mapActions('settings/metadata', ["loadMetadata"]),
-            ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket", "assignVideoToNothing", "reloadVideo"]),
+            ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket", "assignVideoToNothing"]),
             ...mapMutations('sorting', ['updateMetadata', 'deleteBucket', 'clearBuckets']),
             ...mapActions('videos', ['editVideo']),
             ...mapMutations('player', ['clearPlaylist', 'setCurrentVideo']),
