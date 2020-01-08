@@ -63,12 +63,14 @@
             }
         },
         methods: {
-            ...mapActions('videos', [
-                'editVideo',
-                'toggleSelectVideo'
-            ]),
+            ...mapActions('videos', ['toggleSelectVideo', 'loadVideos']),
+            ...mapActions('videos/editing', ['editVideo', 'editSelectedVideos']),
             edit() {
-                this.editVideo(this.videoId);
+                if(this.isSelected(this.videoId)) {
+                    this.editSelectedVideos();
+                } else {
+                    this.editVideo(this.videoId);
+                }
             },
             startHover() {
                 this.hover = true;

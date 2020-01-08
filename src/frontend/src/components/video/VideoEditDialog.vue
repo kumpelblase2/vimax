@@ -34,7 +34,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters, mapState } from "vuex";
+    import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
     import MetadataValueEditor from "../metadata/MetadataValueEditor";
     import { getThumbnailURL } from "../../video";
 
@@ -42,7 +42,7 @@
         name: "VideoEditDialog",
         components: { MetadataValueEditor },
         computed: {
-            ...mapState('videos', ['editingVideo']),
+            ...mapState('videos/editing', ['editingVideo']),
             ...mapGetters('settings/metadata', ['editableMetadata']),
             dialog() {
                 return this.editingVideo != null;
@@ -52,13 +52,8 @@
             }
         },
         methods: {
-            ...mapActions('videos', [
-                'editVideo',
-                'saveEditingVideo',
-                'changeSelectedThumbnail',
-                'setEditingMetadataValue',
-                'refreshThumbnails'
-            ]),
+            ...mapMutations('videos/editing', ['changeThumbnailsInEdit', 'setEditingMetadataValue']),
+            ...mapActions('videos/editing', ['editVideo', 'saveEditingVideo', 'refreshThumbnails']),
             close() {
                 this.editVideo(null);
             },
@@ -70,7 +65,7 @@
                 return getThumbnailURL(thumbnail);
             },
             updateSelectedThumbnail(thumbnailIndex) {
-                this.changeSelectedThumbnail(thumbnailIndex);
+                this.changeThumbnailsInEdit(thumbnailIndex);
             },
             handleMetadataUpdate(id, event) {
                 this.setEditingMetadataValue({ id, value: event });

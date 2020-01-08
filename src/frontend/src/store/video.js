@@ -1,22 +1,24 @@
 import videoApi from "../api/videos";
+import videoEditing from "./videoEditing";
 import { getSelectedThumbnail } from "../video";
 
-const APPEND_VIDEO = 'addOrUpdateVideo';
+const UPDATE_VIDEO = 'addOrUpdateVideo';
 const CLEAR_VIDEOS = 'clearVideos';
-const SET_EDITING_VIDEO = 'editVideo';
 
 const SELECT_VIDEO = 'selectVideo';
 const UNSELECT_VIDEO = 'unselectVideo';
 
-const MAX_VIDEOS = 80;
+const MAX_VIDEOS = 50;
 
-export const MUTATIONS = { APPEND_VIDEO, CLEAR_VIDEOS, SET_EDITING_VIDEO, SELECT_VIDEO, UNSELECT_VIDEO };
+export const MUTATIONS = { UPDATE_VIDEO, CLEAR_VIDEOS, SELECT_VIDEO, UNSELECT_VIDEO };
 
 export default {
     namespaced: true,
+    modules: {
+        editing: videoEditing
+    },
     state: {
         videos: [],
-        editingVideo: null,
         selectedVideoIds: [],
         isLoading: false,
         displayVideoIds: [],
@@ -50,7 +52,7 @@ export default {
         }
     },
     mutations: {
-        [APPEND_VIDEO](state, video) {
+        [UPDATE_VIDEO](state, video) {
             const index = state.videos.findIndex(existing => existing.id === video.id);
             if(index >= 0) {
                 Object.assign(state.videos[index], video);
@@ -60,13 +62,6 @@ export default {
         },
         addVideos(state, videos) {
             state.videos.push(...videos);
-        },
-        [SET_EDITING_VIDEO](state, videoId) {
-            if(videoId == null) {
-                state.editingVideo = null;
-            } else {
-                state.editingVideo = Object.assign({}, state.videos.find(video => video.id === videoId));
-            }
         },
         [SELECT_VIDEO](state, videoId) {
             if(state.selectedVideoIds.indexOf(videoId) < 0) {
@@ -82,20 +77,11 @@ export default {
         clearSelectedVideos(state) {
             state.selectedVideoIds = [];
         },
-        changeThumbnailsInEdit(state, thumbnailIndex) {
-            state.editingVideo.selectedThumbnail = thumbnailIndex;
-        },
-        setEditingMetadataValue(state, { id, value }) {
-            state.editingVideo.metadata[id].value = value;
-        },
         updateThumbnail(state, { videoId, thumbnails }) {
             const video = state.videos.find(video => video.id === videoId);
             if(video != null) {
                 video.thumbnails = thumbnails;
             }
-        },
-        updateEditingThumbnails(state, thumbnails) {
-            state.editingVideo.thumbnails = thumbnails;
         },
         [CLEAR_VIDEOS](state) {
             state.displayVideoIds = [];
@@ -136,31 +122,6 @@ export default {
             }
             commit('setLoading', false);
         },
-        async editVideo({ commit,getters, dispatch }, videoId) {
-            if(videoId == null) {
-                commit(SET_EDITING_VIDEO, null);
-            } else {
-                if(!getters.hasVideo(videoId)) {
-                    await dispatch('reloadVideo', videoId);
-                }
-                commit(SET_EDITING_VIDEO, videoId);
-            }
-        },
-        async saveEditingVideo({ commit, state }) {
-            const editedVideo = await videoApi.saveVideo(state.editingVideo);
-            commit(APPEND_VIDEO, editedVideo);
-        },
-        changeSelectedThumbnail({ commit }, thumbnailIndex) {
-            commit('changeThumbnailsInEdit', thumbnailIndex);
-        },
-        setEditingMetadataValue({ commit }, { id, value }) {
-            commit('setEditingMetadataValue', { id, value });
-        },
-        async refreshThumbnails({ commit, state }) {
-            const newThumbnails = await videoApi.refreshThumbnails(state.editingVideo);
-            commit('updateThumbnail', { videoId: state.editingVideo.id, thumbnails: newThumbnails });
-            commit('updateEditingThumbnails', newThumbnails);
-        },
         async search({ commit, dispatch }) {
             commit(CLEAR_VIDEOS);
             commit('resetPage');
@@ -168,7 +129,7 @@ export default {
         },
         async reloadVideo({ commit }, videoId) {
             const video = await videoApi.getVideo(videoId);
-            commit(APPEND_VIDEO, video);
+            commit(UPDATE_VIDEO, video);
         },
         async loadVideos({ commit, getters }, videoIds = []) {
             const videosToLoad = videoIds.filter(videoId => !getters.hasVideo(videoId));
