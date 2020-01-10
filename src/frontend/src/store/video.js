@@ -85,6 +85,7 @@ export default {
         },
         [CLEAR_VIDEOS](state) {
             state.displayVideoIds = [];
+            state.selectedVideoIds = [];
         },
         setLoading(state, value) {
             state.isLoading = value;
