@@ -80,7 +80,6 @@ class PluginManager(private val pluginRepository: PluginInformationRepository,
     fun refreshPlugin(name: String) {
         LOGGER.info("Refreshing videos for plugin $name...")
         val plugin = plugins.find { it.first.name == name } ?: return
-        metadataProcess.enableCache(true)
         val videos = videoRepository.findAll()
         val chunked = videos.chunked(100)
         chunked.forEachIndexed { index, chunk ->
@@ -88,7 +87,6 @@ class PluginManager(private val pluginRepository: PluginInformationRepository,
             LOGGER.info("Refresh: ${index * 100 + chunk.size}/${videos.size} done.")
         }
         videoRepository.saveAll(videos)
-        metadataProcess.enableCache(false)
     }
 
     @Transactional
