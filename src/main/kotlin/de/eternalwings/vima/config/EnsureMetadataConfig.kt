@@ -2,7 +2,6 @@ package de.eternalwings.vima.config
 
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
-import org.hibernate.annotations.QueryHints.READ_ONLY
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.transaction.support.TransactionTemplate
@@ -25,8 +24,8 @@ class EnsureMetadataConfig {
         val allMetadata = metadataRepository.getAllIds()
 
         transactionExecutor.execute {
-            allMetadata.forEach { metadata ->
-                videoRepository.addDefaultValueForMetadataIfNotExist(metadata.toInt())
+            allMetadata.forEach {
+                videoRepository.addMetadataEntryIfNotExists(it)
             }
         }
     }

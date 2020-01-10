@@ -37,7 +37,7 @@ interface VideoRepository : JpaRepository<Video, Int> {
 
     fun findVideoByLocation(location: String): Video?
 
-    @Query("SELECT DISTINCT json_extract(v.metadata_values, '$.' || ?1 || '.value') AS value FROM video v WHERE value IS NOT NULL",
+    @Query("SELECT DISTINCT json_extract(v.metadata_values, '$.' || ?1 || '.value') AS value FROM video v WHERE value IS NOT NULL AND value <> ''",
             nativeQuery = true)
     fun loadStringValuesFor(metadataId: Int): MutableSet<String>
 
@@ -50,9 +50,10 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun findVideosWithMetadataValue(metadataId: Int, metadataValue: Any?, path: String): List<Int>
 
     @Modifying
-    @Query("UPDATE video SET metadata_values = json_insert(metadata_values, '$.' || ?1, json_object('meta-type', json_extract((SELECT m.options FROM metadata m WHERE m.id = ?1), '$.type'), 'value', json_extract((SELECT m.options FROM metadata m WHERE m.id = ?1), '$.defaultValue')))",
+    @Query("UPDATE video SET metadata_values = json_insert(metadata_values, '$.' || ?1, json_object('meta-type', json_extract(" +
+            "(SELECT m.options FROM metadata m WHERE m.id = ?1), '$.type'), 'value', NULL))",
             nativeQuery = true)
-    fun addDefaultValueForMetadataIfNotExist(metadataId: Int)
+    fun addMetadataEntryIfNotExists(metadataId: Int)
 
     @Modifying
     @Query("UPDATE video SET metadata_values = json_remove(metadata_values, '$.' || ?1)", nativeQuery = true)
