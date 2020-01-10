@@ -16,7 +16,8 @@ export default {
             state.multiEditValues = {};
         },
         setEditingVideoValues(state, video) {
-            state.editingVideo = Object.assign({}, video);
+            // Can't use Object.assign() because it only creates a shallow copy...
+            state.editingVideo = JSON.parse(JSON.stringify(video));
         },
         setEditingVideoIds(state, ids) {
             state.multiEditIds = [...ids];
