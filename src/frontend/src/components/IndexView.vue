@@ -3,7 +3,7 @@
         <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
             <v-row wrap justify="space-around">
                 <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId" />
-                <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading">
+                <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading && hasMoreVideos">
                     <div class="mugen-loading">Loading...</div>
                 </MugenScroll>
             </v-row>
