@@ -25,7 +25,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
     class QueryContext {
         private var variables: List<Any?> = emptyList()
 
-        val parameterMap: Iterable<Pair<Int,Any?>>
+        val parameterMap: Iterable<Pair<Int, Any?>>
             get() = variables.mapIndexed { i, value -> (i + 1) to value }
 
         fun newVar(value: Any?): Int {
@@ -35,12 +35,12 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
     }
 
     @Throws(MetadataNotValidException::class)
-    fun createQueryFrom(query: FullQuery): Pair<String,QueryContext> {
+    fun createQueryFrom(query: FullQuery): Pair<String, QueryContext> {
         val allMetadata = this.metadataRepository.findAll()
         return createQueryFrom(query.part, allMetadata)
     }
 
-    private fun createQueryFrom(queryPart: QueryPart, metadataList: List<Metadata>): Pair<String,QueryContext> {
+    private fun createQueryFrom(queryPart: QueryPart, metadataList: List<Metadata>): Pair<String, QueryContext> {
         val start = "SELECT $VIDEO_MODEL_NAME.id FROM $TABLE_NAME $VIDEO_MODEL_NAME WHERE "
         val context = QueryContext()
         return (start + createQueryCondition(queryPart, metadataList, context)) to context
@@ -54,65 +54,77 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
             is IntersectionQuery -> "(" + queryPart.parts.joinToString(separator = " and ") {
                 createQueryCondition(it, metadataList, context)
             } + ")"
-            is PropertyQuery -> createPropertyQuery(queryPart, metadataList, context)
+            is PropertyQuery -> createPropertyQuery(queryPart.property, queryPart.value, metadataList, context)
             is BooleanQuery -> createBooleanQuery(queryPart, metadataList, context)
-            is TextQuery -> createTextQuery(queryPart, metadataList, context)
-            is ComparisonQuery -> createComparisonQuery(queryPart, metadataList, context)
+            is TextQuery -> createTextQuery(queryPart.text, metadataList, context)
+            is ComparisonQuery -> createComparisonQuery(queryPart.property, queryPart.comparator, queryPart.value, metadataList,
+                    context)
             else -> throw InvalidQueryOperationException(queryPart)
         }
     }
 
     private fun createBooleanQuery(booleanQuery: BooleanQuery, metadataList: List<Metadata>, context: QueryContext): String {
         return when (val inner = booleanQuery.query) {
-            is TextQuery -> createTextQuery(inner, metadataList, context, !booleanQuery.value)
-            is PropertyQuery -> createPropertyQuery(inner, metadataList, context, !booleanQuery.value)
-            is ComparisonQuery -> createComparisonQuery(inner, metadataList, context, !booleanQuery.value)
+            is TextQuery -> {
+                val propertyName = inner.text
+                val property = metadataList.getByName(propertyName)
+                if (property != null) {
+                    when (property.type) {
+                        TAGLIST -> createComparisonQuery(propertyName, EQUALS, "0", metadataList, context, !booleanQuery.value)
+                        else -> createPropertyQuery(propertyName, "", metadataList, context, booleanQuery.value)
+                    }
+                } else {
+                    createTextQuery(propertyName, metadataList, context, !booleanQuery.value)
+                }
+            }
+            is PropertyQuery -> createPropertyQuery(inner.property, inner.value, metadataList, context, !booleanQuery.value)
+            is ComparisonQuery -> createComparisonQuery(inner.property, inner.comparator, inner.value, metadataList, context,
+                    !booleanQuery.value)
             else -> throw InvalidQueryOperationException(inner)
         }
     }
 
-    private fun createPropertyQuery(propertyQuery: PropertyQuery, metadataList: List<Metadata>, context: QueryContext,
+    private fun createPropertyQuery(property: String, value: String, metadataList: List<Metadata>, context: QueryContext,
                                     inverse: Boolean = false): String {
         val foundMetadata =
-                metadataList.getByName(propertyQuery.property) ?: throw MetadataNotValidException(propertyQuery.property)
+                metadataList.getByName(property) ?: throw MetadataNotValidException(property)
 
         val comparator = if (inverse) EQUALS.inverse() else EQUALS
         return when (foundMetadata.type) {
             BOOLEAN -> {
-                val booleanValue = propertyQuery.value.toBoolean()
+                val booleanValue = value.toBoolean()
                 booleanQueryOrDefault(foundMetadata.id!!, if (inverse) booleanValue.not() else booleanValue, context)
             }
-            TAGLIST -> arrayContainsQueryOrDefault(foundMetadata.id!!, propertyQuery.value, context, !inverse)
-            TEXT -> textQueryOrDefault(foundMetadata.id!!, propertyQuery.value, context, true, inverse)
-            FLOAT -> valueQueryOrDefault(foundMetadata.id!!, propertyQuery.value.toFloat(), context, comparator)
-            NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, propertyQuery.value.toInt(), context, comparator)
-            SELECTION -> valueQueryOrDefault(foundMetadata.id!!, propertyQuery.value, context, comparator,
+            TAGLIST -> arrayContainsQueryOrDefault(foundMetadata.id!!, value, context, !inverse)
+            TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, true, inverse)
+            FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toFloat(), context, comparator)
+            NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context, comparator)
+            SELECTION -> valueQueryOrDefault(foundMetadata.id!!, value, context, comparator,
                     valuePath = "value.name", defaultValuePath = "defaultValue.name")
             else -> throw NotImplementedError()
         }
     }
 
-    private fun createComparisonQuery(comparisonQuery: ComparisonQuery, metadataList: List<Metadata>, context: QueryContext,
-                                      inverse: Boolean = false): String {
+    private fun createComparisonQuery(property: String, queryComparator: Comparator, value: String, metadataList: List<Metadata>,
+                                      context: QueryContext, inverse: Boolean = false): String {
         val foundMetadata =
-                metadataList.getByName(comparisonQuery.property) ?: throw MetadataNotValidException(comparisonQuery.property)
+                metadataList.getByName(property) ?: throw MetadataNotValidException(property)
 
-        val comparator = if (inverse) comparisonQuery.comparator.inverse() else comparisonQuery.comparator
+        val comparator = if (inverse) queryComparator.inverse() else queryComparator
         return when (foundMetadata.type) {
-            FLOAT -> valueQueryOrDefault(foundMetadata.id!!, comparisonQuery.value.toDouble(), context, comparator)
-            NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, comparisonQuery.value.toInt(), context, comparator)
-            TAGLIST -> arraySizeQueryOrDefault(foundMetadata.id!!, comparator, comparisonQuery.value.toInt(), context)
+            FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toDouble(), context, comparator)
+            NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context, comparator)
+            TAGLIST -> arraySizeQueryOrDefault(foundMetadata.id!!, comparator, value.toInt(), context)
             else -> throw NotImplementedError()
         }
     }
 
-    private fun createTextQuery(textQuery: TextQuery, metadataList: List<Metadata>, context: QueryContext,
+    private fun createTextQuery(text: String, metadataList: List<Metadata>, context: QueryContext,
                                 inverse: Boolean = false): String {
         val searchableMetadata = metadataList.textSearchable
-        val searchText = textQuery.text
-        val queries = searchableMetadata.map { textQueryOrDefault(it.id!!, searchText, context, false, inverse) }
-        val comparator = if(inverse) "NOT LIKE" else "LIKE"
-        val nameQuery = "$VIDEO_MODEL_NAME.name $comparator ?${context.newVar("%$searchText%")}"
+        val queries = searchableMetadata.map { textQueryOrDefault(it.id!!, text, context, false, inverse) }
+        val comparator = if (inverse) "NOT LIKE" else "LIKE"
+        val nameQuery = "$VIDEO_MODEL_NAME.name $comparator ?${context.newVar("%$text%")}"
         return (queries + nameQuery).joinToString(separator = if (inverse) " AND " else " OR ", prefix = "(", postfix = ")")
     }
 
