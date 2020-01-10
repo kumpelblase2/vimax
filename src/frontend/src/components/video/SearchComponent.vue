@@ -1,7 +1,7 @@
 <template>
     <form action="#" @submit="doSearch">
         <v-text-field
-            v-model="searchQuery"
+            :value="searchQuery"
             @change="updateQuery"
             :append-icon-cb="doSearch"
             placeholder="Search..."
