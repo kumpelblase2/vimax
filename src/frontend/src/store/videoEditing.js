@@ -68,14 +68,19 @@ export default {
             commit('updateEditingThumbnails', newThumbnails);
         },
         async saveMultiVideoEdit({ commit, getters, state, rootGetters }, metadataToSave) {
+            const newVideos = [];
             for(let videoId of state.multiEditIds) {
                 const copy = Object.assign({}, rootGetters['videos/getVideo'](videoId));
                 for(let metadataKey of metadataToSave) {
                     copy.metadata[metadataKey].value = state.multiEditValues[metadataKey];
                 }
-                const saved = await videoApi.saveVideo(copy);
-                commit('videos/addOrUpdateVideo', saved, { root: true });
+                newVideos.push(copy);
             }
+
+            const saved = await videoApi.saveVideos(newVideos);
+            saved.forEach(video => {
+                commit('videos/addOrUpdateVideo', video, { root: true });
+            });
             commit('resetMultiEdit');
         }
     }

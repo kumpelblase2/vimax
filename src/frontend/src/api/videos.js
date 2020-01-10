@@ -21,6 +21,10 @@ export default {
         return axios.put(`/api/video/${video.id}`, video).then(response => response.data);
     },
 
+    saveVideos(videos) {
+        return axios.put("/api/videos", videos).then(response => response.data);
+    },
+
     refreshThumbnails(video) {
         return axios.post(`/api/video/${video.id}/refresh`).then(response => response.data);
     },

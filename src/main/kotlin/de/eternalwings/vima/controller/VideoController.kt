@@ -55,7 +55,7 @@ class VideoController(private val videoRepository: VideoRepository,
         }
 
         val sorting = Sort.by(sortDirection ?: ASC, sortProperty.toLowerCase())
-        val paging = PageRequest.of(page, 80, sorting)
+        val paging = PageRequest.of(page, 50, sorting)
         return if (sortProperty == "Name") {
             videoRepository.findVideoIdsSortedByOwnProperty(videoIds, paging)
         } else {
@@ -110,6 +110,14 @@ class VideoController(private val videoRepository: VideoRepository,
     fun updateVideo(@RequestBody newVideo: Video, @PathVariable("id") id: Int): Video {
         val existing = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
         val metadata = metadataRepository.findAll()
+        this.assignNewValuesToVideo(existing, newVideo, metadata)
+
+        pluginManager.callEvent(UPDATE, existing)
+
+        return videoRepository.save(existing)
+    }
+
+    private fun assignNewValuesToVideo(existing: Video, newVideo: Video, metadata: List<Metadata>) {
         existing.selectedThumbnail = newVideo.selectedThumbnail
         existing.name = newVideo.name
         newVideo.metadata?.forEach { metadataId, value ->
@@ -122,10 +130,21 @@ class VideoController(private val videoRepository: VideoRepository,
         }
 
         existing.metadata!!.entries.removeIf { entry -> metadata.none { it.id == entry.key } }
+    }
+
+    @Transactional
+    @PutMapping("/videos")
+    fun updateVideos(@RequestBody newVideos: List<Video>): List<Video> {
+        val existing = videoRepository.findAllById(newVideos.map { it.id!! })
+        val metadata = metadataRepository.findAll()
+        existing.forEach { old ->
+            val updated = newVideos.find { it.id == old.id } ?: return@forEach
+            assignNewValuesToVideo(old, updated, metadata)
+        }
 
         pluginManager.callEvent(UPDATE, existing)
 
-        return videoRepository.save(existing)
+        return videoRepository.saveAll(existing)
     }
 
     @PostMapping("/video/{id}/refresh")
