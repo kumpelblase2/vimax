@@ -25,7 +25,7 @@ data class Video(
         @Suppress("JpaAttributeTypeInspection")
         @field:Column(columnDefinition = "text", name = "metadata_values")
         @field:Convert(converter = SQLiteMetadataValueJsonConverter::class)
-        var metadata: MutableMap<Int, MetadataValue<*>>? = null,
+        var metadata: MutableMap<Int, MetadataValue<*>>? = mutableMapOf(),
         @field:OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
         var thumbnails: MutableList<Thumbnail> = mutableListOf(),
         var selectedThumbnail: Int? = 0
