@@ -1,6 +1,6 @@
 <template>
-    <v-dialog v-model="isEditingMultiple" persistent max-width="750px" scrollable>
-        <v-card>
+    <v-dialog :value="isEditingMultiple" persistent max-width="750px" scrollable>
+        <v-card v-if="isEditingMultiple">
             <v-card-title>
                 <span class="headline">Editing multiple Video(s)</span>
             </v-card-title>
