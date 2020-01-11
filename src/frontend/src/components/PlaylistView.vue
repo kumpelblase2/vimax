@@ -19,7 +19,7 @@
                             {{video.name}}
                         </v-list-item-content>
                         <v-list-item-action>
-                            <v-icon @click="deleteVideo(video.id)">delete</v-icon>
+                            <v-icon @click="deleteVideo(video.id)">close</v-icon>
                         </v-list-item-action>
                     </v-list-item>
                 </draggable>
@@ -74,10 +74,10 @@
         },
         methods: {
             ...mapActions('videos', ['loadVideos']),
-            ...mapActions('playlist', ['updateOrder','removeFromPlaylist']),
+            ...mapActions('playlist', ['updateOrder', 'removeFromPlaylist']),
             ...mapActions('player', ['playPlaylist']),
             deleteVideo(videoId) {
-                this.removeFromPlaylist({playlistId: this.playlistId, videoIds: [videoId]});
+                this.removeFromPlaylist({ playlistId: this.playlistId, videoIds: [videoId] });
             },
             getThumbnailFor(video) {
                 return getSelectedThumbnailURLForVideo(video);
