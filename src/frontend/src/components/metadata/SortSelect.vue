@@ -6,13 +6,19 @@
 <script>
     import { mapActions, mapGetters, mapMutations } from "vuex";
 
+    const applicationMetadata = [
+        { name: "Name", value: "name" },
+        { name: "Updated", value: "updateTime" },
+        { name: "Created", value: "creationTime" }
+    ];
+
     export default {
         name: "SortSelect",
         computed: {
             ...mapGetters('settings/metadata', ['sortableMetadata']),
             ...mapGetters('search', ['sortingProperty']),
             sortableProperties() {
-                return [{name: "Name"}].concat(this.sortableMetadata);
+                return applicationMetadata.concat(this.sortableMetadata);
             }
         },
         methods: {

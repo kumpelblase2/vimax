@@ -3,7 +3,7 @@ export default {
     state: {
         query: "",
         sort: {
-            property: 'Name',
+            property: 'name',
             direction: 'ASC'
         }
     },

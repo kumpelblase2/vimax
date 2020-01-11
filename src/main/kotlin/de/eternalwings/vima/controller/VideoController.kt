@@ -54,9 +54,9 @@ class VideoController(private val videoRepository: VideoRepository,
             videoRepository.getAllIds()
         }
 
-        val sorting = Sort.by(sortDirection ?: ASC, sortProperty.toLowerCase())
+        val sorting = Sort.by(sortDirection ?: ASC, sortProperty)
         val paging = PageRequest.of(page, 50, sorting)
-        return if (sortProperty == "Name") {
+        return if (internalOrderings.contains(sortProperty)) {
             videoRepository.findVideoIdsSortedByOwnProperty(videoIds, paging)
         } else {
             val metadata = metadataRepository.findByName(sortProperty) ?: throw EntityNotFoundException()
@@ -152,5 +152,9 @@ class VideoController(private val videoRepository: VideoRepository,
         val video = videoRepository.findById(videoId).orElseThrow { EntityNotFoundException() }
         videoProcess.refreshThumbnailsFor(video)
         return thumbnailRepository.findByVideo(video) // Otherwise hibernate cannot load the new thumbnails
+    }
+
+    companion object {
+        private val internalOrderings = setOf("name", "updateTime", "creationTime")
     }
 }
