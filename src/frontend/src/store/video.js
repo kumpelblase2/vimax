@@ -96,6 +96,7 @@ export default {
         resetPage(state) {
             state.currentPage = 0;
             state.hasMoreVideos = true;
+            state.displayVideoIds = [];
         },
         addDisplayVideos(state, videoIds) {
             state.displayVideoIds.push(...videoIds);
