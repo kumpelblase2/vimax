@@ -12,7 +12,7 @@
                       @change="updateNumber" :solo="solo" dense/>
         <v-select v-else-if="metadataDefinition.type === 'SELECTION'" :label="metadataDefinition.name"
                   @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
-                  item-text="name" return-object :solo="solo" :search-input.sync="search" dense/>
+                  item-text="name" return-object :solo="solo" dense/>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
                     @change="update" chips deletable-chips clearable multiple :items="values" :solo="solo"/>
         <v-slider v-else-if="metadataDefinition.type === 'RANGE'" :label="metadataDefinition.name"
@@ -30,8 +30,7 @@
         data() {
             return {
                 values: [],
-                isLoading: false,
-                search: null
+                isLoading: false
             }
         },
         computed: {
