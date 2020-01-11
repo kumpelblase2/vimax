@@ -1,6 +1,6 @@
 <template>
     <v-select class="nav-select" :items="sortableProperties" item-text="name" hide-details @change="updateSortingAndReload"
-              v-model="sortingProperty"></v-select>
+              :value="sortingProperty"></v-select>
 </template>
 
 <script>
