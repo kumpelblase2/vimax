@@ -1,5 +1,5 @@
 <template>
-    <v-btn @click="toggleSortingDirection" text icon>
+    <v-btn @click="toggleSortingDirection" text icon :title="'Change sorting to ' + oppositeDirectionText">
         <v-icon>{{sortingIcon}}</v-icon>
     </v-btn>
 </template>
@@ -11,6 +11,9 @@
         name: "SortDirectionToggle",
         computed: {
             ...mapGetters('search', ['sortingDirection']),
+            oppositeDirectionText() {
+                return (this.sortingDirection === 'ASC' ? 'descending' : 'ascending');
+            },
             sortingIcon() {
                 return 'arrow_' + (this.sortingDirection === 'ASC' ? 'upward' : 'downward');
             }

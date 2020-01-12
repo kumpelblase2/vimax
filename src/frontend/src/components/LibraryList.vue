@@ -18,15 +18,14 @@
                             <v-container grid-list-md>
                                 <v-row wrap>
                                     <v-flex xs12 sm6>
-                                        <v-text-field v-model="editingItem.path"
-                                                      label="Location"></v-text-field>
+                                        <v-text-field v-model="editingItem.path" label="Location"/>
                                     </v-flex>
                                 </v-row>
                             </v-container>
                         </v-card-text>
 
                         <v-card-actions>
-                            <v-spacer></v-spacer>
+                            <v-spacer/>
                             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
                             <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                         </v-card-actions>
@@ -41,7 +40,9 @@
 
                     <v-list-item-action>
                         <v-btn icon ripple>
-                            <v-icon small @click="deleteItem(library)">delete</v-icon>
+                            <v-icon small @click="deleteItem(library)" :title="'Delete library at ' + library.path">
+                                delete
+                            </v-icon>
                         </v-btn>
                     </v-list-item-action>
                 </v-list-item>

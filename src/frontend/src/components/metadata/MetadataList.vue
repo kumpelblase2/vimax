@@ -3,8 +3,8 @@
         <div>
             <v-toolbar flat>
                 <v-toolbar-title>Metadata</v-toolbar-title>
-                <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
-                <v-spacer></v-spacer>
+                <v-progress-circular v-if="loading" indeterminate width="3"/>
+                <v-spacer/>
                 <v-dialog v-model="dialog" max-width="500px">
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" color="primary" dark class="mb-2">New Metadata</v-btn>
@@ -18,27 +18,26 @@
                             <v-container grid-list-md>
                                 <v-row wrap>
                                     <v-flex xs12 sm6>
-                                        <v-text-field v-model="editingItem.name" label="Name"></v-text-field>
+                                        <v-text-field v-model="editingItem.name" label="Name"/>
                                     </v-flex>
                                     <v-flex xs12 sm6>
-                                        <v-select v-model="editingItem.type" :items="possibleMetadataTypes"
-                                                  label="Type"></v-select>
+                                        <v-select v-model="editingItem.type" :items="possibleMetadataTypes" label="Type"/>
                                     </v-flex>
                                     <v-flex xs12 sm6>
                                         <v-select v-model="editingItem.ordering"
                                                   :items="[{text:'Ascending',value:'ASC'},{text:'Descending', value:'DESC'}]"
-                                                  label="Ordering"></v-select>
+                                                  label="Ordering"/>
                                     </v-flex>
                                     <v-flex xs12>
                                         <metadata-options :type="editingItem.type"
-                                                          :options="editingItem.options"></metadata-options>
+                                                          :options="editingItem.options"/>
                                     </v-flex>
                                 </v-row>
                             </v-container>
                         </v-card-text>
 
                         <v-card-actions>
-                            <v-spacer></v-spacer>
+                            <v-spacer/>
                             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
                             <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                         </v-card-actions>
@@ -55,14 +54,19 @@
                         <td>{{ defaultValueToText(props.item) }}</td>
                         <td class="justify-center">
                             <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
-                                    @click="moveDown(props.item)">arrow_downward
+                                    @click="moveDown(props.item)" :title="'Move ' + props.item.name + ' down'">
+                                arrow_downward
                             </v-icon>
-                            <v-icon v-if="props.item.displayOrder > 0" small class="mr-2"
-                                    @click="moveUp(props.item)">arrow_upward
+                            <v-icon v-if="props.item.displayOrder > 0" small class="mr-2" @click="moveUp(props.item)"
+                                    :title="'Move ' + props.item.name + ' up'">arrow_upward
                             </v-icon>
-                            <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)">edit
+                            <v-icon v-if="!props.item.systemSpecified" small class="mr-2" @click="editItem(props.item)"
+                                    :title="'Edit ' + props.item.name">
+                                edit
                             </v-icon>
-                            <v-icon v-if="!props.item.systemSpecified" small @click="deleteItem(props.item)">delete</v-icon>
+                            <v-icon v-if="!props.item.systemSpecified" small @click="deleteItem(props.item)"
+                                    :title="'Delete ' + props.item.name">delete
+                            </v-icon>
                         </td>
                     </tr>
                 </template>

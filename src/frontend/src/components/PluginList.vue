@@ -13,7 +13,8 @@
                         <td style="display: flex;">
                             <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
                                       style="margin-top: 10px"></v-switch>
-                            <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)">refresh</v-icon>
+                            <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
+                                    title="Reload Metadata for all videos">refresh</v-icon>
                         </td>
                         <td>{{ props.item.creationTime }}</td>
                         <td>{{ props.item.enabledAt }}</td>
