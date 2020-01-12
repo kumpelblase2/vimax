@@ -7,7 +7,7 @@
                 </v-card-title>
                 <v-card-text>
                     <v-select :items="orderedMetadata" label="Metadata" @change="updateMetadata"
-                              item-text="name" return-object solo></v-select>
+                              item-text="name" return-object solo/>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -17,26 +17,26 @@
                     <v-btn block @click="reset">Reset</v-btn>
                 </v-flex>
                 <v-flex v-if="buckets.length < 8" xs3 class="pa-2">
-                    <sorting-bucket-add-component></sorting-bucket-add-component>
+                    <sorting-bucket-add-component/>
                 </v-flex>
                 <sorting-bucket-component v-bind:key="index" v-for="(bucket,index) in buckets"
-                                          :bucket-index="index" @click="assignToBucket(index)"></sorting-bucket-component>
+                                          :bucket-index="index" @click="assignToBucket(index)"/>
             </v-row>
             <v-row v-if="nextVideo" class="selected-video">
                 <v-flex xs8>
-                    <video-player :autoplay="false" :disable-events="true"></video-player>
+                    <video-player :autoplay="false" :disable-events="true"/>
                 </v-flex>
                 <v-flex xs4 style="overflow-y: scroll">
                     <v-card>
                         <v-card-title>
                             {{nextVideo.name}}
-                            <v-spacer></v-spacer>
+                            <v-spacer/>
                             <v-btn text icon color="orange" small @click="edit">
                                 <v-icon>edit</v-icon>
                             </v-btn>
                         </v-card-title>
                         <v-card-text>
-                            <video-metadata-display :video-metadata="nextVideo.metadata"></video-metadata-display>
+                            <video-metadata-display :video-metadata="nextVideo.metadata"/>
                         </v-card-text>
                     </v-card>
                 </v-flex>
@@ -79,7 +79,7 @@
             ...mapActions('settings/metadata', ["loadMetadata"]),
             ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket", "assignVideoToNothing"]),
             ...mapMutations('sorting', ['updateMetadata', 'deleteBucket', 'clearBuckets']),
-            ...mapActions('videos', ['editVideo']),
+            ...mapActions('videos/editing', ['editVideo']),
             ...mapMutations('player', ['clearPlaylist', 'setCurrentVideo']),
             reset() {
                 this.updateMetadata(null);
