@@ -3,12 +3,12 @@
         <v-text-field
             :value="searchQuery"
             @change="updateQuery"
-            :append-icon-cb="doSearch"
+            @click:append="doSearch"
             placeholder="Search..."
             append-icon="search"
             color="white"
             hide-details
-        ></v-text-field>
+        />
     </form>
 </template>
 
