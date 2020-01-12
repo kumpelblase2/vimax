@@ -41,8 +41,7 @@
         },
         data() {
             return {
-                player: null,
-                videoWatcher: null
+                player: null
             };
         },
         watch: {
@@ -58,6 +57,11 @@
                         type: 'video/mp4'
                     });
                     this.player.thumbnails().src(newValue);
+                }
+            },
+            currentVideo(newValue) {
+                if(newValue != null) {
+                    this.refreshCurrentVideo();
                 }
             }
         },
@@ -83,13 +87,6 @@
         mounted() {
             this.player = videojs(this.$refs.videoPlayer, this.videoPlayerOptions);
             this.player.thumbnails({ play: true });
-            this.videoWatcher = this.$store.watch(
-                (state) => state.player.currentlyPlayingVideo,
-                (newValue) => {
-                    if(newValue == null) return;
-                    this.refreshCurrentVideo();
-                }
-            );
 
             if(this.currentVideo != null) {
                 this.refreshCurrentVideo();
@@ -98,7 +95,6 @@
         beforeDestroy() {
             if(this.player) {
                 this.player.dispose();
-                this.videoWatcher();
             }
         },
         methods: {
