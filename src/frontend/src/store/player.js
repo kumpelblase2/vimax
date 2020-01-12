@@ -1,7 +1,9 @@
+const BEFORE_FIRST_ELEMENT = -1;
+
 export default {
     namespaced: true,
     state: {
-        currentlyPlayingVideoId: -1,
+        currentlyPlayingVideoId: BEFORE_FIRST_ELEMENT,
         playQueue: []
     },
     getters: {
@@ -19,7 +21,7 @@ export default {
         nextVideoId(state) {
             const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideoId);
             const nextIndex = currentIndex + 1;
-            if(currentIndex > -1 && nextIndex < state.playQueue.length) {
+            if(currentIndex > BEFORE_FIRST_ELEMENT && nextIndex < state.playQueue.length) {
                 return state.playQueue[nextIndex];
             } else {
                 return null;
@@ -48,26 +50,35 @@ export default {
                 state.playQueue.splice(index, 1);
             }
         },
-        addToQueue(state, videoId) {
-            state.playQueue.push(videoId);
+        addToQueue(state, videoIds) {
+            state.playQueue = [...state.playQueue, ...videoIds];
         },
         clearPlaylist(state) {
             state.playQueue = [];
-        }
+            state.currentlyPlayingVideoId = BEFORE_FIRST_ELEMENT;
+        },
     },
     actions: {
-        nextVideo({ commit, getters }) {
-            const next = getters.nextVideoId;
+        async nextVideo({ commit, state, getters, dispatch, rootGetters }) {
+            let next = getters.nextVideoId;
+            if(next == null && state.currentlyPlayingVideoId === BEFORE_FIRST_ELEMENT) {
+                next = state.playQueue[0];
+            }
+
             if(next != null) {
+                if(rootGetters['videos/getVideo'](next) == null) {
+                    await dispatch('videos/loadVideos', [next], { root: true });
+                }
                 commit('setCurrentVideo', next);
             }
         },
-        playPlaylist({ commit, getters, dispatch }, playlist) {
+        async playVideos({ commit, dispatch }, videoIds) {
             commit('clearPlaylist');
-            playlist.videoIds.forEach(video => {
-                commit('addToQueue', video);
-            });
-            dispatch('nextVideo');
+            commit('addToQueue', videoIds);
+            await dispatch('nextVideo');
+        },
+        async playPlaylist({ dispatch }, playlist) {
+            await dispatch('playVideos', playlist.videoIds);
         },
         skipToVideo({ commit, getters }, videoId) {
             if(getters.containsVideo(videoId)) {

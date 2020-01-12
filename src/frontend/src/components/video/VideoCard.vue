@@ -64,13 +64,9 @@
         },
         methods: {
             ...mapActions('videos', ['toggleSelectVideo', 'loadVideos']),
-            ...mapActions('videos/editing', ['editVideo', 'editSelectedVideos']),
+            ...mapActions('videos/editing', ['editVideo']),
             edit() {
-                if(this.isSelected(this.videoId)) {
-                    this.editSelectedVideos();
-                } else {
-                    this.editVideo(this.videoId);
-                }
+                this.editVideo(this.videoId);
             },
             startHover() {
                 this.hover = true;

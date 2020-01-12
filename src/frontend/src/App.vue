@@ -36,51 +36,24 @@
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
-        <v-app-bar app fixed clipped-left>
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title>Vima</v-toolbar-title>
-            <v-spacer v-if="shouldShowPlaylistAdd"></v-spacer>
-            <AddToPlaylistButton v-if="shouldShowPlaylistAdd"></AddToPlaylistButton>
-            <v-spacer v-if="shouldShowMetadata"></v-spacer>
-            <MetadataSelection v-if="shouldShowMetadata"></MetadataSelection>
-            <v-spacer v-if="shouldShowSort"></v-spacer>
-            <SortSelect v-if="shouldShowSort"></SortSelect>
-            <SortDirectionToggle v-if="shouldShowSort"></SortDirectionToggle>
-            <v-spacer></v-spacer>
-            <v-row v-if="shouldShowSearch" align-center style="max-width: 650px">
-                <SearchComponent></SearchComponent>
-            </v-row>
-        </v-app-bar>
+        <top-bar :drawer="drawer" @drawer="drawer = $event"/>
         <v-content>
-            <router-view></router-view>
+            <router-view/>
         </v-content>
         <v-footer>
-            <v-spacer></v-spacer>
+            <v-spacer/>
             <div>Vima made with ❤️ by kumpelblase2</div>
-            <v-spacer></v-spacer>
+            <v-spacer/>
         </v-footer>
     </v-app>
 </template>
 
 <script>
-    import SearchComponent from "./components/video/SearchComponent";
-    import MetadataSelection from "./components/metadata/MetadataSelection";
-    import { mapGetters } from "vuex";
-    import SortSelect from "./components/metadata/SortSelect";
-    import SortDirectionToggle from "./components/metadata/SortDirectionToggle";
-    import AddToPlaylistButton from "./components/playlist/AddToPlaylistButton";
+    import TopBar from "./components/TopBar";
 
     export default {
         name: 'Vima',
-        components: { AddToPlaylistButton, SortDirectionToggle, SortSelect, MetadataSelection, SearchComponent },
-        computed: {
-            ...mapGetters('page', [
-                'shouldShowMetadata',
-                'shouldShowSearch',
-                'shouldShowSort',
-                'shouldShowPlaylistAdd'
-            ])
-        },
+        components: { TopBar },
         data: () => ({
             drawer: null
         })

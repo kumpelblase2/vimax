@@ -49,6 +49,9 @@ export default {
         },
         hasVideosToDisplay(state) {
             return state.displayVideoIds.length > 0;
+        },
+        hasVideosSelected(state) {
+            return state.selectedVideoIds.length > 0;
         }
     },
     mutations: {
@@ -103,6 +106,9 @@ export default {
         },
         noMoreVideos(state) {
             state.hasMoreVideos = false;
+        },
+        selectAllVideos(state) {
+            state.selectedVideoIds = [...state.displayVideoIds];
         }
     },
     actions: {
