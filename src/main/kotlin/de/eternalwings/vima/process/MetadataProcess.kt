@@ -17,8 +17,8 @@ class MetadataProcess(private val videoRepository: VideoRepository, private val 
         return getReadOnlyCopyOf(name)
     }
 
-    private fun getReadOnlyCopyOf(name: String): MetadataInfo<*> {
-        val metadata = metadataRepository.findByName(name) ?: throw IllegalArgumentException()
+    private fun getReadOnlyCopyOf(name: String): MetadataInfo<*>? {
+        val metadata = metadataRepository.findByName(name) ?: return null
         return MetadataInfo.fromMetadata(metadata)
     }
 
