@@ -1,8 +1,7 @@
 <template>
     <form action="#" @submit="doSearch">
         <v-text-field
-            :value="searchQuery"
-            @change="updateQuery"
+            v-model="query"
             @click:append="doSearch"
             placeholder="Search..."
             append-icon="search"
@@ -17,17 +16,24 @@
 
     export default {
         name: "SearchComponent",
+        data() {
+            return {
+                query: ""
+            }
+        },
         computed: {
             ...mapGetters('search', ['searchQuery'])
         },
         methods: {
-            ...mapActions('videos', [
-                'search'
-            ]),
+            ...mapActions('videos', ['search']),
             ...mapMutations('search', ['updateQuery']),
             doSearch() {
-                this.search(this.searchQuery);
+                this.updateQuery(this.query);
+                this.search();
             }
+        },
+        mounted() {
+            this.query = this.searchQuery;
         }
     }
 </script>
