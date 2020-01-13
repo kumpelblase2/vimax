@@ -1,7 +1,7 @@
 <template>
     <v-flex row xs12 fill-height>
         <v-flex column fill-height>
-            <video ref="videoPlayer" class="video-js vjs-big-play-centered" @ended="onVideoFinished" @playing="onVideoStarted"></video>
+            <video ref="videoPlayer" class="video-js vjs-big-play-centered" @ended="onVideoFinished" @playing="onVideoStarted"/>
         </v-flex>
         <v-flex column xs2 fill-height v-if="hasQueue" style="max-height: 90vh; overflow-y: scroll;">
             <v-list>
@@ -9,7 +9,7 @@
                     <v-list-item-avatar><v-img :src="_thumbnailForVideo(video)"></v-img></v-list-item-avatar>
                     <v-list-item-content>
                         <v-list-item-title>
-                            <v-icon v-if="currentVideo.id === video.id">play_arrow</v-icon>
+                            <v-icon v-if="currentVideo && currentVideo.id === video.id">play_arrow</v-icon>
                             {{video.name}}
                         </v-list-item-title>
                     </v-list-item-content>
@@ -41,7 +41,8 @@
         },
         data() {
             return {
-                player: null
+                player: null,
+                hasStarted: false
             };
         },
         watch: {
@@ -57,6 +58,7 @@
                         type: 'video/mp4'
                     });
                     this.player.thumbnails().src(newValue);
+                    this.hasStarted = false;
                 }
             },
             currentVideo(newValue) {
@@ -109,6 +111,7 @@
                 ]);
                 this.player.poster(this.currentVideoThumbnail);
                 this.player.thumbnails().src(this.currentVideoStream);
+                this.hasStarted = false;
             },
             onVideoFinished() {
                 if(!this.disableEvents) {
@@ -117,7 +120,8 @@
                 this.nextVideo();
             },
             onVideoStarted() {
-                if(!this.disableEvents) {
+                if(!this.disableEvents && !this.hasStarted) {
+                    this.hasStarted = true;
                     events.watchStartEvent(this.currentVideo.id).then(() => this.reloadVideo(this.currentVideo.id));
                 }
             },
