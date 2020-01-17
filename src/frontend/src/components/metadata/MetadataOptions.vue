@@ -47,7 +47,7 @@
         props: ['type', 'options'],
         methods: {
             addSelectionValue() {
-                this.options.values.push({ name: '', id: null });
+                this.options.values.push({ name: '' });
             },
             removeSelection(index) {
                 this.options.values.splice(index, 1);
