@@ -11,7 +11,7 @@ import java.lang.IllegalStateException
 @Configuration
 class FFmpegConfig {
     @Bean
-    fun ffmpeg(@Value("\${ffpmeg-binary:ffmpeg2}") ffmpegLocation: String): FFmpeg {
+    fun ffmpeg(@Value("\${ffpmeg-binary:ffmpeg}") ffmpegLocation: String): FFmpeg {
         try {
             return FFmpeg(ffmpegLocation)
         } catch (exception: IOException) {
