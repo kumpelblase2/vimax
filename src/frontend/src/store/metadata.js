@@ -9,6 +9,7 @@ export default {
         possibleMetadataTypes: [
             { text: 'Text', value: 'TEXT' },
             { text: 'Number', value: 'NUMBER' },
+            { text: 'Float', value: 'FLOAT' },
             { text: 'Range', value: 'RANGE' },
             { text: 'Taglist', value: 'TAGLIST' },
             { text: 'Selection', value: 'SELECTION' },
