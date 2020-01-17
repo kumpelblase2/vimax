@@ -1,0 +1,13 @@
+[Unit]
+Description=Vimax Video Server
+After=network.target
+
+[Service]
+WorkingDirectory=/usr/lib/vimax
+ExecStart=/usr/bin/java -jar /usr/lib/vimax/vimax.jar
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
