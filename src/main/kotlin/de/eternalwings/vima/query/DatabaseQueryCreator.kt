@@ -1,6 +1,7 @@
 package de.eternalwings.vima.query
 
 import de.eternalwings.vima.MetadataType.BOOLEAN
+import de.eternalwings.vima.MetadataType.DURATION
 import de.eternalwings.vima.MetadataType.FLOAT
 import de.eternalwings.vima.MetadataType.NUMBER
 import de.eternalwings.vima.MetadataType.RANGE
@@ -15,6 +16,8 @@ import de.eternalwings.vima.query.Comparator.SMALLER
 import de.eternalwings.vima.query.Comparator.SMALLER_OR_EQUALS
 import de.eternalwings.vima.repository.MetadataRepository
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 @Component
 class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
@@ -114,6 +117,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         return when (foundMetadata.type) {
             FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toDouble(), context, comparator)
             NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context, comparator)
+            DURATION -> valueQueryOrDefault(foundMetadata.id!!, value.toDuration(), context, comparator)
             TAGLIST -> arraySizeQueryOrDefault(foundMetadata.id!!, comparator, value.toInt(), context)
             else -> throw NotImplementedError()
         }
@@ -254,6 +258,22 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         return "json_array_length($table.$column, '$.$property') $comparator ?${context.newVar(value)}"
     }
 
+    private fun String.toDuration(): Long {
+        val durationMatch = DURATION_PATTERN.matchEntire(this) ?: throw IllegalArgumentException("Cannot parse duration")
+        val values = durationMatch.groupValues
+        val hourString = values[2]
+        val minuteString = values[4]
+        val secondString = values[6]
+        if(hourString.isEmpty() && minuteString.isEmpty() && secondString.isEmpty()) {
+            throw IllegalArgumentException("Cannot parse duration")
+        }
+
+        val hours = if(hourString.isEmpty()) 0 else hourString.toLong()
+        val minutes = if(minuteString.isEmpty()) 0 else minuteString.toLong()
+        val seconds = if(secondString.isEmpty()) 0 else secondString.toLong()
+        return Duration.of(hours, ChronoUnit.HOURS).plus(minutes, ChronoUnit.MINUTES).plus(seconds, ChronoUnit.SECONDS).seconds
+    }
+
     private fun List<Metadata>.getByName(name: String): Metadata? {
         return this.find { it.name == name }
     }
@@ -266,5 +286,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         private const val VIDEO_MODEL_NAME = "v"
         private const val METADATA_TABLE_NAME = "Metadata"
         private const val METADATA_MODEL_NAME = "m"
+
+        private val DURATION_PATTERN = "((\\d+)h)? ?((\\d+)m)? ?((\\d+)s?)?".toRegex()
     }
 }
