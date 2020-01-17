@@ -2,7 +2,7 @@ import de.eternalwings.vima.plugin.PluginRegistration
 import org.springframework.data.domain.Sort.Direction.DESC
 
 PluginRegistration.register("Watched") {
-    val watchedMetadata = boolean("Watched", DESC, false)
+    val watchedMetadata = switch("Watched", DESC, false)
 
     onStartWatching { video ->
         video[watchedMetadata] = true

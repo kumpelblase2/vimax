@@ -7,6 +7,7 @@ import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.MetadataOptions
 import de.eternalwings.vima.domain.NumberMetadataOptions
 import de.eternalwings.vima.domain.PluginInformation
+import de.eternalwings.vima.domain.RangeMetadataOptions
 import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValue
 import de.eternalwings.vima.domain.TaglistMetadataOptions
@@ -47,7 +48,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         return createdReference
     }
 
-    fun int(name: String, order: Direction, defaultValue: Int) = metadata(name, order, NumberMetadataOptions().also {
+    fun number(name: String, order: Direction, defaultValue: Int) = metadata(name, order, NumberMetadataOptions().also {
         it.defaultValue = defaultValue
     })
 
@@ -64,11 +65,14 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
     fun duration(name: String, order: Direction, defaultValue: Duration) =
             metadata(name, order, DurationMetadataOptions().also { it.defaultValue = defaultValue })
 
-    fun boolean(name: String, order: Direction, defaultValue: Boolean) =
+    fun switch(name: String, order: Direction, defaultValue: Boolean) =
             metadata(name, order, BooleanMetadataOptions().also { it.defaultValue = defaultValue })
 
     fun float(name: String, order: Direction, defaultValue: Double) =
             metadata(name, order, FloatMetadataOptions().also { it.defaultValue = defaultValue })
+
+    fun range(name: String, order: Direction, defaultValue: Int, min: Int? = null, max: Int? = null, step: Int? = null) =
+            metadata(name, order, RangeMetadataOptions(min, max, step).also { it.defaultValue = defaultValue })
 
     private fun addHandler(eventType: EventType, handler: VideoHandler) {
         val handlers = eventHandlers.computeIfAbsent(eventType) { arrayListOf() }

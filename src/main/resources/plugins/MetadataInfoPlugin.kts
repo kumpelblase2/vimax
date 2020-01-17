@@ -15,7 +15,7 @@ val highestRes = SelectionValue("1080p")
 PluginRegistration.register("Metadata") {
     val allResolutions = listOf(undefinedResolution, SD, lowRes, higherRes, highestRes)
     val resolution = selection("Resolution", ASC, allResolutions, undefinedResolution)
-    val bitRate = int("Bitrate", DESC, 0)
+    val bitRate = number("Bitrate", DESC, 0)
     val length = duration("Length", DESC, Duration.ZERO)
 
     val ffprobe = context.fFprobe
