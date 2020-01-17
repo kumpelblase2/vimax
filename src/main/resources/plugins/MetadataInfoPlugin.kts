@@ -18,7 +18,7 @@ PluginRegistration.register("Metadata") {
     val bitRate = number("Bitrate", DESC, 0)
     val length = duration("Length", DESC, Duration.ZERO)
 
-    val ffprobe = context.fFprobe
+    val ffprobe = context.ffprobe
 
     val update: (VideoContainer) -> Unit = {
         val probe = ffprobe.probe(it.location)
