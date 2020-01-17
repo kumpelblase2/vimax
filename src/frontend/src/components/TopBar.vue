@@ -1,5 +1,6 @@
 <template>
     <v-app-bar app fixed clipped-left v-if="selectedVideoIds.length === 0">
+        <v-btn icon @click="goBack" v-show="shouldShowBack"><v-icon>arrow_back</v-icon></v-btn>
         <v-app-bar-nav-icon @click.stop="$emit('drawer', !drawer)"/>
         <v-toolbar-title>Vima</v-toolbar-title>
         <v-spacer v-show="shouldShowMetadata"/>
@@ -52,7 +53,8 @@
                 'shouldShowMetadata',
                 'shouldShowSearch',
                 'shouldShowSort',
-                'shouldShowPlaylistAdd'
+                'shouldShowPlaylistAdd',
+                'shouldShowBack'
             ]),
             ...mapState('videos', ['selectedVideoIds'])
         },
@@ -64,6 +66,9 @@
                 this.playVideos(this.selectedVideoIds);
                 this.$router.push({ path: '/watch' });
                 this.clearSelectedVideos();
+            },
+            goBack() {
+                this.$router.go(-1);
             }
         }
     }

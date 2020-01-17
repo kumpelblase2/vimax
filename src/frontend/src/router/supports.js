@@ -15,3 +15,7 @@ export function supportsMetadataFilter(view) {
 export function supportsPlaylist(view) {
     return view === INDEX;
 }
+
+export function shouldShowBack(view){
+    return view !== INDEX;
+}
