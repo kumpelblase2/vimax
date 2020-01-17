@@ -3,7 +3,7 @@
         <v-text-field v-model="options.defaultValue" label="Default Value"/>
         <v-switch v-model="options.suggest" label="Suggestions"/>
     </div>
-    <div v-else-if="type === 'NUMBER' || type === 'RANGE' || type === 'FLOAT'">
+    <div v-else-if="type === 'NUMBER' || type === 'RANGE'">
         <v-text-field type="number" v-model="options.defaultValue" label="Default Value"/>
         <v-text-field type="number" v-model="options.max" label="Maximum"/>
         <v-text-field type="number" v-model="options.min" label="Minimum"/>
