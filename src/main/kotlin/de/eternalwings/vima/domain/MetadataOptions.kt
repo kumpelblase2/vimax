@@ -40,7 +40,7 @@ import java.time.LocalTime
 abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val metadataConstructor: (T?) -> MetadataValue<T>,
                                   var defaultValue: T? = null) {
     @JsonIgnore
-    fun toValue(): MetadataValue<T> = metadataConstructor(defaultValue)
+    fun toValue(): MetadataValue<T> = metadataConstructor(null)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
