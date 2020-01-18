@@ -37,11 +37,13 @@ interface VideoRepository : JpaRepository<Video, Int> {
 
     fun findVideoByLocation(location: String): Video?
 
-    @Query("SELECT DISTINCT json_extract(v.metadata_values, '$.' || ?1 || '.value') AS value FROM video v WHERE value IS NOT NULL AND value <> ''",
+    @Query("SELECT DISTINCT json_extract(v.metadata_values, '$.' || ?1 || '.value') AS value FROM video v WHERE value IS NOT NULL AND" +
+            " value <> '' ORDER BY value",
             nativeQuery = true)
     fun loadStringValuesFor(metadataId: Int): MutableSet<String>
 
-    @Query("SELECT DISTINCT json_each.value AS value FROM video v, json_each(v.metadata_values, '$.' || ?1 || '.value') WHERE value IS NOT NULL",
+    @Query("SELECT DISTINCT json_each.value AS value FROM video v, json_each(v.metadata_values, '$.' || ?1 || '.value') " +
+            "WHERE value IS NOT NULL ORDER BY value",
             nativeQuery = true)
     fun loadTagValuesFor(metadataId: Int): MutableSet<String>
 
