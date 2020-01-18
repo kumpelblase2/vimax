@@ -17,13 +17,15 @@ enum class Comparator {
     GREATER,
     SMALLER_OR_EQUALS,
     GREATER_OR_EQUALS,
-    EQUALS;
+    EQUALS,
+    NOT_EQUALS;
 
     fun inverse(): Comparator = when (this) {
         GREATER -> SMALLER_OR_EQUALS
         SMALLER -> GREATER_OR_EQUALS
         SMALLER_OR_EQUALS -> GREATER
         GREATER_OR_EQUALS -> SMALLER
-        EQUALS -> EQUALS
+        EQUALS -> NOT_EQUALS
+        NOT_EQUALS -> EQUALS
     }
 }

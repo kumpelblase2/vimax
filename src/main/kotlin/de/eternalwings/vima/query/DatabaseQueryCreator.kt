@@ -12,6 +12,7 @@ import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.query.Comparator.EQUALS
 import de.eternalwings.vima.query.Comparator.GREATER
 import de.eternalwings.vima.query.Comparator.GREATER_OR_EQUALS
+import de.eternalwings.vima.query.Comparator.NOT_EQUALS
 import de.eternalwings.vima.query.Comparator.SMALLER
 import de.eternalwings.vima.query.Comparator.SMALLER_OR_EQUALS
 import de.eternalwings.vima.repository.MetadataRepository
@@ -73,7 +74,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
                 val property = metadataList.getByName(propertyName)
                 if (property != null) {
                     when (property.type) {
-                        TAGLIST -> createComparisonQuery(propertyName, EQUALS, "0", metadataList, context, !booleanQuery.value)
+                        TAGLIST -> createComparisonQuery(propertyName, EQUALS, "0", metadataList, context, booleanQuery.value)
                         else -> createPropertyQuery(propertyName, "", metadataList, context, booleanQuery.value)
                     }
                 } else {
@@ -215,6 +216,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
             GREATER_OR_EQUALS -> ">="
             SMALLER_OR_EQUALS -> "<="
             EQUALS -> "="
+            NOT_EQUALS -> "<>"
         }
     }
 
