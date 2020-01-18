@@ -14,7 +14,8 @@
                   @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
                   item-text="name" return-object :solo="solo" dense/>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
-                    @change="update" chips deletable-chips clearable multiple :items="values" :solo="solo"/>
+                    @change="update" chips deletable-chips clearable multiple :items="values" :solo="solo"
+                    :search-input.sync="search"/>
         <v-slider v-else-if="metadataDefinition.type === 'RANGE'" :label="metadataDefinition.name"
                   :value="metadataValue" @change="updateNumber" :solo="solo" :min="metadataDefinition.options.min"
                   :max="metadataDefinition.options.max" thumb-label/>
@@ -30,7 +31,8 @@
         data() {
             return {
                 values: [],
-                isLoading: false
+                isLoading: false,
+                search: ""
             }
         },
         computed: {
@@ -41,6 +43,9 @@
         },
         methods: {
             update(ev) {
+                if(this.metadataDefinition.type === 'TAGLIST') {
+                    this.search = "";
+                }
                 this.$emit('change', ev);
             },
             updateNumber(ev) {
