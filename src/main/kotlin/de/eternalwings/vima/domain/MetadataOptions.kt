@@ -76,7 +76,7 @@ data class SelectionMetadataOptions(val values: List<SelectionValue> = emptyList
 
 data class SelectionValue(var name: String? = null)
 
-class TaglistMetadataOptions : MetadataOptions<List<String>>(TAGLIST, ::TaglistMetadataValue)
+class TaglistMetadataOptions : MetadataOptions<Set<String>>(TAGLIST, ::TaglistMetadataValue)
 
 class BooleanMetadataOptions : MetadataOptions<Boolean>(BOOLEAN, ::BooleanMetadataValue)
 

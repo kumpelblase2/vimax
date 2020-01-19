@@ -50,7 +50,7 @@ data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<
 data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>() {
 }
 
-data class TaglistMetadataValue(override var value: List<String>? = emptyList()) : MetadataValue<List<String>>() {
+data class TaglistMetadataValue(override var value: Set<String>? = emptySet()) : MetadataValue<Set<String>>() {
 }
 
 data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>() {

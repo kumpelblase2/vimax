@@ -56,7 +56,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         it.defaultValue = defaultValue
     })
 
-    fun taglist(name: String, order: Direction, defaultValue: List<String> = emptyList()) =
+    fun taglist(name: String, order: Direction, defaultValue: Set<String> = emptySet()) =
             metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue })
 
     fun selection(name: String, order: Direction, values: List<SelectionValue>, defaultValue: SelectionValue) =
