@@ -32,9 +32,10 @@ export function toDisplayValue(type, value) {
         switch(type) {
             case 'TEXT':
             case 'NUMBER':
-            case 'FLOAT':
             case 'RANGE':
                 return value.toString();
+            case 'FLOAT':
+                return (Math.round(value * 100) / 100).toString();
             case 'BOOLEAN':
                 return value ? 'Yes' : 'No';
             case 'SELECTION':
