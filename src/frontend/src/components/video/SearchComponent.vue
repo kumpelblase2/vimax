@@ -7,6 +7,8 @@
             append-icon="search"
             color="white"
             hide-details
+            clearable
+            @click:clear="reset"
         />
     </form>
 </template>
@@ -30,6 +32,10 @@
             doSearch() {
                 this.updateQuery(this.query);
                 this.search();
+            },
+            reset() {
+                this.query = "";
+                this.doSearch();
             }
         },
         mounted() {
