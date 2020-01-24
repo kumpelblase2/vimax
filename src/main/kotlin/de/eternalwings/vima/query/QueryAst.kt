@@ -18,7 +18,13 @@ enum class Comparator {
     SMALLER_OR_EQUALS,
     GREATER_OR_EQUALS,
     EQUALS,
-    NOT_EQUALS;
+    NOT_EQUALS,
+    LIKE,
+    NOT_LIKE,
+    IS,
+    IS_NOT,
+    EXISTS,
+    NOT_EXISTS;
 
     fun inverse(): Comparator = when (this) {
         GREATER -> SMALLER_OR_EQUALS
@@ -27,5 +33,23 @@ enum class Comparator {
         GREATER_OR_EQUALS -> SMALLER
         EQUALS -> NOT_EQUALS
         NOT_EQUALS -> EQUALS
+        IS -> IS_NOT
+        IS_NOT -> IS
+        LIKE -> NOT_LIKE
+        NOT_LIKE -> LIKE
+        EXISTS -> NOT_EXISTS
+        NOT_EXISTS -> EXISTS
+    }
+
+    fun toDB(): String {
+        return when (this) {
+            GREATER -> ">"
+            SMALLER -> "<"
+            GREATER_OR_EQUALS -> ">="
+            SMALLER_OR_EQUALS -> "<="
+            EQUALS -> "="
+            NOT_EQUALS -> "<>"
+            else -> this.name.replace("_", " ")
+        }
     }
 }
