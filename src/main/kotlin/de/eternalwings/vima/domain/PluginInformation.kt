@@ -2,6 +2,7 @@ package de.eternalwings.vima.domain
 
 import java.time.LocalDateTime
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
 
 @Entity
@@ -10,6 +11,8 @@ class PluginInformation(
         var name: String? = null,
         @Column(nullable = false)
         var enabled: Boolean = false,
+        @Embedded
+        var information: PluginDescription = PluginDescription(),
         var disabledAt: LocalDateTime? = null,
         var enabledAt: LocalDateTime? = null,
         var settings: String? = "{}"
@@ -24,9 +27,5 @@ class PluginInformation(
         enabled = false
         disabledAt = LocalDateTime.now()
         enabledAt = null
-    }
-
-    fun copy(): PluginInformation {
-        return PluginInformation(name, enabled, disabledAt, enabledAt, settings).also { it.id = this.id }
     }
 }

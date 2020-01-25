@@ -13,6 +13,10 @@ val higherRes = SelectionValue("720p")
 val highestRes = SelectionValue("1080p")
 
 PluginRegistration.register("Metadata") {
+    description = "Show video file metadata provided by ffmpeg."
+    author = "kumpelblase2"
+    version = "1.0"
+
     val allResolutions = listOf(undefinedResolution, SD, lowRes, higherRes, highestRes)
     val resolution = selection("Resolution", ASC, allResolutions, undefinedResolution)
     val bitRate = number("Bitrate", DESC, 0)

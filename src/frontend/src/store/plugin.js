@@ -5,6 +5,9 @@ export default {
     state: {
         headers: [
             { text: "Name", value: "name" },
+            { text: "Description", value: "description", width: 500 },
+            { text: "Author", value: "author", width: 200 },
+            { text: "Version", value: "version", width: 150 },
             { text: "Enabled", value: "enabled", width: 150 },
             { text: "Added On", value: "createdAt", width: 150 },
             { text: "Enabled On", value: "enabledAt", width: 150 },

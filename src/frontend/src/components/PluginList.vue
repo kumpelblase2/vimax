@@ -10,6 +10,9 @@
                 <template slot="item" slot-scope="props">
                     <tr>
                         <td>{{ props.item.name }}</td>
+                        <td>{{ props.item.information.description }}</td>
+                        <td>{{ props.item.information.author }}</td>
+                        <td>{{ props.item.information.version }}</td>
                         <td style="display: flex;">
                             <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
                                       style="margin-top: 10px"></v-switch>

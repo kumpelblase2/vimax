@@ -30,9 +30,10 @@ class PluginManager(private val pluginRepository: PluginInformationRepository,
     }
 
     fun addPlugin(information: PluginInformation, pluginConfig: PluginConfig) {
-        if (plugins.any { it.first.name == information.name }) throw PluginAlreadyRegisteredException(information.name)
-        LOGGER.info("Loaded plugin ${information.name}")
-        plugins = plugins + (information to pluginConfig)
+        val updatedInformation = pluginRepository.save(information)
+        if (plugins.any { it.first.name == updatedInformation.name }) throw PluginAlreadyRegisteredException(updatedInformation.name)
+        LOGGER.info("Loaded plugin ${updatedInformation.name}")
+        plugins = plugins + (updatedInformation to pluginConfig)
     }
 
     private fun createPlugin(name: String): PluginInformation {

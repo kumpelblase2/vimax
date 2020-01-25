@@ -12,6 +12,7 @@ import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValue
 import de.eternalwings.vima.domain.TaglistMetadataOptions
 import de.eternalwings.vima.domain.TextMetadataOptions
+import de.eternalwings.vima.ext.prop
 import de.eternalwings.vima.plugin.EventType.CREATE
 import de.eternalwings.vima.plugin.EventType.FINISH_WATCHING
 import de.eternalwings.vima.plugin.EventType.START_WATCHING
@@ -28,6 +29,9 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
     internal val ownedMetadata: MutableList<MetadataContainer<*>> = arrayListOf()
 
     internal val name: String = pluginInformation.name!!
+    var description by prop(pluginInformation.information::description)
+    var author by prop(pluginInformation.information::author)
+    var version by prop(pluginInformation.information::version)
 
     private fun createMetadata(metadata: Metadata): MetadataInfo<*> {
         return MetadataInfo.fromMetadata(metadataProcess.createOrUpdate(metadata))
@@ -48,13 +52,11 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         return createdReference
     }
 
-    fun number(name: String, order: Direction, defaultValue: Int) = metadata(name, order, NumberMetadataOptions().also {
-        it.defaultValue = defaultValue
-    })
+    fun number(name: String, order: Direction, defaultValue: Int) =
+            metadata(name, order, NumberMetadataOptions().also { it.defaultValue = defaultValue })
 
-    fun text(name: String, order: Direction, defaultValue: String) = metadata(name, order, TextMetadataOptions().also {
-        it.defaultValue = defaultValue
-    })
+    fun text(name: String, order: Direction, defaultValue: String) =
+            metadata(name, order, TextMetadataOptions().also { it.defaultValue = defaultValue })
 
     fun taglist(name: String, order: Direction, defaultValue: Set<String> = emptySet()) =
             metadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue })

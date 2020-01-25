@@ -21,3 +21,7 @@ class PropertyDelegate<R>(private val prop: KProperty<R>) {
                 ?: throw IllegalArgumentException("Cannot set val property")
     }
 }
+
+fun <R> prop(prop: KProperty<R>): PropertyDelegate<R> {
+    return PropertyDelegate(prop)
+}
