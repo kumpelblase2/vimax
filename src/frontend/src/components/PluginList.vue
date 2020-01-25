@@ -14,11 +14,12 @@
                             <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
                                       style="margin-top: 10px"></v-switch>
                             <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
-                                    title="Reload Metadata for all videos">refresh</v-icon>
+                                    title="Reload Metadata for all videos">refresh
+                            </v-icon>
                         </td>
-                        <td>{{ props.item.creationTime }}</td>
-                        <td>{{ props.item.enabledAt }}</td>
-                        <td>{{ props.item.disabledAt }}</td>
+                        <td>{{ displayDate(props.item.creationTime) }}</td>
+                        <td>{{ displayDate(props.item.enabledAt) }}</td>
+                        <td>{{ displayDate(props.item.disabledAt) }}</td>
                     </tr>
                 </template>
                 <template slot="no-data">
@@ -47,7 +48,7 @@
         data() {
             return {
                 loading: true,
-                updating: false,
+                updating: false
             }
         },
         computed: {
@@ -59,6 +60,17 @@
                 this.updating = true;
                 await pluginApi.refresh(name);
                 this.updating = false;
+            },
+            displayDate(date) {
+                if(date != null) {
+                    const parsed = new Date(Date.parse(date));
+                    return parsed.getFullYear() + "-" + (parsed.getMonth() + 1).toString().padStart(2, "0") +
+                        "-" + parsed.getDate().toString().padStart(2, "0") +
+                        " " + parsed.getHours().toString().padStart(2, "0") +
+                        ":" + parsed.getMinutes().toString().padStart(2, "0");
+                } else {
+                    return "";
+                }
             }
         },
         async mounted() {

@@ -6,9 +6,9 @@ export default {
         headers: [
             { text: "Name", value: "name" },
             { text: "Enabled", value: "enabled", width: 150 },
-            { text: "Added On", value: "createdAt", width: 400 },
-            { text: "Enabled On", value: "enabledAt", width: 400 },
-            { text: "Disabled On", value: "disabledAt", width: 400 }
+            { text: "Added On", value: "createdAt", width: 150 },
+            { text: "Enabled On", value: "enabledAt", width: 150 },
+            { text: "Disabled On", value: "disabledAt", width: 150 }
         ],
         plugins: []
     },
