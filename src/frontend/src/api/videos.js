@@ -5,8 +5,8 @@ export default {
         return axios.get('/api/videos').then(response => response.data);
     },
 
-    getVideosByPage(page, query = "", sortProp = 'Name', sortDir = 'ASC') {
-        return axios.get(`/api/videos?query=${encodeURIComponent(query)}&page=${page}&sortby=${sortProp}&sortdir=${sortDir}`).then(response => response.data);
+    getVideosByPage(query = "", sortProp = 'Name', sortDir = 'ASC') {
+        return axios.get(`/api/videos?query=${encodeURIComponent(query)}&sortby=${sortProp}&sortdir=${sortDir}`).then(response => response.data);
     },
 
     getRecentVideos() {

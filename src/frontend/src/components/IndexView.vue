@@ -29,14 +29,14 @@
         async mounted() {
             this.resetPage();
             await this.loadMetadata();
-            return this.loadVideosOfCurrentPage();
+            return this.search();
         },
         computed: {
             ...mapState('videos', ['isLoading','hasMoreVideos','displayVideoIds']),
             ...mapGetters('videos', ['hasVideosToDisplay'])
         },
         methods: {
-            ...mapActions('videos', ['loadVideosOfCurrentPage']),
+            ...mapActions('videos', ['search','loadVideosOfCurrentPage']),
             ...mapMutations('videos', ['resetPage']),
             ...mapActions('settings/metadata',['loadMetadata'])
         }

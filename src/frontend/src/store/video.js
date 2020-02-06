@@ -22,6 +22,7 @@ export default {
         selectedVideoIds: [],
         isLoading: false,
         displayVideoIds: [],
+        searchResultVideoIds: [],
         hasMoreVideos: true,
         currentPage: 0
     },
@@ -52,6 +53,9 @@ export default {
         },
         hasVideosSelected(state) {
             return state.selectedVideoIds.length > 0;
+        },
+        searchedVideosAtPage: (state) => {
+            return (page, size) => state.searchResultVideoIds.slice(page * size, page * size + size);
         }
     },
     mutations: {
@@ -89,6 +93,7 @@ export default {
         [CLEAR_VIDEOS](state) {
             state.displayVideoIds = [];
             state.selectedVideoIds = [];
+            state.searchResultVideoIds = [];
         },
         setLoading(state, value) {
             state.isLoading = value;
@@ -109,6 +114,9 @@ export default {
         },
         selectAllVideos(state) {
             state.selectedVideoIds = [...state.displayVideoIds];
+        },
+        addSearchResultIds(state, ids) {
+            state.searchResultVideoIds.push(...ids);
         }
     },
     actions: {
@@ -119,9 +127,9 @@ export default {
                 commit('selectVideo', videoId);
             }
         },
-        async loadVideosOfCurrentPage({ commit, state, dispatch, rootState }) {
+        async loadVideosOfCurrentPage({ commit, state, dispatch, getters }) {
             commit('setLoading', true);
-            const videoIds = await videoApi.getVideosByPage(state.currentPage, rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+            const videoIds = getters.searchedVideosAtPage(state.currentPage, 50);
             commit('nextPage');
             await dispatch('loadVideos', videoIds);
             commit('addDisplayVideos', videoIds);
@@ -130,9 +138,11 @@ export default {
             }
             commit('setLoading', false);
         },
-        async search({ commit, dispatch }) {
+        async search({ commit, dispatch, rootState }) {
             commit(CLEAR_VIDEOS);
             commit('resetPage');
+            const videoIds = await videoApi.getVideosByPage(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+            commit('addSearchResultIds',videoIds);
             await dispatch('loadVideosOfCurrentPage');
         },
         async reloadVideo({ commit }, videoId) {

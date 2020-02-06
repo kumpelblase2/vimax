@@ -4,6 +4,7 @@ import de.eternalwings.vima.domain.Library
 import de.eternalwings.vima.domain.Video
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -23,15 +24,15 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun getAllIds(): List<Int>
 
     @Query("SELECT v.id FROM Video v WHERE v.id in ?1")
-    fun findVideoIdsSortedByOwnProperty(ids: Collection<Int>, pageable: Pageable): List<Int>
+    fun findVideoIdsSortedByOwnProperty(ids: Collection<Int>, sort: Sort): List<Int>
 
-    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') ASC LIMIT ?4 OFFSET ?3",
+    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') ASC",
             nativeQuery = true)
-    fun findVideoIdsSortedByAsc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
+    fun findVideoIdsSortedByAsc(ids: Collection<Int>, metadataId: Int): List<Int>
 
-    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') DESC LIMIT ?4 OFFSET ?3",
+    @Query("SELECT v.id FROM video v WHERE v.id IN ?1 ORDER BY json_extract(v.metadata_values, '$.' || ?2 || '.value') DESC",
             nativeQuery = true)
-    fun findVideoIdsSortedByDesc(ids: Collection<Int>, metadataId: Int, offset: Int, limit: Int): List<Int>
+    fun findVideoIdsSortedByDesc(ids: Collection<Int>, metadataId: Int): List<Int>
 
     fun findVideosByUpdateTimeAfter(timestamp: LocalDateTime): List<Video>
 
