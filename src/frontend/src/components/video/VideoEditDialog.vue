@@ -18,7 +18,7 @@
                 </v-item-group>
                 <div v-for="metadata in editableMetadata" :key="metadata.id">
                     <metadata-value-editor :metadata-definition="metadata"
-                                           :metadata-value="video.metadata[metadata.id].value"
+                                           :metadata-value="getValueOf(metadata)"
                                            @change="handleMetadataUpdate(metadata.id, $event)"></metadata-value-editor>
                 </div>
             </v-card-text>
@@ -69,6 +69,14 @@
             },
             handleMetadataUpdate(id, event) {
                 this.setEditingMetadataValue({ id, value: event });
+            },
+            getValueOf(metadata) {
+                const value = this.video.metadata[metadata.id].value;
+                if(value != null) {
+                    return value;
+                } else {
+                    return metadata.options.defaultValue;
+                }
             }
         }
     }
