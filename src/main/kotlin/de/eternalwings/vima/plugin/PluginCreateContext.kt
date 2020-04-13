@@ -19,6 +19,7 @@ import de.eternalwings.vima.plugin.EventType.START_WATCHING
 import de.eternalwings.vima.plugin.EventType.UPDATE
 import de.eternalwings.vima.plugin.MetadataContainer.ExternalMetadata
 import de.eternalwings.vima.plugin.MetadataContainer.OwnedMetadata
+import de.eternalwings.vima.plugin.PluginPriority.NORMAL
 import de.eternalwings.vima.process.MetadataProcess
 import org.springframework.data.domain.Sort.Direction
 import java.time.Duration
@@ -76,25 +77,25 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
     fun range(name: String, order: Direction, defaultValue: Int, min: Int? = null, max: Int? = null, step: Int? = null) =
             metadata(name, order, RangeMetadataOptions(min, max, step).also { it.defaultValue = defaultValue })
 
-    private fun addHandler(eventType: EventType, handler: VideoHandler) {
+    private fun addHandler(eventType: EventType, priority: PluginPriority, handler: VideoHandlerCall) {
         val handlers = eventHandlers.computeIfAbsent(eventType) { arrayListOf() }
-        handlers.add(handler)
+        handlers.add(VideoHandler(priority, handler))
     }
 
-    fun onCreate(handler: VideoHandler) {
-        addHandler(CREATE, handler)
+    fun onCreate(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
+        addHandler(CREATE, priority, handler)
     }
 
-    fun onUpdate(handler: VideoHandler) {
-        addHandler(UPDATE, handler)
+    fun onUpdate(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
+        addHandler(UPDATE, priority, handler)
     }
 
-    fun onStartWatching(handler: VideoHandler) {
-        addHandler(START_WATCHING, handler)
+    fun onStartWatching(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
+        addHandler(START_WATCHING, priority, handler)
     }
 
-    fun onFinishWatching(handler: VideoHandler) {
-        addHandler(FINISH_WATCHING, handler)
+    fun onFinishWatching(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
+        addHandler(FINISH_WATCHING, priority, handler)
     }
 
     operator fun <T> VideoContainer.set(reference: OwnedMetadata<T>, value: T) {

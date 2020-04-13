@@ -39,8 +39,6 @@ sealed class MetadataContainer<T>(protected val metadata: MetadataInfo<T>) {
     }
 }
 
-typealias VideoHandler = (VideoContainer) -> Unit
-
 object PluginRegistration {
     private lateinit var pluginManager: PluginManager
     private lateinit var metadataProcess: MetadataProcess

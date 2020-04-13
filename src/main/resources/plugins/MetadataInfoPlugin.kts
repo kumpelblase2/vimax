@@ -1,4 +1,5 @@
 import de.eternalwings.vima.domain.SelectionValue
+import de.eternalwings.vima.plugin.PluginPriority.NORMAL
 import de.eternalwings.vima.plugin.PluginRegistration
 import de.eternalwings.vima.plugin.VideoContainer
 import org.springframework.data.domain.Sort.Direction.ASC
@@ -37,7 +38,7 @@ PluginRegistration.register("Metadata") {
         }
     }
 
-    onCreate(update)
+    onCreate(NORMAL, update)
 
     onUpdate {
         if (it[bitRate] == null || it[bitRate] == 0) {

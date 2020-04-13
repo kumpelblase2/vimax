@@ -13,8 +13,8 @@ data class PluginConfig(val pluginName: String, private val eventHandlers: Map<E
 
     fun callHandlerFor(eventType: EventType, videos: List<Video>) {
         val containerVideos = videos.map { VideoContainer.fromVideo(it) }
-        eventHandlers.getOrDefault(eventType, Collections.emptyList()).forEach { handler ->
-            containerVideos.forEach { handler(it) }
+        eventHandlers.getOrDefault(eventType, Collections.emptyList()).sortedBy { it.priority.ordinal }.forEach { handler ->
+            containerVideos.forEach { handler.call(it) }
         }
 
         containerVideos.forEachIndexed { index, container ->
