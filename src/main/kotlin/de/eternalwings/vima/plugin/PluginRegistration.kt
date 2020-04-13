@@ -27,6 +27,14 @@ sealed class MetadataContainer<T>(protected val metadata: MetadataInfo<T>) {
         return value.value
     }
 
+    fun update(video: VideoContainer, updater: (T?) -> T?) {
+        val defaultValue = this.metadata.defaultValue
+        val existingMetadata = video.metadata
+        val value = existingMetadata[this.metadata.id] as MetadataValue<T>
+        val updated = updater(value.value ?: defaultValue)
+        value.value = updated
+    }
+
     class ExternalMetadata<T>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata)
     class OwnedMetadata<T>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata) {
         fun set(video: VideoContainer, value: T) {

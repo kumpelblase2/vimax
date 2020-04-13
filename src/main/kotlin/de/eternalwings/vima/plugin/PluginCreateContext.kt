@@ -102,6 +102,11 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         reference.set(this, value)
     }
 
+    fun <T> VideoContainer.set(name: String, updater: (T?) -> T?) {
+        val existing = metadataProcess.getSimpleReference(name) ?: return
+        ExternalMetadata(existing as MetadataInfo<T>).update(this, updater)
+    }
+
     operator fun <T> VideoContainer.get(reference: MetadataContainer<T>): T? {
         return reference.get(this)
     }
