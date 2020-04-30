@@ -56,7 +56,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         return when (queryPart) {
             is UnionQuery -> or(queryPart.parts.map { createQueryCondition(it, metadataList, context) })
             is IntersectionQuery -> and(queryPart.parts.map { createQueryCondition(it, metadataList, context) })
-            is PropertyQuery -> createPropertyQuery(queryPart.property, queryPart.value, metadataList, context)
+            is PropertyQuery -> createPropertyQuery(queryPart.property, queryPart.value, metadataList, queryPart.like, context)
             is BooleanQuery -> createBooleanQuery(queryPart, metadataList, context)
             is TextQuery -> createTextQuery(queryPart.text, metadataList, context)
             is ComparisonQuery -> createComparisonQuery(queryPart.property, queryPart.comparator, queryPart.value, metadataList,
@@ -73,13 +73,13 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
                 if (property != null) {
                     when (property.type) {
                         TAGLIST -> createComparisonQuery(propertyName, NOT_EQUALS, "0", metadataList, context)
-                        else -> createPropertyQuery(propertyName, "", metadataList, context)
+                        else -> createPropertyQuery(propertyName, "", metadataList, false, context).inverse()
                     }
                 } else {
                     createTextQuery(propertyName, metadataList, context)
                 }
             }
-            is PropertyQuery -> createPropertyQuery(inner.property, inner.value, metadataList, context)
+            is PropertyQuery -> createPropertyQuery(inner.property, inner.value, metadataList, inner.like, context)
             is ComparisonQuery -> createComparisonQuery(inner.property, inner.comparator, inner.value, metadataList, context)
             else -> throw InvalidQueryOperationException(inner)
         }
@@ -87,15 +87,15 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         return if (!booleanQuery.value) query.inverse() else query
     }
 
-    private fun createPropertyQuery(property: String, value: String, metadataList: List<Metadata>,
+    private fun createPropertyQuery(property: String, value: String, metadataList: List<Metadata>, like: Boolean,
                                     context: QueryContext): Filter {
         val foundMetadata =
                 metadataList.getByName(property) ?: throw MetadataNotValidException(property)
 
         return when (foundMetadata.type) {
             BOOLEAN -> booleanQueryOrDefault(foundMetadata.id!!, value.toBoolean(), context)
-            TAGLIST -> arrayContainsQueryOrDefault(foundMetadata.id!!, value, context)
-            TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, true)
+            TAGLIST -> arrayContainsQueryOrDefault(foundMetadata.id!!, value, like, context)
+            TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, like)
             FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toFloat(), context)
             NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context)
             SELECTION -> valueQueryOrDefault(foundMetadata.id!!, value, context, valuePath = "value.name",
@@ -145,14 +145,14 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
                 "$METADATA_MODEL_NAME.id = $metadataId AND ", checkValue)
     }
 
-    private fun arrayContainsQueryOrDefault(metadataId: Int, value: String, context: QueryContext): Filter {
+    private fun arrayContainsQueryOrDefault(metadataId: Int, value: String, like: Boolean, context: QueryContext): Filter {
         val jsonProp = "$metadataId.value"
         return or(
-                tagValueContainsQuery(VIDEO_MODEL_NAME, value, context, jsonProp),
+                tagValueContainsQuery(VIDEO_MODEL_NAME, value, like, context, jsonProp),
                 and(
                         jsonNullMatch(VIDEO_MODEL_NAME, context, jsonProp),
                         metadataDefaultValueCheck(metadataId) {
-                            tagValueContainsQuery(it, value, context, property = "defaultValue", column = "options")
+                            tagValueContainsQuery(it, value, like, context, property = "defaultValue", column = "options")
                         }
                 )
         )
@@ -160,8 +160,17 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
 
     private fun booleanQueryOrDefault(metadataId: Int, booleanValue: Boolean, context: QueryContext): Filter {
         val jsonProp = "$metadataId.value"
+        val booleanCheck = if (booleanValue) {
+            booleanValueQuery(VIDEO_MODEL_NAME, booleanValue, context, jsonProp)
+        } else {
+            or(
+                    booleanValueQuery(VIDEO_MODEL_NAME, booleanValue, context, jsonProp),
+                    jsonNullMatch(VIDEO_MODEL_NAME, context, jsonProp)
+            )
+        }
+
         return or(
-                booleanValueQuery(VIDEO_MODEL_NAME, booleanValue, context, jsonProp),
+                booleanCheck,
                 and(
                         jsonNullMatch(VIDEO_MODEL_NAME, context, jsonProp),
                         metadataDefaultValueCheck(metadataId) {
@@ -204,10 +213,11 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         ))
     }
 
-    private fun tagValueContainsQuery(table: String, value: String, context: QueryContext,
+    private fun tagValueContainsQuery(table: String, value: String, like: Boolean, context: QueryContext,
                                       property: String = "value",
                                       column: String = "metadata_values") =
-            jsonArrayContains(table, property, value, context, column = column)
+            jsonArrayContains(table, property, if (like) "%$value%" else value, context, column = column,
+                    operator = if (like) LIKE else EQUALS)
 
     private fun textValueQuery(table: String, value: String, context: QueryContext, exact: Boolean = false,
                                property: String = "value", column: String = "metadata_values"): Filter {
@@ -233,7 +243,8 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
     private fun jsonArrayContains(table: String, property: String, value: Any?, context: QueryContext,
                                   operator: Comparator = EQUALS, column: String = "metadata_values"): Filter {
         val iterator = "json_each(json_extract($table.$column, '$.$property'))"
-        return ContainerQuery(EXISTS, "SELECT * FROM $iterator WHERE json_each.value ${operator.toDB()} ?${context.newVar(value)}")
+        return ContainerQuery(EXISTS,
+                "SELECT * FROM $iterator WHERE json_each.value ${operator.toDB()} ?${context.newVar(value)}")
     }
 
     private fun jsonArraySize(table: String, comparator: Comparator, value: Number, context: QueryContext,

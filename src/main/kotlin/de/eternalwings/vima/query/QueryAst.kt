@@ -9,7 +9,7 @@ data class UnionQuery(val parts: List<QueryPart>) : QueryPart
 data class TextQuery(val text: String) : QueryPart
 data class BooleanQuery(val query: QueryPart, val value: Boolean) : QueryPart
 data class BooleanOp(val value: Boolean)
-data class PropertyQuery(val property: String, val value: String) : QueryPart
+data class PropertyQuery(val property: String, val value: String, val like: Boolean = false) : QueryPart
 data class ComparisonQuery(val property: String, val comparator: Comparator, val value: String) : QueryPart
 
 enum class Comparator {

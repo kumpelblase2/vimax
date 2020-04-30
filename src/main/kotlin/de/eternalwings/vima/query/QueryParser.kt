@@ -29,6 +29,7 @@ object QueryParser : Grammar<FullQuery>() {
     val smaller by token("<")
     val larger by token(">")
     val equals by token("=")
+    val like by token("~")
     val AND by token("AND|and")
     val OR by token("OR|or")
     val openBrace by token("\\(")
@@ -54,10 +55,11 @@ object QueryParser : Grammar<FullQuery>() {
     }
 
     val property by (value and skip(colon) and value).map { PropertyQuery(it.t1, it.t2) }
+    val likeProperty by (value and skip(like) and value).map { PropertyQuery(it.t1, it.t2, true) }
     val comparison by (value and comparator and value).map { ComparisonQuery(it.t1, it.t2, it.t3) }
     val text by value.map { TextQuery(it) }
 
-    val term: Parser<QueryPart> by (optional(boolean) and (property or comparison or text)).map {
+    val term: Parser<QueryPart> by (optional(boolean) and (property or likeProperty or comparison or text)).map {
         val boolOp = it.t1
         if (boolOp != null) {
             BooleanQuery(it.t2, boolOp.value)
