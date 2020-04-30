@@ -29,7 +29,8 @@
         methods: {
             ...mapActions('videos', ['search']),
             ...mapMutations('search', ['updateQuery']),
-            doSearch() {
+            doSearch($event) {
+                $event.preventDefault();
                 this.updateQuery(this.query);
                 this.search();
             },
