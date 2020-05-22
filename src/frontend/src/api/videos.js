@@ -9,6 +9,10 @@ export default {
         return axios.get(`/api/videos?query=${encodeURIComponent(query)}&sortby=${sortProp}&sortdir=${sortDir}`).then(response => response.data);
     },
 
+    getAllIds(query) {
+        return axios.get(`/api/videos/id?query=${encodeURIComponent(query)}`).then(response => response.data);
+    },
+
     getRecentVideos() {
         return axios.get('/api/home').then(response => response.data);
     },

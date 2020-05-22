@@ -6,8 +6,9 @@
             placeholder="Search..."
             append-icon="search"
             color="white"
-            hide-details
+            :hide-details="!hasError"
             clearable
+            :error-messages="queryErrors"
             @click:clear="reset"
         />
     </form>
@@ -24,7 +25,17 @@
             }
         },
         computed: {
-            ...mapGetters('search', ['searchQuery'])
+            ...mapGetters('search', ['searchQuery', 'error']),
+            hasError() {
+                return this.error != null && this.error.length > 0;
+            },
+            queryErrors() {
+                if(this.hasError) {
+                    return [this.error];
+                } else {
+                    return [];
+                }
+            }
         },
         methods: {
             ...mapActions('videos', ['search']),

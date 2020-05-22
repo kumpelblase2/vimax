@@ -139,10 +139,18 @@ export default {
             commit('setLoading', false);
         },
         async search({ commit, dispatch, rootState }) {
+            let videoIds;
+            try {
+                videoIds = await videoApi.getVideosByPage(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+                commit('search/updateQueryError', "", { root: true });
+            } catch(exception) {
+                // Save error
+                commit('search/updateQueryError', "Invalid query.", { root: true });
+                return;
+            }
             commit(CLEAR_VIDEOS);
             commit('resetPage');
-            const videoIds = await videoApi.getVideosByPage(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
-            commit('addSearchResultIds',videoIds);
+            commit('addSearchResultIds', videoIds);
             await dispatch('loadVideosOfCurrentPage');
         },
         async reloadVideo({ commit }, videoId) {

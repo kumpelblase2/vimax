@@ -5,7 +5,8 @@ export default {
         sort: {
             property: 'name',
             direction: 'ASC'
-        }
+        },
+        queryError: ""
     },
     getters: {
         sortingProperty(state) {
@@ -16,6 +17,9 @@ export default {
         },
         searchQuery(state) {
             return state.query;
+        },
+        error(state) {
+            return state.queryError;
         }
     },
     mutations: {
@@ -27,6 +31,9 @@ export default {
         },
         updateSortingDirection(state, direction) {
             state.sort.direction = direction;
+        },
+        updateQueryError(state, error) {
+            state.queryError = error;
         }
     }
 }
