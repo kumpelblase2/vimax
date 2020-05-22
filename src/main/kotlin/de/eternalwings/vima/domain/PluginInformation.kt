@@ -12,11 +12,20 @@ class PluginInformation(
         @Column(nullable = false)
         var enabled: Boolean = false,
         @Embedded
-        var information: PluginDescription = PluginDescription(),
+        var information: PluginDescription? = PluginDescription(),
         var disabledAt: LocalDateTime? = null,
         var enabledAt: LocalDateTime? = null,
         var settings: String? = "{}"
 ) : BasePersistable<Int>() {
+
+    val description: PluginDescription
+        get() {
+            if(information == null) {
+                information = PluginDescription()
+            }
+            return information!!
+        }
+
     fun enable() {
         enabled = true
         disabledAt = null

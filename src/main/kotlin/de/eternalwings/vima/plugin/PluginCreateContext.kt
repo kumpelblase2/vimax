@@ -30,9 +30,9 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
     internal val ownedMetadata: MutableList<MetadataContainer<*>> = arrayListOf()
 
     internal val name: String = pluginInformation.name!!
-    var description by prop(pluginInformation.information::description)
-    var author by prop(pluginInformation.information::author)
-    var version by prop(pluginInformation.information::version)
+    var description by prop(pluginInformation.description::description)
+    var author by prop(pluginInformation.description::author)
+    var version by prop(pluginInformation.description::version)
 
     private fun createMetadata(metadata: Metadata): MetadataInfo<*> {
         return MetadataInfo.fromMetadata(metadataProcess.createOrUpdate(metadata))
