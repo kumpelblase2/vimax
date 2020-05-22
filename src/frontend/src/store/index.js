@@ -7,6 +7,7 @@ import page from "./page";
 import search from "./search";
 import playlist from "./playlist";
 import player from "./player";
+import checkin from "./checkin";
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
         page,
         search,
         playlist,
-        player
+        player,
+        checkin
     }
 });

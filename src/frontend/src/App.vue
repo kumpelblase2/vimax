@@ -26,6 +26,14 @@
                         <v-list-item-title>Sorting Mode</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                <v-list-item to="/checkin">
+                    <v-list-item-action>
+                        <v-icon>meeting_room</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Checkin Mode</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
                 <v-list-item to="/settings">
                     <v-list-item-action>
                         <v-icon>settings</v-icon>

@@ -65,6 +65,15 @@ class VideoController(private val videoRepository: VideoRepository,
         }
     }
 
+    @GetMapping("/videos/id")
+    fun getAllVideoIds(@RequestParam("query", defaultValue = "") query: String): List<Int> {
+        return if (query.isNotBlank()) {
+            videoProcess.searchFor(query.trim())
+        } else {
+            videoRepository.getAllIds()
+        }
+    }
+
     @GetMapping("/videos/byid")
     fun getVideosToSortById(@RequestParam("ids", required = true) ids: List<Int>): List<Video> {
         return videoRepository.findAllById(ids)
