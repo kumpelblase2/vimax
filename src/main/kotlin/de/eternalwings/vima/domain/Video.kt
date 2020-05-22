@@ -53,5 +53,5 @@ data class Thumbnail(
     @get:Transient
     @get:JsonIgnore
     val locationPath: Path
-        get() = Paths.get(location)
+        get() = Paths.get(location!!)
 }
