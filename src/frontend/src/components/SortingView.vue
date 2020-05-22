@@ -24,7 +24,7 @@
             </v-row>
             <v-row v-if="nextVideo" class="selected-video">
                 <v-flex xs8>
-                    <video-player :autoplay="false" :disable-events="true"/>
+                    <single-video-player :autoplay="false" :disable-events="true" :video="video"/>
                 </v-flex>
                 <v-flex xs4 style="overflow-y: scroll">
                     <v-card>
@@ -55,7 +55,7 @@
     import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
     import SortingBucketComponent from "./sortview/SortingBucketComponent";
     import SortingBucketAddComponent from "./sortview/SortingBucketAddComponent";
-    import VideoPlayer from "./VideoPlayer";
+    import SingleVideoPlayer from "./SingleVideoPlayer";
     import VideoMetadataDisplay from "./video/VideoMetadataDisplay";
     import VideoEditDialog from "./video/VideoEditDialog";
 
@@ -66,13 +66,17 @@
                 listener: null
             };
         },
-        components: { VideoMetadataDisplay, VideoPlayer, SortingBucketAddComponent, SortingBucketComponent, VideoEditDialog },
+        components: { VideoMetadataDisplay, SingleVideoPlayer, SortingBucketAddComponent, SortingBucketComponent, VideoEditDialog },
         computed: {
             ...mapState('sorting', ['selectedMetadata', 'buckets']),
             ...mapGetters('sorting', ['nextVideoId', 'nextVideo', "empty"]),
             ...mapGetters('settings/metadata', ['orderedMetadata']),
+            ...mapGetters('videos', ['getVideo']),
             showDialog() {
                 return this.selectedMetadata == null;
+            },
+            video() {
+                return this.getVideo(this.nextVideoId);
             }
         },
         methods: {
@@ -80,7 +84,6 @@
             ...mapActions('sorting', ["loadSortableVideos", "assignVideoToBucket", "assignVideoToNothing"]),
             ...mapMutations('sorting', ['updateMetadata', 'deleteBucket', 'clearBuckets']),
             ...mapActions('videos/editing', ['editVideo']),
-            ...mapMutations('player', ['clearPlaylist', 'setCurrentVideo']),
             reset() {
                 this.updateMetadata(null);
                 this.clearBuckets();
@@ -113,10 +116,6 @@
                 }
             };
             window.addEventListener('keyup', this.listener);
-
-            this.$store.watch(() => this.nextVideoId, newValue => {
-                this.setCurrentVideo(newValue);
-            })
         },
         destroyed() {
             window.removeEventListener('keyup', this.listener);
