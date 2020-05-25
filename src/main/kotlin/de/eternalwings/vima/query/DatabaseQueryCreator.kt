@@ -95,7 +95,7 @@ class DatabaseQueryCreator(private val metadataRepository: MetadataRepository) {
         return when (foundMetadata.type) {
             BOOLEAN -> booleanQueryOrDefault(foundMetadata.id!!, value.toBoolean(), context)
             TAGLIST -> arrayContainsQueryOrDefault(foundMetadata.id!!, value, like, context)
-            TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, like)
+            TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, !like)
             FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toFloat(), context)
             NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context)
             SELECTION -> valueQueryOrDefault(foundMetadata.id!!, value, context, valuePath = "value.name",
