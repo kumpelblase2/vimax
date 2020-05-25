@@ -48,7 +48,7 @@ export default {
                 return false;
             }
 
-            return state.playQueue.length > 1 && state.playQueue.findIndex(video => video === state.currentlyPlayingVideoId) < state.playQueue.length;
+            return state.playQueue.length > 1 && state.playQueue.findIndex(video => video === state.currentlyPlayingVideoId) < state.playQueue.length - 1;
         },
         hasQueue(state) {
             return state.playQueue.length > 0;
