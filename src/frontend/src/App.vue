@@ -59,7 +59,7 @@
 
 <script>
     import TopBar from "./components/TopBar";
-    import PlayerBar from "./components/PlayerBar";
+    import PlayerBar from "./components/player/PlayerBar";
 
     export default {
         name: 'Vima',
