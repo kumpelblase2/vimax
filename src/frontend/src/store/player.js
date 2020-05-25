@@ -18,6 +18,15 @@ export default {
                 return null;
             }
         },
+        previousVideoId(state) {
+            const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideoId);
+            const nextIndex = currentIndex - 1;
+            if(currentIndex > BEFORE_FIRST_ELEMENT && nextIndex > BEFORE_FIRST_ELEMENT) {
+                return state.playQueue[nextIndex];
+            } else {
+                return null;
+            }
+        },
         nextVideoId(state) {
             const currentIndex = state.playQueue.indexOf(state.currentlyPlayingVideoId);
             const nextIndex = currentIndex + 1;
@@ -26,6 +35,20 @@ export default {
             } else {
                 return null;
             }
+        },
+        hasPrevious(state) {
+            if(state.currentlyPlayingVideoId == null) {
+                return false;
+            }
+
+            return state.playQueue.length > 1 && state.playQueue.findIndex(video => video === state.currentlyPlayingVideoId) > 0;
+        },
+        hasNext(state) {
+            if(state.currentlyPlayingVideoId == null) {
+                return false;
+            }
+
+            return state.playQueue.length > 1 && state.playQueue.findIndex(video => video === state.currentlyPlayingVideoId) < state.playQueue.length;
         },
         hasQueue(state) {
             return state.playQueue.length > 0;
@@ -57,20 +80,34 @@ export default {
             state.playQueue = [];
             state.currentlyPlayingVideoId = BEFORE_FIRST_ELEMENT;
         },
+        insertAfterCurrent(state, videoId) {
+            const currentIndex = state.playQueue.findIndex(video => video === videoId);
+            const insertIndex = currentIndex + 1;
+            if(insertIndex >= state.playQueue.length) {
+                state.playQueue.push(videoId);
+            } else {
+                state.playQueue.splice(insertIndex, 0, videoId);
+            }
+        }
     },
     actions: {
-        async nextVideo({ commit, state, getters, dispatch, rootGetters }) {
-            let next = getters.nextVideoId;
+        async changeToVideo({ commit, state }, next) {
             if(next == null && state.currentlyPlayingVideoId === BEFORE_FIRST_ELEMENT) {
                 next = state.playQueue[0];
             }
-
             if(next != null) {
-                if(rootGetters['videos/getVideo'](next) == null) {
-                    await dispatch('videos/loadVideos', [next], { root: true });
-                }
                 commit('setCurrentVideo', next);
             }
+        },
+        async playVideo({ commit }, videoId) {
+            commit('addToQueue', [videoId]);
+            commit('setCurrentVideo', videoId);
+        },
+        async previousVideo({ getters, dispatch }) {
+            return dispatch('changeToVideo', getters.previousVideoId);
+        },
+        async nextVideo({ getters, dispatch }) {
+            return dispatch('changeToVideo', getters.nextVideoId);
         },
         async playVideos({ commit, dispatch }, videoIds) {
             commit('clearPlaylist');
@@ -83,6 +120,36 @@ export default {
         skipToVideo({ commit, getters }, videoId) {
             if(getters.containsVideo(videoId)) {
                 commit('setCurrentVideo', videoId);
+            }
+        },
+        clear({ commit }) {
+            commit('clearPlaylist');
+        },
+        removeVideo({ state, commit }, videoId) {
+            if(state.currentlyPlayingVideoId === videoId) {
+                const currentIndex = state.playQueue.findIndex(video => video === videoId);
+                if(currentIndex + 1 < state.playQueue.length) {
+                    commit('setCurrentVideo', state.playQueue[currentIndex + 1]);
+                } else if(currentIndex - 1 > 0) {
+                    commit('setCurrentVideo', state.playQueue[currentIndex - 1]);
+                } else {
+                    commit('setCurrentVideo', BEFORE_FIRST_ELEMENT);
+                }
+            }
+            commit('removeVideoFromQueue', videoId);
+        },
+        playVideoNext({ state, commit, dispatch }, videoId) {
+            if(state.currentlyPlayingVideoId === BEFORE_FIRST_ELEMENT) {
+                dispatch('playVideo', videoId);
+            } else {
+                commit('insertAfterCurrent', videoId);
+            }
+        },
+        queueVideoIn({ state, commit, dispatch }, videoId) {
+            if(state.currentlyPlayingVideoId === BEFORE_FIRST_ELEMENT) {
+                dispatch('playVideo', videoId);
+            } else {
+                commit('addToQueue', [videoId]);
             }
         }
     }

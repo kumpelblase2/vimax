@@ -2,10 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import SettingsView from "../components/SettingsView";
 import IndexView from "../components/IndexView";
-import WatchView from "../components/WatchView";
 import SortingView from "../components/SortingView";
 import PlaylistsView from "../components/PlaylistsView";
-import { INDEX, PLAYLISTS, SETTINGS, SORTING, WATCH, PLAYLIST, CHECKIN } from "./views";
+import { INDEX, PLAYLISTS, SETTINGS, SORTING, PLAYLIST, CHECKIN } from "./views";
 import PlaylistView from "../components/PlaylistView";
 import CheckinView from "../components/CheckinView";
 
@@ -27,11 +26,6 @@ export default new Router({
             path: '/settings',
             name: SETTINGS,
             component: SettingsView
-        },
-        {
-            path: '/watch/:id?',
-            name: WATCH,
-            component: WatchView
         },
         {
             path: '/sorting',

@@ -84,7 +84,6 @@
             },
             startPlaylist() {
                 this.playPlaylist(this.playlist);
-                this.$router.push({ path: `/watch` });
             }
         }
     }

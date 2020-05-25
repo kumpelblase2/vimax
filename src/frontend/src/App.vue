@@ -46,8 +46,11 @@
         </v-navigation-drawer>
         <top-bar :drawer="drawer" @drawer="drawer = $event"/>
         <v-content>
-            <router-view/>
+            <div class="scroll-container">
+                <router-view/>
+            </div>
         </v-content>
+        <player-bar />
         <v-footer>
             <v-spacer/>
             <div>Vima made with ❤️ by kumpelblase2</div>
@@ -58,10 +61,11 @@
 
 <script>
     import TopBar from "./components/TopBar";
+    import PlayerBar from "./components/PlayerBar";
 
     export default {
         name: 'Vima',
-        components: { TopBar },
+        components: { TopBar, PlayerBar },
         data: () => ({
             drawer: null
         })
@@ -69,4 +73,17 @@
 </script>
 
 <style>
+    html {
+        overflow: hidden !important;
+    }
+
+    .v-content {
+        max-height: 100vh;
+    }
+
+    .scroll-container {
+        height: 100%;
+        overflow-y: scroll;
+    }
+
 </style>

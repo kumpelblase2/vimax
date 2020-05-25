@@ -64,7 +64,6 @@
             ...mapActions('player', ['playVideos']),
             playSelected() {
                 this.playVideos(this.selectedVideoIds);
-                this.$router.push({ path: '/watch' });
                 this.clearSelectedVideos();
             },
             goBack() {

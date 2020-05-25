@@ -1,19 +1,17 @@
 <template>
-    <div>
-        <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
-            <v-row wrap justify="space-around">
-                <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId" />
-                <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading && hasMoreVideos">
-                    <div class="mugen-loading">Loading...</div>
-                </MugenScroll>
-            </v-row>
-            <video-edit-dialog />
-            <multi-video-edit-dialog/>
-        </v-container>
-        <v-container v-else>
-            <v-row>No videos found</v-row>
-        </v-container>
-    </div>
+    <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
+        <v-row wrap justify="space-around">
+            <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId"/>
+            <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading && hasMoreVideos">
+                <div class="mugen-loading">Loading...</div>
+            </MugenScroll>
+        </v-row>
+        <video-edit-dialog/>
+        <multi-video-edit-dialog/>
+    </v-container>
+    <v-container v-else>
+        <v-row>No videos found</v-row>
+    </v-container>
 </template>
 
 <script>
@@ -32,13 +30,13 @@
             return this.search();
         },
         computed: {
-            ...mapState('videos', ['isLoading','hasMoreVideos','displayVideoIds']),
+            ...mapState('videos', ['isLoading', 'hasMoreVideos', 'displayVideoIds']),
             ...mapGetters('videos', ['hasVideosToDisplay'])
         },
         methods: {
-            ...mapActions('videos', ['search','loadVideosOfCurrentPage']),
+            ...mapActions('videos', ['search', 'loadVideosOfCurrentPage']),
             ...mapMutations('videos', ['resetPage']),
-            ...mapActions('settings/metadata',['loadMetadata'])
+            ...mapActions('settings/metadata', ['loadMetadata'])
         }
     }
 </script>
