@@ -71,9 +71,9 @@
                 </div>
                 <div style="padding: 10px; width: 24%; height: 100px">
                     <v-row justify="center" align="center" class="fill-height" no-gutters>
-                        <v-btn icon v-if="hasPrevious" @click="previousVideo"><v-icon>skip_previous</v-icon></v-btn>
+                        <v-btn icon :disabled="!hasPrevious" @click="previousVideo"><v-icon>skip_previous</v-icon></v-btn>
                         <v-btn icon large @click="playPauseVideo"><v-icon>{{playIcon}}</v-icon></v-btn>
-                        <v-btn icon v-if="hasNext" @click="nextVideo"><v-icon>skip_next</v-icon></v-btn>
+                        <v-btn icon :disabled="!hasNext" @click="nextVideo"><v-icon>skip_next</v-icon></v-btn>
                     </v-row>
                 </div>
                 <div style="padding: 10px; width: 38%; height: 100px">
