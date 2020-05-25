@@ -46,9 +46,7 @@
         </v-navigation-drawer>
         <top-bar :drawer="drawer" @drawer="drawer = $event"/>
         <v-content>
-            <div class="scroll-container">
-                <router-view/>
-            </div>
+            <router-view/>
         </v-content>
         <player-bar />
         <v-footer>

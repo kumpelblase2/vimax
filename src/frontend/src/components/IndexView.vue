@@ -1,17 +1,20 @@
 <template>
-    <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
-        <v-row wrap justify="space-around">
-            <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId"/>
-            <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading && hasMoreVideos">
-                <div class="mugen-loading">Loading...</div>
-            </MugenScroll>
-        </v-row>
-        <video-edit-dialog/>
-        <multi-video-edit-dialog/>
-    </v-container>
-    <v-container v-else>
-        <v-row>No videos found</v-row>
-    </v-container>
+    <div class="scroll-container" ref="container">
+        <v-container fluid grid-list v-if="hasVideosToDisplay || isLoading">
+            <v-row wrap justify="space-around">
+                <VideoCard v-for="videoId in displayVideoIds" :key="videoId" :video-id="videoId"/>
+                <MugenScroll v-show="hasMoreVideos" :handler="loadVideosOfCurrentPage" :should-handle="!isLoading && hasMoreVideos"
+                             scroll-container="container">
+                    <div class="mugen-loading">Loading...</div>
+                </MugenScroll>
+            </v-row>
+            <video-edit-dialog/>
+            <multi-video-edit-dialog/>
+        </v-container>
+        <v-container v-else>
+            <v-row>No videos found</v-row>
+        </v-container>
+    </div>
 </template>
 
 <script>

@@ -1,9 +1,11 @@
 <template>
-    <v-flex column>
-        <library-list></library-list>
-        <metadata-list></metadata-list>
-        <plugin-list></plugin-list>
-    </v-flex>
+    <div class="scroll-container">
+        <v-flex column>
+            <library-list></library-list>
+            <metadata-list></metadata-list>
+            <plugin-list></plugin-list>
+        </v-flex>
+    </div>
 </template>
 
 <script>
