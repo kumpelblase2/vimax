@@ -88,6 +88,9 @@ export default {
             } else {
                 state.playQueue.splice(insertIndex, 0, videoId);
             }
+        },
+        updateOrder(state, videoIds) {
+            state.playQueue.splice(0, state.playQueue.length, ...videoIds);
         }
     },
     actions: {

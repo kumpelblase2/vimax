@@ -11,27 +11,32 @@
             <div v-if="!collapsed && showPlaylist" class="playlist-view">
                 <h1>Play Queue</h1>
                 <v-list>
-                    <v-list-item v-for="video in videosInQueue" :key="video.id">
-                        <v-list-item-avatar width="90" height="50" tile>
-                            <v-img :src="_thumbnailForVideo(video)"></v-img>
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                            <v-list-item-title>
-                                <v-icon v-if="currentVideo && currentVideo.id === video.id">play_arrow</v-icon>
-                                {{video.name}}
-                            </v-list-item-title>
-                        </v-list-item-content>
-                        <v-list-item-action>
-                            <v-flex column>
-                                <v-btn @click="skipToVideo(video.id)" icon>
-                                    <v-icon>play_arrow</v-icon>
-                                </v-btn>
-                                <v-btn @click="removeVideo(video.id)" icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-flex>
-                        </v-list-item-action>
-                    </v-list-item>
+                    <draggable handle=".drag-item" v-model="orderedVideos">
+                        <v-list-item v-for="video in videosInQueue" :key="video.id">
+                            <v-list-item-action>
+                                <v-icon class="drag-item">reorder</v-icon>
+                            </v-list-item-action>
+                            <v-list-item-avatar width="90" height="50" tile>
+                                <v-img :src="_thumbnailForVideo(video)"></v-img>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    <v-icon v-if="currentVideo && currentVideo.id === video.id">play_arrow</v-icon>
+                                    {{video.name}}
+                                </v-list-item-title>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-flex column>
+                                    <v-btn @click="skipToVideo(video.id)" icon>
+                                        <v-icon>play_arrow</v-icon>
+                                    </v-btn>
+                                    <v-btn @click="removeVideo(video.id)" icon>
+                                        <v-icon>delete</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                            </v-list-item-action>
+                        </v-list-item>
+                    </draggable>
                 </v-list>
             </div>
             <video :src="videoUrl" ref="videoPlayer" @play="playing = true" @pause="playing = false" width="100%"
@@ -88,7 +93,8 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
+    import draggable from 'vuedraggable';
     import { getSelectedThumbnailURLForVideo, getStreamURLForVideo } from "../video";
     import events from "../api/event";
 
@@ -114,6 +120,9 @@
 
     export default {
         name: "PlayerBar",
+        components: {
+            draggable
+        },
         data() {
             return {
                 collapsed: true,
@@ -143,6 +152,14 @@
             },
             seekProgress() {
                 return (100 / this.duration) * this.currentTime;
+            },
+            orderedVideos: {
+                get() {
+                    return this.videosInQueue;
+                },
+                set(value) {
+                    this.updateOrder(value.map(v => v.id));
+                }
             }
         },
         watch: {
@@ -155,6 +172,7 @@
         },
         methods: {
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo', 'skipToVideo', 'removeVideo']),
+            ...mapMutations('player', ['updateOrder']),
             playPauseVideo() {
                 if(this.playing) {
                     this.$refs.videoPlayer.pause();
