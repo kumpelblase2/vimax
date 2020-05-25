@@ -12,7 +12,7 @@
                 <h1>Play Queue</h1>
                 <v-list>
                     <v-list-item v-for="video in videosInQueue" :key="video.id">
-                        <v-list-item-avatar>
+                        <v-list-item-avatar width="90" height="50" tile>
                             <v-img :src="_thumbnailForVideo(video)"></v-img>
                         </v-list-item-avatar>
                         <v-list-item-content>
