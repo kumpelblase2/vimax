@@ -81,7 +81,7 @@ export default {
             state.currentlyPlayingVideoId = BEFORE_FIRST_ELEMENT;
         },
         insertAfterCurrent(state, videoId) {
-            const currentIndex = state.playQueue.findIndex(video => video === videoId);
+            const currentIndex = state.playQueue.findIndex(video => video === state.currentlyPlayingVideoId);
             const insertIndex = currentIndex + 1;
             if(insertIndex >= state.playQueue.length) {
                 state.playQueue.push(videoId);
