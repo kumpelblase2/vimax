@@ -14,7 +14,7 @@
 <script>
     export default {
         name: "VideoProgressBar",
-        props: ['videoUrl', 'seekProgress'],
+        props: ['videoUrl', 'seekProgress', 'duration'],
         methods: {
             correctThumbnailPosition(ev) {
                 const x = ev.clientX;

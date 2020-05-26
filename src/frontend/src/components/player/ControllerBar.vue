@@ -1,7 +1,7 @@
 <template>
     <div class="controller-bar" :class="{'expanded': !collapsed}">
         <video-progress-bar :video-url="videoUrl" @scrubb="$emit('scrubb', $event)"
-                            :seek-progress="seekProgress"></video-progress-bar>
+                            :seek-progress="seekProgress" :duration="duration"></video-progress-bar>
         <v-row style="margin: 0 !important;">
             <div style="padding: 10px; width: 38%; height: 100px;">
                 <v-hover v-slot:default="{ hover }" v-show="collapsed">
