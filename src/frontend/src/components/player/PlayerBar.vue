@@ -19,7 +19,7 @@
         </div>
         <controller-bar :collapsed="collapsed" :playing="playing" :seek-progress="seekProgress" :duration="duration"
                         :current-time="currentTime" :volume="volume" @changeVolume="updateVolume" @expand="expand"
-                        @togglePlaylist="togglePlaylist" @playPauseVideo="playPauseVideo"/>
+                        @togglePlaylist="togglePlaylist" @playPauseVideo="playPauseVideo" @scrubb="scrubb"/>
     </div>
 </template>
 
