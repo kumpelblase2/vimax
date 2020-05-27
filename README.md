@@ -48,7 +48,7 @@ You need FFmpeg installed in the `PATH` of your system. FFmpeg is used to genera
 
 Simply place the provided jar in any folder you like and start it using the following command (adjust the filename accordingly):
 ```shell script
-java -jar vima-0.0.1-all.jar
+java -jar vima-0.0.1-all.jar -Dspring.profiles.active=production
 ```
 
 This will start the application and once startup has finished, you can access the application via `http://localhost:8080`
@@ -62,8 +62,6 @@ To start the backend you can run:
 # or if you're on windows
 gradlew.bat bootRun
 ```
-
-if you're on windows.
 
 To then start the ui you have do multiple steps.
 First, change into the `src/frontend` directory and then run the following:

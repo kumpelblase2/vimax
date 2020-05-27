@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/usr/lib/vimax
-ExecStart=/usr/bin/java -jar /usr/lib/vimax/vimax.jar
+ExecStart=/usr/bin/java -jar /usr/lib/vimax/vimax.jar -Dspring.profiles.active=production
 Type=simple
 Restart=on-failure
 RestartSec=5
