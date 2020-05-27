@@ -84,6 +84,7 @@ node {
 import com.github.jengelman.gradle.plugins.shadow.transformers.*
 
 shadowJar {
+    baseName = "vimax"
     manifest {
         attributes 'Main-Class': 'de.eternalwings.vima.VimaApplicationKt'
     }
