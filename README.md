@@ -57,13 +57,9 @@ This will start the application and once startup has finished, you can access th
 
 To start the backend you can run:
 
-```
+```shell
 ./gradlew bootRun
-```
-
-or
-
-```
+# or if you're on windows
 gradlew.bat bootRun
 ```
 
@@ -73,8 +69,8 @@ To then start the ui you have do multiple steps.
 First, change into the `src/frontend` directory and then run the following:
 
 ```
-npm install
-npm start
+npm ci
+npm run serve
 ```
 
 You can then access the UI on `localhost:8081`
