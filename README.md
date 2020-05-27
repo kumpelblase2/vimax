@@ -6,25 +6,25 @@ Vimax is the successor to [Vima](https://github.com/kumpelblase2/vima/), but wit
 > Vima is a video manager or video collection. It manages a set of videos and allows the user to define custom metadata for each video. The user can then search for specific videos via the specified metadata using a custom query language, create playlists the same way and obviously play the videos in their browser.
 
 All of which is still true for Vimax. While I'm still OK with the decisions I've made, I wouldn't make them again with what I know
- now. And sadly, these changes cannot be completely implemented in Vima, which is why we now have Vimax.
+ now. Sadly though, these changes cannot be completely implemented in Vima, which is why we now have Vimax.
 
-The reasons boil down to mostly big setup cost for users and bad maintainability of configuration. Ruby on rails is a pain to
+The reasons boil down to mostly high setup cost for users and bad maintainability of configuration. Ruby on Rails is a pain to
  deploy and run for a normal user compared to a simple binary or jar. This seems to be a general issue with interpreted 
-languages and cannot really be fixed apart from providing packages for everyone. 
+languages and cannot really be fixed apart from providing packages for everyone, which is sadly not feasible for me.
 
-Vima also required an existing mongodb database which is, again, annoying setup a user would have to do beforehand not to 
+Vima also required an existing mongodb database which is - again - annoying setup a user would have to do beforehand; not to 
 mention that they'd have to maintain it. While mongo itself isn't the issue (I think it's one of the few use-cases where mongo
- _does_ make sense), there's no alternative document store that can run in-memory or can be started inside the application.
+ _does_ make sense), there's no alternative document store which can run in-memory or can be started inside an application.
 
 Lastly, the configuration wasn't really pleasant to work with. It was neither nice to work with from the user side nor was 
 reacting to changes to it on the server side. A simple file doesn't provide the user any help with how it should be 
-structured, what values can be used or what options he had available. It provided a lot of flexibility when initially developing
- the application but that came at a price.
+structured, what values can be used or what options he has available. It provided a lot of flexibility when initially developing
+ the application but that came at a price. I no longer want to pay that price.
 
 ### So how is Vimax gonna fix these?
 
 Vimax is written in a compiled language and will be provided as a single artifact (in this case: Jar). Secondly, it uses SQLite to
- store the data which doesn't require any setup from the user. And there will be no need to edit a config file as it would all
+ store the data which doesn't require any setup from the user. Also, there will be no need to edit a config file as it would all
 be done in the client.
 
 ## Plugins
@@ -72,3 +72,31 @@ npm run serve
 ```
 
 You can then access the UI on `localhost:8081`
+
+### Building a release
+To build a deployable archive you can simply run:
+```bash
+$ ./gradlew shadowJar
+# or if you're on windows
+$ gradlew.bat shadowJar
+```
+Which will generate a jar under `build/libs/vimax-*-all.jar`
+
+## Configuration
+
+While the goal was to never having to configure things in a file again I'm ignoring this goal for "application specific" 
+configuration. In other words, any configuration that directly influences that application itself, not the content it manages.
+
+For that, anyone can create a file called `application.properties` next to the jar. Since the application is built with spring, 
+any of the properties provided by spring can be overwritten here, but also a few that are specifically provided by this 
+application, namely:
+
+```properties
+# The relative directory where thumbnails will be saved. This is relative to the library location.
+# Changing this will only affect newly generated thumbnails.
+thumbnail-relative-dir=.thumbnails-new
+# If it should continuously watch for added/removed files or if they should only be checked on startup
+watch-files=true
+# The relative directory where to load external plugins from
+external-plugin-dir=./plugins
+```
