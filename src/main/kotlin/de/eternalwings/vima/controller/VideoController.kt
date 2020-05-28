@@ -20,6 +20,9 @@ import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.http.CacheControl
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,11 +32,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Collections
 import java.util.concurrent.TimeUnit.DAYS
 import javax.persistence.EntityNotFoundException
-import javax.transaction.Transactional
+
+data class VideoFileInformation(val location: String, val timestamp: LocalDateTime)
 
 @RestController
 @RequestMapping("/api")
@@ -41,7 +46,10 @@ class VideoController(private val videoRepository: VideoRepository,
                       private val thumbnailRepository: ThumbnailRepository,
                       private val metadataRepository: MetadataRepository,
                       private val videoProcess: VideoProcess,
-                      private val pluginManager: PluginManager) {
+                      private val pluginManager: PluginManager,
+                      transactionManager: PlatformTransactionManager) {
+
+    private val transactionTemplate = TransactionTemplate(transactionManager)
 
     @GetMapping("/videos")
     fun getVideos(@RequestParam("query", required = false, defaultValue = "") query: String,
@@ -90,11 +98,13 @@ class VideoController(private val videoRepository: VideoRepository,
     @GetMapping("/video/{id}/stream")
     @Cacheable(cacheNames = ["streams"], key = "#id")
     fun streamVideo(@PathVariable("id") id: Int): ResponseEntity<Resource> {
-        val video = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
-        val location = video.location!!
+        val information = transactionTemplate.execute {
+            val video = videoRepository.findById(id).orElseThrow { EntityNotFoundException() }
+            VideoFileInformation(video.location!!, video.creationTime!!)
+        }!!
         return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, DAYS))
-            .lastModified(video.creationTime!!.toInstant(ZoneOffset.UTC))
-            .body(FileSystemResource(location))
+            .lastModified(information.timestamp.toInstant(ZoneOffset.UTC))
+            .body(FileSystemResource(information.location))
     }
 
     @GetMapping("/video/{id}/thumbnails")
