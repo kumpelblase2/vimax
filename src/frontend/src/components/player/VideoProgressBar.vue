@@ -27,6 +27,10 @@
                 const progress = x / documentWidth;
                 this.$refs.thumbnailPlayer.currentTime = this.duration * progress;
             }
+        },
+        beforeDestroy() {
+            this.$refs.thumbnailPlayer.src = "";
+            this.$refs.thumbnailPlayer.removeAttribute("src");
         }
     }
 </script>

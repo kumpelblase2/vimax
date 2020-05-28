@@ -65,6 +65,9 @@
                 if(newValue && !oldValue) {
                     this.collapsed = false;
                     this.showPlaylist = false;
+                } else if(!newValue && oldValue) {
+                    this.$refs.videoPlayer.src = ""
+                    this.$refs.videoPlayer.removeAttribute("src");
                 }
             }
         },
