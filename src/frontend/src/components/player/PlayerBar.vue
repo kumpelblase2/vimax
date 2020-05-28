@@ -70,6 +70,7 @@
         },
         methods: {
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
+            ...mapActions('videos', ['reloadVideo']),
             playPauseVideo() {
                 if(this.playing) {
                     this.$refs.videoPlayer.pause();
