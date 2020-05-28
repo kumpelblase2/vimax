@@ -58,8 +58,10 @@
                 this.editVideo(null);
             },
             save() {
-                this.saveEditingVideo().then(() => this.close());
-                this.$emit('finish-edit');
+                this.$nextTick(() => {
+                    this.saveEditingVideo().then(() => this.close());
+                    this.$emit('finish-edit');
+                })
             },
             thumbnailUrl(thumbnail) {
                 return getThumbnailURL(thumbnail);

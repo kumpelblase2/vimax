@@ -84,6 +84,7 @@
                 this.changeThumbnailsInEdit(thumbnailIndex);
             },
             async next() {
+                await this.$nextTick();
                 await this.saveEditingVideo();
                 await this.nextVideo();
             },
