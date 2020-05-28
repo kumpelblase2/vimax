@@ -99,4 +99,9 @@ thumbnail-relative-dir=.thumbnails-new
 watch-files=true
 # The relative directory where to load external plugins from
 external-plugin-dir=./plugins
+# The ffmpeg binary name (including path)
+# If it is available in the $PATH environment, a path does not need to be specified
+ffpmeg-binary=ffmpeg
+# Similar to ffmpeg above, just for ffprobe
+ffprobe-binary=ffprobe
 ```
