@@ -1,5 +1,7 @@
 # vimax
 
+![Screenshot of landing page](screenshots/library.png)
+
 Vimax is the successor to [Vima](https://github.com/kumpelblase2/vima/), but with a few different ideas in mind while the main
  use case stayed the same. To quote what Vima wanted to do:
  
