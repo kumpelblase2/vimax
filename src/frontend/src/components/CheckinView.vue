@@ -15,7 +15,7 @@
                     <v-flex xs6><v-btn @click="skip" block>Skip</v-btn></v-flex>
                     <v-flex xs6><v-btn color="primary" block @click="next">Save and Next</v-btn></v-flex>
                 </v-row>
-                <v-card style="max-height: 76vh; overflow-y: scroll">
+                <v-card class="editing-card">
                     <v-card-title>
                         {{editingVideo.name}}
                         <v-spacer/>
@@ -106,5 +106,10 @@
 <style scoped>
     .active {
         box-shadow: 0 0 0 5px orange;
+    }
+
+    .editing-card {
+        overflow-y: auto;
+        max-height: 76vh;
     }
 </style>
