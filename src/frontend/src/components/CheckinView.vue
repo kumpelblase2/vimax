@@ -62,9 +62,9 @@
             SingleVideoPlayer
         },
         methods: {
-            ...mapMutations('videos/editing', ['changeThumbnailsInEdit', 'setEditingMetadataValue']),
+            ...mapMutations('videos/editing', ['changeThumbnailsInEdit', 'setEditingMetadataValue', 'resetEditingVideo']),
             ...mapActions('videos/editing', ['saveEditingVideo']),
-            ...mapActions('checkin', ['updateFilter','nextVideo']),
+            ...mapActions('checkin', ['updateFilter','nextVideo', 'restartEditingIfPossible']),
             ...mapActions('settings/metadata', ['loadMetadata']),
             handleMetadataUpdate(id, event) {
                 this.setEditingMetadataValue({ id, value: event });
@@ -94,6 +94,11 @@
         },
         async mounted() {
             await this.loadMetadata();
+            this.restartEditingIfPossible();
+        },
+        beforeRouteLeave(_to, _from, next) {
+            this.resetEditingVideo();
+            next();
         }
     }
 </script>

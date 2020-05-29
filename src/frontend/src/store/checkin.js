@@ -16,19 +16,24 @@ export default {
         }
     },
     actions: {
-        async updateFilter({commit,state,dispatch}, value) {
+        async updateFilter({ commit, state, dispatch }, value) {
             commit('changeFilter', value);
             const ids = await videos.getAllIds(value);
             commit('updateRemaining', ids);
             dispatch('nextVideo');
         },
-        async nextVideo({commit,state,dispatch}) {
+        async nextVideo({ commit, state, dispatch }) {
             if(state.remainingVideoIds.length > 0) {
                 const next = state.remainingVideoIds[0];
                 await dispatch('videos/editing/editVideo', next, { root: true });
                 commit('updateNext');
             } else {
                 commit('updateNext');
+            }
+        },
+        async restartEditingIfPossible({ state, dispatch }) {
+            if(state.current) {
+                await dispatch('videos/editing/editVideo', state.current, { root: true });
             }
         }
     },
