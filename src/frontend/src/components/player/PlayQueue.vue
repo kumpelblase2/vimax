@@ -61,5 +61,7 @@
 </script>
 
 <style scoped>
-
+    .v-list-item__title {
+        padding-left: 10px
+    }
 </style>
