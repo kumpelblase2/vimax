@@ -28,6 +28,11 @@ class MetadataProcess(private val videoRepository: VideoRepository, private val 
         val isNew = metadata.isNew
         if (isNew) {
             metadata.displayOrder = (metadataRepository.getHighestDisplayOrder() ?: 0) + 1
+        } else {
+            val existing = metadataRepository.getOne(metadata.id!!)
+            if (existing.type != metadata.type) {
+                throw IllegalArgumentException("Changing the type of metadata is currently not possible.")
+            }
         }
 
         val saved = metadataRepository.save(metadata)
