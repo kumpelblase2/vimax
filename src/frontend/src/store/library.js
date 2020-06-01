@@ -28,8 +28,8 @@ export default {
             const saved = await libraryApi.saveLibrary(library);
             commit('addOrUpdateLibrary', saved);
         },
-        async deleteLibrary({ commit }, library) {
-            await libraryApi.deleteLibrary(library.id);
+        async deleteLibrary({ commit }, {library, deleteThumbnails}) {
+            await libraryApi.deleteLibrary(library.id, deleteThumbnails);
             commit('removeLibrary', library);
         },
         resetEditItem({ commit }) {

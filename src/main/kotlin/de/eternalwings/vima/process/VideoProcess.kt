@@ -15,9 +15,11 @@ class VideoProcess(private val videoRepository: VideoRepository,
                    private val thumbnailDeleter: ThumbnailDeleter,
                    private val thumbnailCreator: VideoThumbnailCreator,
                    private val videoSearcher: VideoSearcher) {
-    fun deleteAllVideosInLibrary(library: Library) {
+    fun deleteAllVideosInLibrary(library: Library, deleteThumbnails: Boolean = false) {
         val videosToDelete = videoRepository.findByLibrary(library)
-        thumbnailDeleter.deleteThumbnailsOf(videosToDelete)
+        if(deleteThumbnails) {
+            thumbnailDeleter.deleteThumbnailsOf(videosToDelete)
+        }
         videoRepository.deleteAll(videosToDelete)
     }
 

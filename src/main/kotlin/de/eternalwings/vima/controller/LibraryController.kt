@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -59,9 +60,11 @@ class LibraryController(private val libraryRepository: LibraryRepository,
     fun getLibraries(): List<Library> = libraryRepository.findAll()
 
     @DeleteMapping("/{id}")
-    fun deleteLibrary(@PathVariable("id") id: Int): Int {
+    fun deleteLibrary(@PathVariable("id") id: Int,
+                      @RequestParam("delete_thumbnails", required = false, defaultValue = "false")
+                      deleteThumbnails: Boolean): Int {
         val library = libraryRepository.getOne(id)
-        videoProcess.deleteAllVideosInLibrary(library)
+        videoProcess.deleteAllVideosInLibrary(library, deleteThumbnails)
         eventPublisher.publishEvent(LibraryDeleteEvent(this, library))
         libraryRepository.delete(library)
         return id

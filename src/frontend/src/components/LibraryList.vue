@@ -5,6 +5,7 @@
                 <v-toolbar-title>Libraries</v-toolbar-title>
                 <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
                 <v-spacer></v-spacer>
+                <library-delete-confirm-dialog ref="deleteConfirmation"/>
                 <v-dialog v-model="dialog" max-width="500px">
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" color="primary" dark class="mb-2">Add Library</v-btn>
@@ -53,9 +54,11 @@
 
 <script>
     import { mapActions, mapState } from 'vuex';
+    import LibraryDeleteConfirmDialog from "./LibraryDeleteConfirmDialog";
 
     export default {
         name: "LibraryList",
+        components: { LibraryDeleteConfirmDialog },
         data: () => ({
             loading: false,
             dialog: false
@@ -73,9 +76,10 @@
             ])
         },
         methods: {
-            deleteItem(item) {
-                if(confirm('Are you sure you want to delete this library?')) {
-                    this.deleteLibrary(item);
+            async deleteItem(item) {
+                const result = await this.$refs.deleteConfirmation.open();
+                if(result.confirm) {
+                    this.deleteLibrary({ library: item, deleteThumbnails: result.thumbnails });
                 }
             },
             close() {
