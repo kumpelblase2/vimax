@@ -7,9 +7,9 @@
     import { mapActions, mapGetters, mapMutations } from "vuex";
 
     const applicationMetadata = [
-        { name: "Name", value: "name" },
-        { name: "Updated", value: "updateTime" },
-        { name: "Created", value: "creationTime" }
+        { name: "Name", value: "name", ordering: "ASC" },
+        { name: "Updated", value: "updateTime", ordering: "DESC" },
+        { name: "Created", value: "creationTime", ordering: "DESC" }
     ];
 
     export default {
@@ -22,10 +22,14 @@
             }
         },
         methods: {
-            ...mapMutations('search', ['updateSortingProperty']),
+            ...mapMutations('search', ['updateSortingProperty', 'updateSortingDirection']),
             ...mapActions('videos', ['search']),
             updateSortingAndReload(property) {
                 this.updateSortingProperty(property);
+                const metadata = this.sortableProperties.find(metadata => metadata.name === property || metadata.value === property);
+                if(metadata != null) {
+                    this.updateSortingDirection(metadata.ordering);
+                }
                 this.search();
             }
         }
