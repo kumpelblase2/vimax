@@ -28,9 +28,10 @@
         name: "Library",
         components: { MultiVideoEditDialog, VideoEditDialog, VideoCard, MugenScroll },
         async mounted() {
+            this.setLoading(true);
             this.resetPage();
             await this.loadMetadata();
-            return this.search();
+            await this.search();
         },
         computed: {
             ...mapState('videos', ['isLoading', 'hasMoreVideos', 'displayVideoIds']),
@@ -38,7 +39,7 @@
         },
         methods: {
             ...mapActions('videos', ['search', 'loadVideosOfCurrentPage']),
-            ...mapMutations('videos', ['resetPage']),
+            ...mapMutations('videos', ['resetPage', 'setLoading']),
             ...mapActions('settings/metadata', ['loadMetadata'])
         }
     }
