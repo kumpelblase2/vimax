@@ -41,3 +41,6 @@ yarn-error.log*
 ### Frontend Build Configuration ###
 !src/frontend/build
 !src/frontend/build/*
+
+# Databases
+database*.db
