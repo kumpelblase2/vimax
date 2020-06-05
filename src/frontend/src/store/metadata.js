@@ -93,6 +93,14 @@ export default {
             changedMetadatas.forEach(changed => commit('addOrUpdateMetadata', changed));
         },
         onlyShowMetadata({ commit, state }, newVisibleMetadata) {
+            if(newVisibleMetadata.length === 0) {
+                commit('hideAllMetadata');
+                return;
+            } else if(newVisibleMetadata.length === state.metadata.length) {
+                commit('showAllMetadata');
+                return;
+            }
+
             state.metadata.forEach(metadata => {
                 if(newVisibleMetadata.findIndex(visibleMetadata => visibleMetadata.id === metadata.id) >= 0) {
                     commit('showMetadata', metadata);
@@ -124,7 +132,7 @@ export default {
                 state.metadata.push(metadata);
             }
         },
-        addAll(state,metadatas) {
+        addAll(state, metadatas) {
             metadatas.forEach(metadata => {
                 const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
                 if(existingIndex >= 0) {
@@ -147,8 +155,9 @@ export default {
             state.visibleMetadatas = [];
         },
         showAllMetadata(state) {
-            state.visibleMetadatas = state.metadata.slice();
-            state.visibleMetadatas.sort((first, second) => first.displayOrder - second.displayOrder);
+            const metadataCopy = state.metadata.slice();
+            metadataCopy.sort((first, second) => first.displayOrder - second.displayOrder);
+            state.visibleMetadatas = metadataCopy;
         }
     }
 };
