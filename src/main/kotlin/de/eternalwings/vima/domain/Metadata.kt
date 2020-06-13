@@ -11,16 +11,12 @@ import javax.persistence.EnumType.STRING
 import javax.persistence.Enumerated
 import javax.persistence.FetchType.LAZY
 import javax.persistence.ManyToOne
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 
 @Entity
 data class Metadata(
-        @field:NotBlank
         @field:Column(updatable = false)
         var name: String? = null,
-        @field:NotNull
-        @field:Column(updatable = false)
+        @field:Column(updatable = false, nullable = false)
         var type: MetadataType? = null,
         @field:Enumerated(STRING)
         var ordering: Direction = ASC,

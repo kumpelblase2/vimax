@@ -1,6 +1,5 @@
-package de.eternalwings.vima.config
+package de.eternalwings.vima.plugin
 
-import de.eternalwings.vima.plugin.PluginManager
 import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -19,7 +18,7 @@ import javax.annotation.PostConstruct
 class PluginLoader(private val pluginManager: PluginManager, private val resourceLoader: ResourceLoader,
                    @Value("\${external-plugin-dir}") private val externalPluginDir: Path) {
     private val matcher = FileSystems.getDefault().getPathMatcher("glob:**.kts")
-    private val internalPluginDir = "plugins"
+    private val scriptLoader = KtsObjectLoader(this.javaClass.classLoader)
 
     private val externalPluginFiles: Stream<Path>
         get() {
@@ -34,7 +33,6 @@ class PluginLoader(private val pluginManager: PluginManager, private val resourc
     fun loadPlugins() {
         val resources =
                 ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:$internalPluginDir/*.kts")
-        val scriptLoader = KtsObjectLoader(this.javaClass.classLoader)
         val resourceInputStreams = Stream.of(*resources).map { it.inputStream }
         val externalInputStreams = externalPluginFiles.map { Files.newInputStream(it) }
 
@@ -45,7 +43,12 @@ class PluginLoader(private val pluginManager: PluginManager, private val resourc
         pluginManager.disableUnloaded()
     }
 
-    fun KtsObjectLoader.execute(reader: Reader) {
-        safeEval { engine.eval(reader) }
+    private fun KtsObjectLoader.execute(reader: Reader) {
+        kotlin.runCatching { engine.eval(reader) }
+            .getOrElse { throw RuntimeException("Cannot load plugin", it) }
+    }
+
+    companion object {
+        private const val internalPluginDir = "plugins"
     }
 }

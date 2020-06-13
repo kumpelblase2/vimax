@@ -44,7 +44,7 @@ class LoadVideoTasklet(private val videoRepository: VideoRepository,
     }
 
     fun getLibrary(chunkContext: ChunkContext): Library? {
-        val libraryId = chunkContext.stepContext.stepExecution.jobParameters.getLong("library")
+        val libraryId = chunkContext.stepContext.stepExecution.jobParameters.getLong("library")!!
         return libraryRepository.getOne(libraryId.toInt())
     }
 
