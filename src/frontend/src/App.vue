@@ -62,7 +62,7 @@
     import PlayerBar from "./components/player/PlayerBar";
 
     export default {
-        name: 'Vima',
+        name: 'Vimax',
         components: { TopBar, PlayerBar },
         data: () => ({
             drawer: null
