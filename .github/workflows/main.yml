@@ -21,3 +21,18 @@ jobs:
       working-directory: 'src/frontend'
     - name: Create jar
       run: './gradlew shadowJar'
+    - uses: actions/create-release@77669bf751443994139ba3fb124c19364d82c3c7
+      name: Create draft release for tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: v${{ github.ref }}
+        draft: true
+    - uses: svenstaro/upload-release-action@14569a2d348419d066e34e5dfa65071ecd30b64b
+      name: Upload artifacts
+      with:
+       repo_token: ${{ secrets.GITHUB_TOKEN }}
+       file: build/libs/*.jar
+       file_glob: true
+       tag: ${{ github.ref }}
