@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters} from "vuex";
+    import { mapActions, mapGetters } from "vuex";
     import { getStreamURLForVideo } from "../../video";
     import events from "../../api/event";
     import VideoProgressBar from "./VideoProgressBar";
@@ -45,7 +45,8 @@
                 duration: 0,
                 playing: false,
                 volume: 1,
-                showPlaylist: false
+                showPlaylist: false,
+                keyListener: null
             }
         },
         computed: {
@@ -72,6 +73,23 @@
             }
         },
         methods: {
+            mountListener() {
+                this.keyListener = event => {
+                    if(this.hasVideo) {
+                        if(event.key === " ") {
+                            this.playPauseVideo();
+                        } else if(event.key === "ArrowRight") {
+                            this.scrubbSeconds(5);
+                        } else if(event.key === "ArrowLeft") {
+                            this.scrubbSeconds(-5);
+                        }
+                    }
+                };
+                document.addEventListener('keyup', this.keyListener);
+            },
+            unmountListener() {
+                document.removeEventListener('keyup', this.keyListener)
+            },
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
             ...mapActions('videos', ['reloadVideo']),
             playPauseVideo() {
@@ -114,7 +132,16 @@
             },
             scrubb(value) {
                 this.$refs.videoPlayer.currentTime = (value / 100) * this.duration;
+            },
+            scrubbSeconds(amount) {
+                this.$refs.videoPlayer.currentTime += amount;
             }
+        },
+        mounted() {
+            this.mountListener();
+        },
+        destroyed() {
+            this.unmountListener();
         }
     }
 </script>
