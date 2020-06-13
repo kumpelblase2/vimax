@@ -128,7 +128,11 @@
             },
             onVideoFinished() {
                 events.watchFinishEvent(this.currentVideo.id).then(() => this.reloadVideo(this.currentVideo.id));
-                this.nextVideo();
+                if(this.hasNext) {
+                    this.nextVideo();
+                } else {
+                    this.collapse();
+                }
             },
             scrubb(value) {
                 this.$refs.videoPlayer.currentTime = (value / 100) * this.duration;
