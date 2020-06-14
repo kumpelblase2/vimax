@@ -42,31 +42,47 @@
                         <v-list-item-title>Settings</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                <v-list-item @click="openAbout">
+                    <v-list-item-action>
+                        <v-icon>info</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>About</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
         <top-bar :drawer="drawer" @drawer="drawer = $event"/>
         <v-content>
+            <v-dialog v-model="about" max-width="700px">
+                <about-dialog @close="closeAbout"/>
+            </v-dialog>
             <router-view/>
         </v-content>
         <player-bar />
-        <v-footer>
-            <v-spacer/>
-            <div>Vima made with ❤️ by kumpelblase2</div>
-            <v-spacer/>
-        </v-footer>
     </v-app>
 </template>
 
 <script>
     import TopBar from "./components/TopBar";
     import PlayerBar from "./components/player/PlayerBar";
+    import AboutDialog from "./components/AboutDialog";
 
     export default {
         name: 'Vimax',
-        components: { TopBar, PlayerBar },
+        components: { AboutDialog, TopBar, PlayerBar },
         data: () => ({
-            drawer: null
-        })
+            drawer: null,
+            about: false
+        }),
+        methods: {
+            openAbout() {
+                this.about = true;
+            },
+            closeAbout() {
+                this.about = false;
+            }
+        }
     }
 </script>
 
