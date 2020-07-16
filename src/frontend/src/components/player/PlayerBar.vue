@@ -28,7 +28,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
     import { getStreamURLForVideo } from "../../video";
     import events from "../../api/event";
     import VideoProgressBar from "./VideoProgressBar";
@@ -97,6 +97,10 @@
                             this.scrubbSeconds(5);
                         } else if(event.key === "ArrowLeft") {
                             this.scrubbSeconds(-5);
+                        } else if(event.key === "ArrowUp" && !this.isMuted) {
+                            this.updateVolume(this.currentVolume + 0.1);
+                        } else if(event.key === "ArrowDown" && !this.isMuted) {
+                            this.updateVolume(this.currentVolume - 0.1);
                         }
                     }
                 };
@@ -106,6 +110,7 @@
                 document.removeEventListener('keyup', this.keyListener)
             },
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
+            ...mapMutations('player', ['updateVolume']),
             ...mapActions('videos', ['reloadVideo']),
             playPauseVideo() {
                 if(this.playing) {
