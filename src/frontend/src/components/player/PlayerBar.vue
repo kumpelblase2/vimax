@@ -4,13 +4,17 @@
             <div v-if="!collapsed" class="top-video-bar">
                 <v-row no-gutters justify="space-between" align="center" class="fill-height" style="padding-left: 10px;
             padding-right: 10px;">
-                    <v-btn icon @click="collapse"><v-icon>keyboard_arrow_down</v-icon></v-btn>
-                    <v-btn icon @click="fullscreen"><v-icon>fullscreen</v-icon></v-btn>
+                    <v-btn icon @click="collapse">
+                        <v-icon>keyboard_arrow_down</v-icon>
+                    </v-btn>
+                    <v-btn icon @click="fullscreen">
+                        <v-icon>fullscreen</v-icon>
+                    </v-btn>
                 </v-row>
             </div>
             <div v-if="!collapsed && showPlaylist" class="playlist-view">
                 <h1>Play Queue</h1>
-                <play-queue />
+                <play-queue/>
             </div>
             <video :src="videoUrl" ref="videoPlayer" @play="playing = true" @pause="playing = false" width="100%"
                    height="100%" autoplay @ended="onVideoFinished"
@@ -18,8 +22,8 @@
                    preload="auto"></video>
         </div>
         <controller-bar :collapsed="collapsed" :playing="playing" :seek-progress="seekProgress" :duration="duration"
-                        :current-time="currentTime" :volume="volume" @changeVolume="updateVolume" @expand="expand"
-                        @togglePlaylist="togglePlaylist" @playPauseVideo="playPauseVideo" @scrubb="scrubb"/>
+                        :current-time="currentTime" :volume="volume" @expand="expand" @togglePlaylist="togglePlaylist"
+                        @playPauseVideo="playPauseVideo" @scrubb="scrubb"/>
     </div>
 </template>
 
@@ -50,7 +54,8 @@
             }
         },
         computed: {
-            ...mapGetters('player', ['currentVideo', 'hasQueue', 'hasNext', 'hasPrevious', 'videosInQueue']),
+            ...mapGetters('player', ['currentVideo', 'hasQueue', 'hasNext', 'hasPrevious', 'videosInQueue', 'currentVolume',
+                'isMuted']),
             hasVideo() {
                 return this.currentVideo != null;
             },
@@ -66,10 +71,20 @@
                 if(newValue && !oldValue) {
                     this.collapsed = false;
                     this.showPlaylist = false;
+                    setTimeout(() => {
+                        this.$refs.videoPlayer.muted = this.isMuted;
+                        this.$refs.videoPlayer.volume = this.currentVolume;
+                    });
                 } else if(!newValue && oldValue) {
                     this.$refs.videoPlayer.src = ""
                     this.$refs.videoPlayer.removeAttribute("src");
                 }
+            },
+            isMuted(newValue) {
+                this.$refs.videoPlayer.muted = newValue;
+            },
+            currentVolume(newValue) {
+                this.$refs.videoPlayer.volume = newValue;
             }
         },
         methods: {
@@ -106,10 +121,6 @@
                 if(this.$refs.videoPlayer) { // it may just have been disposed
                     this.currentTime = this.$refs.videoPlayer.currentTime;
                 }
-            },
-            updateVolume(amount) {
-                this.volume = amount;
-                this.$refs.videoPlayer.volume = amount;
             },
             expand() {
                 this.collapsed = false;

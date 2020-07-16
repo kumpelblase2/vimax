@@ -4,7 +4,9 @@ export default {
     namespaced: true,
     state: {
         currentlyPlayingVideoId: BEFORE_FIRST_ELEMENT,
-        playQueue: []
+        playQueue: [],
+        volume: 1.0,
+        muted: false
     },
     getters: {
         currentVideo(state, _getters, _rootState, rootGetters) {
@@ -61,6 +63,12 @@ export default {
         },
         videosInQueue(state, _getters, _rootState, rootGetters) {
             return state.playQueue.map(videoId => rootGetters['videos/getVideo'](videoId));
+        },
+        currentVolume(state) {
+            return state.volume;
+        },
+        isMuted(state) {
+            return state.muted;
         }
     },
     mutations: {
@@ -91,6 +99,12 @@ export default {
         },
         updateOrder(state, videoIds) {
             state.playQueue.splice(0, state.playQueue.length, ...videoIds);
+        },
+        toggleMuted(state) {
+            state.muted = !state.muted;
+        },
+        updateVolume(state, volume) {
+            state.volume = Math.min(1.0, Math.max(0.0, volume));
         }
     },
     actions: {

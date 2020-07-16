@@ -37,10 +37,9 @@
                     <v-btn icon large @click="$emit('togglePlaylist')">
                         <v-icon>playlist_play</v-icon>
                     </v-btn>
-                    <v-icon dense>volume_up</v-icon>
-                    <v-slider vertical hide-details class="volume-slider"
-                              step="0.1" max="1" min="0" :value="volume" @input="$emit('changeVolume', $event)" height="80px">
-                        <v-icon>volume_up</v-icon>
+                    <v-icon dense @click="toggleMuted">{{volumeIcon}}</v-icon>
+                    <v-slider :disabled="isMuted" vertical hide-details class="volume-slider"
+                              step="0.1" max="1" min="0" :value="currentVolume" @input="updateVolume" height="80px">
                     </v-slider>
                 </v-row>
             </div>
@@ -50,7 +49,7 @@
 
 <script>
     import VideoProgressBar from "./VideoProgressBar";
-    import { mapActions, mapGetters } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
     import { getStreamURLForVideo } from "../../video";
 
     function padLeft(number) {
@@ -75,12 +74,17 @@
 
     export default {
         name: "ControllerBar",
-        props: ['collapsed', 'seekProgress', 'duration', 'currentTime', 'volume', 'playing'],
+        props: ['collapsed', 'seekProgress', 'duration', 'currentTime', 'playing'],
+        data() {
+            return {
+                previousVolume: 0
+            }
+        },
         components: {
             VideoProgressBar
         },
         computed: {
-            ...mapGetters('player', ['currentVideo', 'hasNext', 'hasPrevious']),
+            ...mapGetters('player', ['currentVideo', 'hasNext', 'hasPrevious', 'currentVolume', 'isMuted']),
             videoUrl() {
                 return getStreamURLForVideo(this.currentVideo);
             },
@@ -92,10 +96,14 @@
             },
             playIcon() {
                 return this.playing ? "pause" : "play_arrow";
+            },
+            volumeIcon() {
+                return this.isMuted ? "volume_off" : "volume_up";
             }
         },
         methods: {
-            ...mapActions('player', ['clear', 'nextVideo', 'previousVideo'])
+            ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
+            ...mapMutations('player', ['toggleMuted', 'updateVolume']),
         }
     }
 </script>
