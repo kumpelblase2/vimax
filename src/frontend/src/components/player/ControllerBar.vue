@@ -39,7 +39,7 @@
                     </v-btn>
                     <v-icon dense>volume_up</v-icon>
                     <v-slider vertical hide-details class="volume-slider"
-                              step="0.1" max="1" min="0" :value="volume" @input="$emit('changeVolume')" height="80px">
+                              step="0.1" max="1" min="0" :value="volume" @input="$emit('changeVolume', $event)" height="80px">
                         <v-icon>volume_up</v-icon>
                     </v-slider>
                 </v-row>
