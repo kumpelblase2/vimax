@@ -48,9 +48,9 @@ interface VideoRepository : JpaRepository<Video, Int> {
             nativeQuery = true)
     fun loadTagValuesFor(metadataId: Int): MutableSet<String>
 
-    @Query("SELECT DISTINCT v.id FROM video v WHERE json_extract(v.metadata_values, '$.' || ?1 || ?3) = ?2",
+    @Query("SELECT DISTINCT v.id FROM video v WHERE json_extract(v.metadata_values, '$.' || ?1 || ?3) = ?2 OR json_extract(v.metadata_values, '$.' || ?1 || ?3) IS NULL",
             nativeQuery = true)
-    fun findVideosWithMetadataValue(metadataId: Int, metadataValue: Any?, path: String): List<Int>
+    fun findVideosWithDefaultMetadataValue(metadataId: Int, metadataValue: Any?, path: String): List<Int>
 
     @Modifying
     @Query("UPDATE video SET metadata_values = json_insert(metadata_values, '$.' || ?1, json_object('meta-type', json_extract(" +
