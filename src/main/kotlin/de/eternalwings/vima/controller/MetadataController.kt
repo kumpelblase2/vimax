@@ -37,12 +37,8 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     }
 
     @DeleteMapping("/metadata/{id}")
-    @Transactional
     fun deleteMetadata(@PathVariable("id") metadataId: Int): Int {
-        val metadata = this.metadataRepository.getOne(metadataId)
-        if (metadata.isSystemSpecified) throw IllegalArgumentException("Metadata is system specified metadata.")
-        this.metadataRepository.delete(metadata)
-        this.videoRepository.removeMetadataValueOf(metadataId)
+        metadataProcess.deleteMetadata(metadataId)
         return metadataId
     }
 

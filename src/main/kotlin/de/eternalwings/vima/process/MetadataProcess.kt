@@ -7,6 +7,7 @@ import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Component
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Component
@@ -40,5 +41,15 @@ class MetadataProcess(private val videoRepository: VideoRepository, private val 
             videoRepository.addMetadataEntryIfNotExists(saved.id!!)
         }
         return saved
+    }
+
+    @Transactional
+    fun deleteMetadata(metadataId: Int) {
+        val metadata = metadataRepository.findById(metadataId).orElseThrow { EntityNotFoundException("Metadata does not exist") }
+        if (metadata.isSystemSpecified) throw IllegalArgumentException("Metadata is system specified metadata.")
+        val oldDisplayOrder = metadata.displayOrder
+        this.metadataRepository.delete(metadata)
+        this.metadataRepository.updateDisplayOrderWithValuesHigher(oldDisplayOrder)
+        this.videoRepository.removeMetadataValueOf(metadata.id!!)
     }
 }
