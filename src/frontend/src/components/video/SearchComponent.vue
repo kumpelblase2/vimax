@@ -2,7 +2,7 @@
     <form action="#" @submit="doSearch">
         <v-text-field
             v-model="query"
-            @click:append="doSearch"
+            @click:append.prevent="doSearch"
             placeholder="Search..."
             append-icon="search"
             color="white"
@@ -40,8 +40,7 @@
         methods: {
             ...mapActions('videos', ['search']),
             ...mapMutations('search', ['updateQuery']),
-            doSearch($event) {
-                $event.preventDefault();
+            doSearch() {
                 this.updateQuery(this.query);
                 this.search();
             },
