@@ -27,7 +27,8 @@ class VideoImporter(val jobLauncher: JobLauncher, val importJob: Job) {
         if (imported >= maxImport && maxImport > 0) return fail(IllegalStateException("Reached import limit."))
         imported += 1
         val parameters = JobParametersBuilder().addString("path", videoPath.toString())
-                .addLong("library", libraryId.toLong()).toJobParameters()
+            .addLong("library", libraryId.toLong())
+            .addLong("time", System.currentTimeMillis()).toJobParameters()
         val execution = jobLauncher.run(importJob, parameters)
         LOGGER.debug("Started import job with id ${execution.jobId}")
         return CompletableFuture.completedFuture(null)
