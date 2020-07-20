@@ -35,6 +35,12 @@ export default {
             if(state.current) {
                 await dispatch('videos/editing/editVideo', state.current, { root: true });
             }
+        },
+        videoDeleteUpdate({ dispatch, commit, getters }, videoId) {
+            if(getters.currentVideo.id === videoId) {
+                dispatch('nextVideo');
+            }
+            commit('removeVideoFromQueue', videoId);
         }
     },
     mutations: {
@@ -49,6 +55,12 @@ export default {
                 state.current = state.remainingVideoIds.shift();
             } else {
                 state.current = null;
+            }
+        },
+        removeVideoFromQueue(state, videoId) {
+            const index = state.remainingVideoIds.indexOf(videoId);
+            if(index >= 0) {
+                state.remainingVideoIds.splice(index, 1);
             }
         }
     }

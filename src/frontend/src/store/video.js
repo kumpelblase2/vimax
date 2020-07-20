@@ -117,6 +117,18 @@ export default {
         },
         addSearchResultIds(state, ids) {
             state.searchResultVideoIds.push(...ids);
+        },
+        removeVideoFromPage(state, id) {
+            const idIndex = state.displayVideoIds.indexOf(id);
+            if(idIndex >= 0) {
+                state.displayVideoIds.splice(idIndex, 1);
+            }
+        },
+        removeVideo(state, id) {
+            const idIndex = state.videos.findIndex(video => video.id === id);
+            if(idIndex >= 0) {
+                state.videos.splice(idIndex, 1);
+            }
         }
     },
     actions: {
@@ -163,6 +175,10 @@ export default {
                 const videos = await videoApi.getVideosById(videosToLoad);
                 commit('addVideos', videos);
             }
+        },
+        videoDeleteUpdate({commit}, videoId) {
+            commit('removeVideoFromPage', videoId);
+            commit('removeVideo', videoId);
         }
     }
 };

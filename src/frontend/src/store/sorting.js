@@ -67,6 +67,12 @@ export default {
         },
         [SET_SORTABLE_VIDEOS](state, videoIds) {
             videoIds.forEach(id => state.sortingVideoIds.push(id));
+        },
+        removeVideoFromQueue(state, videoId) {
+            const index = state.sortingVideoIds.indexOf(videoId);
+            if(index >= 0) {
+                state.sortingVideoIds.splice(index, 1);
+            }
         }
     },
     actions: {
@@ -98,6 +104,12 @@ export default {
             if(getters.needsToLoadMore) {
                 dispatch('loadNextSortableBatch');
             }
+        },
+        videoDeleteUpdate({ commit, getters }, videoId) {
+            if(getters.nextVideoId === videoId) {
+                commit(SKIP_VIDEO);
+            }
+            commit('removeVideoFromQueue', videoId);
         }
     }
 }
