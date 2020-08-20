@@ -18,6 +18,7 @@
                         <v-list>
                             <v-list-item @click="playNext"><v-list-item-title>Play Next</v-list-item-title></v-list-item>
                             <v-list-item @click="appendQueue"><v-list-item-title>Add to Queue</v-list-item-title></v-list-item>
+                            <v-list-item @click="showVideo"><v-list-item-title>Info</v-list-item-title></v-list-item>
                         </v-list>
                     </v-menu>
                     <v-btn text icon color="orange" @click="watchVideo">
@@ -44,9 +45,9 @@
 </style>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
     import VideoMetadataDisplay from "./VideoMetadataDisplay";
-    import { getSelectedThumbnailURLForVideo } from "../../video";
+    import { getSelectedThumbnailURLForVideo } from "@/video";
 
     export default {
         name: "VideoCard",
@@ -74,6 +75,7 @@
             ...mapActions('videos', ['toggleSelectVideo', 'loadVideos']),
             ...mapActions('player', ['playVideo', 'playVideoNext','queueVideoIn']),
             ...mapActions('videos/editing', ['editVideo']),
+            ...mapMutations('videos', ["displayVideo"]),
             edit() {
                 this.editVideo(this.videoId);
             },
@@ -94,6 +96,9 @@
             },
             appendQueue() {
                 this.queueVideoIn(this.videoId);
+            },
+            showVideo() {
+                this.displayVideo(this.videoId);
             }
         }
     }

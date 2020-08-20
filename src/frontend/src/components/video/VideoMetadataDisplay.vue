@@ -25,24 +25,23 @@
         name: 'VideoMetadataDisplay',
         components: { MetadataValueDisplay },
         props: {
-            videoMetadata: null
+            videoMetadata: null,
+            all: Boolean
         },
         computed: {
             ...mapGetters('settings/metadata', [
-                'visibleMetadata'
+                'visibleMetadata',
+                'orderedMetadata'
             ]),
             metadatas() {
-                return this.visibleMetadata.map(definition => {
+                const usedMetadata = this.all ? this.orderedMetadata : this.visibleMetadata;
+
+                return usedMetadata.map(definition => {
                     return {
                         value: valueOrDefault(this.videoMetadata[definition.id], definition),
                         definition
                     }
                 });
-            }
-        },
-        methods: {
-            needsDivider(index) {
-                return index < this.videoMetadata.length
             }
         }
     }

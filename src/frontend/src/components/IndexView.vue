@@ -10,6 +10,7 @@
             </v-row>
             <video-edit-dialog/>
             <multi-video-edit-dialog/>
+            <video-info-dialog />
         </v-container>
         <v-container v-else>
             <v-row>No videos found</v-row>
@@ -23,10 +24,11 @@
     import VideoCard from "./video/VideoCard";
     import VideoEditDialog from "./video/VideoEditDialog";
     import MultiVideoEditDialog from "./video/MultiVideoEditDialog";
+    import VideoInfoDialog from "@/components/video/VideoInfoDialog";
 
     export default {
         name: "Library",
-        components: { MultiVideoEditDialog, VideoEditDialog, VideoCard, MugenScroll },
+        components: { VideoInfoDialog, MultiVideoEditDialog, VideoEditDialog, VideoCard, MugenScroll },
         async mounted() {
             this.setLoading(true);
             this.resetPage();

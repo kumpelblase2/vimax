@@ -1,41 +1,49 @@
 <template>
-    <v-card>
-        <v-card-title>
-            {{playlist.name}}
-            <v-spacer></v-spacer>
-            <v-icon @click="startPlaylist">play_arrow</v-icon>
-        </v-card-title>
-        <v-card-text>
-            <v-list>
-                <draggable v-model="orderedVideos" handle=".drag-item">
-                    <v-list-item v-for="video in videos" :key="video.id">
-                        <v-list-item-action>
-                            <v-icon class="drag-item">reorder</v-icon>
-                        </v-list-item-action>
-                        <v-list-item-avatar horizontal height="100" width="150" class="mr-3">
-                            <v-img :src="getThumbnailFor(video)"></v-img>
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                            {{video.name}}
-                        </v-list-item-content>
-                        <v-list-item-action>
-                            <v-icon @click="deleteVideo(video.id)">close</v-icon>
-                        </v-list-item-action>
-                    </v-list-item>
-                </draggable>
-            </v-list>
-        </v-card-text>
-    </v-card>
+    <div>
+        <v-card>
+            <v-card-title>
+                {{playlist.name}}
+                <v-spacer></v-spacer>
+                <v-icon @click="startPlaylist">play_arrow</v-icon>
+            </v-card-title>
+            <v-card-text>
+                <v-list>
+                    <draggable v-model="orderedVideos" handle=".drag-item">
+                        <v-list-item v-for="video in videos" :key="video.id">
+                            <v-list-item-action>
+                                <v-icon class="drag-item">reorder</v-icon>
+                            </v-list-item-action>
+                            <v-list-item-avatar horizontal height="100" width="150" class="mr-3">
+                                <v-img :src="getThumbnailFor(video)"></v-img>
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                                {{video.name}}
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-row>
+                                    <v-icon @click="displayVideo(video.id)" style="margin-right: 5px">info</v-icon>
+                                    <v-icon @click="deleteVideo(video.id)">close</v-icon>
+                                </v-row>
+                            </v-list-item-action>
+                        </v-list-item>
+                    </draggable>
+                </v-list>
+            </v-card-text>
+        </v-card>
+        <video-info-dialog />
+    </div>
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
     import draggable from 'vuedraggable';
-    import { getSelectedThumbnailURLForVideo } from "../video";
+    import { getSelectedThumbnailURLForVideo } from "@/video";
+    import VideoInfoDialog from "@/components/video/VideoInfoDialog";
 
     export default {
         name: "PlaylistView",
         components: {
+            VideoInfoDialog,
             draggable
         },
         data() {
@@ -76,6 +84,7 @@
             ...mapActions('videos', ['loadVideos']),
             ...mapActions('playlist', ['updateOrder', 'removeFromPlaylist']),
             ...mapActions('player', ['playPlaylist']),
+            ...mapMutations('videos', ["displayVideo"]),
             deleteVideo(videoId) {
                 this.removeFromPlaylist({ playlistId: this.playlistId, videoIds: [videoId] });
             },

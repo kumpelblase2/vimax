@@ -24,7 +24,8 @@ export default {
         displayVideoIds: [],
         searchResultVideoIds: [],
         hasMoreVideos: true,
-        currentPage: 0
+        currentPage: 0,
+        displayedVideoId: null
     },
     getters: {
         selectedVideos: (state) => {
@@ -56,6 +57,12 @@ export default {
         },
         searchedVideosAtPage: (state) => {
             return (page, size) => state.searchResultVideoIds.slice(page * size, page * size + size);
+        },
+        shouldShowVideoInfo: (state) => {
+            return !!state.displayedVideoId;
+        },
+        videoInfoId: (state) => {
+            return state.displayedVideoId;
         }
     },
     mutations: {
@@ -129,6 +136,9 @@ export default {
             if(idIndex >= 0) {
                 state.videos.splice(idIndex, 1);
             }
+        },
+        displayVideo(state, id) {
+            state.displayedVideoId = id;
         }
     },
     actions: {
