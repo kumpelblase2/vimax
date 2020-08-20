@@ -29,7 +29,7 @@
                     </v-btn>
                 </v-row>
             </v-img>
-            <v-card-title>{{ video.name }}</v-card-title>
+            <v-card-title><span class="ellipsis-text">{{ video.name }}</span></v-card-title>
             <v-card-text v-show="hasVisibleMetadata">
                 <VideoMetadataDisplay :video-metadata="video.metadata"/>
             </v-card-text>
@@ -41,6 +41,12 @@
     .selected-video {
         outline: 5px solid orange;
         outline-offset: -5px;
+    }
+
+    .ellipsis-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>
 
