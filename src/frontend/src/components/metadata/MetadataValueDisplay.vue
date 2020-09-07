@@ -4,6 +4,7 @@
             <v-chip small v-for="(item, index) in metadataValue" :key="index">{{item}}</v-chip>
         </div>
         <span v-else-if="displayAsText">{{ textValue }}</span>
+        <span v-else><i>No display configured.</i></span>
     </div>
 </template>
 
