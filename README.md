@@ -43,10 +43,13 @@ You can also create your own plugins. Check out the [plugin information](PLUGINS
 
 Java 8 (or later) needs to be installed on the system to run the application.
  
-You need FFmpeg installed in the `PATH` of your system. FFmpeg is used to generate the thumbnails for the videos and to provide
- metadata like resolution or bitrate if the `MetadataInfoPlugin` is enabled.
- 
-## How to start (user instructions)
+You need FFmpeg installed in the `PATH` of your system. FFmpeg is used to generate the thumbnails for the videos and to
+ provide metadata like resolution or bitrate if the `MetadataInfoPlugin` is enabled.
+
+For development purposes, you also need to have nodejs+npm installed.
+
+## Installation
+### Starting the application
 
 Simply place the provided jar in any folder you like and start it using the following command (adjust the filename accordingly):
 ```shell script
@@ -55,7 +58,22 @@ java -jar vima-0.0.1-all.jar -Dspring.profiles.active=production
 
 This will start the application and once startup has finished, you can access the application via `http://localhost:8080`
 
-## How to start (developer instructions)
+## Setting up
+
+Now that we have the application running, there are some things we need to set up. 
+1. Open application in your browser and
+go to the settings tab using the menu on the left. You should see no libraries, but a couple of metadata and plugins. 
+2. Enable wanted plugins. If you want to enable some plugins now, you can do that. However, you can also enable them later if
+ you'd like. 
+3. Configure any metadata you'd like to have. You can also do this later if you want.
+4. Add a library by clicking the "Add library" button. This will open a dialog where you can specify the path of the library on
+ the system. For example: `/home/tim/videos`. Save this library.
+
+The system should now start importing the videos from that library and generate thumbnails. Depending on the amount of videos
+ in the library, this may take a while.
+
+## Developer Instructions
+### How to start
 
 To start the backend you can run:
 
