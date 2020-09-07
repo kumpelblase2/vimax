@@ -1,15 +1,15 @@
 <template>
-    <div>
-        <div v-if="metadataType === 'TAGLIST'">
-            <v-chip small v-for="(item, index) in metadataValue" :key="index">{{item}}</v-chip>
-        </div>
+    <div class="text-truncate">
+        <template v-if="metadataType === 'TAGLIST'">
+            <v-chip small v-for="item in metadataValue" :key="item">{{item}}</v-chip>
+        </template>
         <span v-else-if="displayAsText">{{ textValue }}</span>
         <span v-else><i>No display configured.</i></span>
     </div>
 </template>
 
 <script>
-    import { canBeDisplayedAsText, toDisplayValue } from "../../helpers/metadata-display-helper";
+    import { canBeDisplayedAsText, toDisplayValue } from "@/helpers/metadata-display-helper";
 
     export default {
         name: "MetadataValueDisplay",

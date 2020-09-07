@@ -1,5 +1,5 @@
 <template>
-    <v-simple-table dense>
+    <v-simple-table dense class="minimal">
         <template v-slot:default>
             <tbody>
             <tr v-for="(metadata, index) in metadatas" :key="index">
@@ -46,3 +46,13 @@
         }
     }
 </script>
+
+<style>
+.minimal .v-data-table__wrapper table {
+    table-layout: fixed;
+}
+
+.minimal table td {
+    padding: 0;
+}
+</style>
