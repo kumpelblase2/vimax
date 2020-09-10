@@ -1,5 +1,5 @@
 <template>
-    <div v-if="hasVideo" class="player-container" :class="{'expanded': !collapsed}">
+    <div v-if="hasVideoPlaying" class="player-container" :class="{'expanded': !collapsed}">
         <div :class="{ 'video-collapsed': collapsed, 'video-expanded': !collapsed }">
             <div v-if="!collapsed" class="top-video-bar">
                 <v-row no-gutters justify="space-between" align="center" class="fill-height" style="padding-left: 10px;
@@ -54,12 +54,11 @@
             }
         },
         computed: {
-            ...mapGetters('player', ['currentVideo', 'hasQueue', 'hasNext', 'hasPrevious', 'videosInQueue', 'currentVolume',
-                'isMuted']),
-            hasVideo() {
-                return this.currentVideo != null;
-            },
+            ...mapGetters('player', ['currentVideo', 'currentVideoId', 'hasQueue', 'hasNext', 'hasPrevious', 'videosInQueue', 'currentVolume', 'isMuted', 'hasVideoPlaying']),
             videoUrl() {
+                if(this.currentVideo == null) {
+                    return "";
+                }
                 return getStreamURLForVideo(this.currentVideo);
             },
             seekProgress() {
@@ -67,7 +66,7 @@
             }
         },
         watch: {
-            hasVideo(newValue, oldValue) {
+            hasVideoPlaying(newValue, oldValue) {
                 if(newValue && !oldValue) {
                     this.collapsed = false;
                     this.showPlaylist = false;
@@ -78,6 +77,11 @@
                 } else if(!newValue && oldValue) {
                     this.$refs.videoPlayer.src = ""
                     this.$refs.videoPlayer.removeAttribute("src");
+                }
+            },
+            currentVideoId(newValue) {
+                if(newValue > 0) {
+                    this.loadVideos([newValue]);
                 }
             },
             isMuted(newValue) {
@@ -111,7 +115,7 @@
             },
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
             ...mapMutations('player', ['updateVolume']),
-            ...mapActions('videos', ['reloadVideo']),
+            ...mapActions('videos', ['reloadVideo', 'loadVideos']),
             playPauseVideo() {
                 if(this.playing) {
                     this.$refs.videoPlayer.pause();
@@ -143,7 +147,7 @@
                 }
             },
             onVideoFinished() {
-                events.watchFinishEvent(this.currentVideo.id).then(() => this.reloadVideo(this.currentVideo.id));
+                events.watchFinishEvent(this.currentVideoId).then(() => this.reloadVideo(this.currentVideoId));
                 if(this.hasNext) {
                     this.nextVideo();
                 } else {

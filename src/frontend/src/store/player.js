@@ -12,6 +12,9 @@ export default {
         currentVideo(state, _getters, _rootState, rootGetters) {
             return rootGetters['videos/getVideo'](state.currentlyPlayingVideoId);
         },
+        currentVideoId(state) {
+            return state.currentlyPlayingVideoId;
+        },
         nextUp(state, getters, _rootState, rootGetters) {
             const nextId = getters.nextVideoId;
             if(nextId != null) {
@@ -60,6 +63,9 @@ export default {
         },
         containsVideo(state) {
             return (id) => state.playQueue.includes(id);
+        },
+        videoIdsInQueue(state) {
+            return state.playQueue;
         },
         videosInQueue(state, _getters, _rootState, rootGetters) {
             return state.playQueue.map(videoId => rootGetters['videos/getVideo'](videoId));
