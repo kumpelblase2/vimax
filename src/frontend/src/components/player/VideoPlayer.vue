@@ -16,7 +16,7 @@
                     <v-list-item-action>
                         <v-flex column>
                             <v-btn @click="skipToVideo(video.id)" icon><v-icon>play_arrow</v-icon></v-btn>
-                            <v-btn @click="removeVideoFromQueue(video.id)" icon><v-icon>delete</v-icon></v-btn>
+                            <v-btn @click="removeVideo(video.id)" icon><v-icon>delete</v-icon></v-btn>
                         </v-flex>
                     </v-list-item-action>
                 </v-list-item>
@@ -101,7 +101,7 @@
         },
         methods: {
             ...mapActions('videos', ['reloadVideo']),
-            ...mapActions('player', ['nextVideo', 'removeVideoFromQueue', 'skipToVideo']),
+            ...mapActions('player', ['nextVideo', 'removeVideo', 'skipToVideo']),
             refreshCurrentVideo() {
                 this.player.src([
                     {
