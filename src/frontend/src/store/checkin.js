@@ -18,7 +18,7 @@ export default {
     actions: {
         async updateFilter({ commit, state, dispatch }, value) {
             commit('changeFilter', value);
-            const ids = await videos.getAllIds(value);
+            const ids = await videos.getVideosMatchingQuery(value);
             commit('updateRemaining', ids);
             dispatch('nextVideo');
         },

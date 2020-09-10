@@ -163,7 +163,7 @@ export default {
         async search({ commit, dispatch, rootState }) {
             let videoIds;
             try {
-                videoIds = await videoApi.getVideosByPage(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
+                videoIds = await videoApi.getVideosMatchingQuery(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
                 commit('search/updateQueryError', "", { root: true });
             } catch(exception) {
                 // Save error
