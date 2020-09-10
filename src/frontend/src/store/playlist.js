@@ -1,13 +1,18 @@
 import playlists from "../api/playlists";
+import smartPlaylists from "../api/smart-playlists";
 
 export default {
     namespaced: true,
     state: {
-        playlists: []
+        playlists: [],
+        smartPlaylists: []
     },
     getters: {
         getPlaylist(state) {
             return (id) => state.playlists.find(playlist => playlist.id === id);
+        },
+        getSmartPlaylist(state) {
+            return (id) => state.smartPlaylists.find(playlist => playlist.id === id);
         }
     },
     mutations: {
@@ -19,20 +24,41 @@ export default {
                 state.playlists.push(playlist);
             }
         },
+        addOrUpdateSmartPlaylist(state, playlist) {
+            const index = state.smartPlaylists.findIndex(existing => existing.id === playlist.id);
+            if(index >= 0) {
+                Object.assign(state.smartPlaylists[index], playlist);
+            } else {
+                state.smartPlaylists.push(playlist);
+            }
+        },
         removePlaylist(state, playlistId) {
             const index = state.playlists.findIndex(existing => existing.id === playlistId);
             if(index >= 0) {
                 state.playlists.splice(index, 1);
             }
         },
+        removeSmartPlaylist(state, playlistId) {
+            const index = state.smartPlaylists.findIndex(existing => existing.id === playlistId);
+            if(index >= 0) {
+                state.smartPlaylists.splice(index, 1);
+            }
+        },
         clearPlaylists(state) {
             state.playlists = [];
+        },
+        clearSmartPlaylists(state) {
+            state.smartPlaylists = [];
         }
     },
     actions: {
         async createPlaylist({ commit }, { name, videoIds }) {
             const createdPlaylist = await playlists.savePlaylist(name, videoIds);
             commit('addOrUpdatePlaylist', createdPlaylist);
+        },
+        async createSmartPlaylist({ commit }, playlist) {
+            const createdPlaylist = await smartPlaylists.savePlaylist(playlist);
+            commit('addOrUpdateSmartPlaylist', createdPlaylist);
         },
         async removePlaylist({ commit }, playlistId) {
             await playlists.deletePlaylist(playlistId);
@@ -45,6 +71,11 @@ export default {
             const videoIds = [...new Set(loaded.flatMap(playlist => playlist.videoIds))];
             await dispatch('videos/loadVideos', videoIds, { root: true });
         },
+        async loadSmartPlaylists({ commit }) {
+            commit('clearSmartPlaylists');
+            const playlists = await smartPlaylists.getPlaylists();
+            playlists.forEach(playlist => commit('addOrUpdateSmartPlaylist', playlist));
+        },
         async addToPlaylist({ commit }, { playlistId, videoIds }) {
             const newPlaylist = await playlists.addToPlaylist(playlistId, videoIds);
             commit('addOrUpdatePlaylist', newPlaylist);
@@ -56,6 +87,14 @@ export default {
         async updateOrder({commit}, { playlistId, videoIds }) {
             const newPlaylist = await playlists.updateOrderOf(playlistId, videoIds);
             commit('addOrUpdatePlaylist', newPlaylist);
+        },
+        async updateSmartPlaylist({commit}, playlist) {
+            const updated = await smartPlaylists.updatePlaylist(playlist);
+            commit('addOrUpdateSmartPlaylist', updated);
+        },
+        async removeSmartPlaylist({commit}, id) {
+            await smartPlaylists.deletePlaylist(id);
+            commit('removeSmartPlaylist', id);
         }
     }
 }

@@ -3,6 +3,7 @@ import IndexView from "@/components/IndexView";
 import PlaylistsView from "@/components/PlaylistsView";
 import PlaylistView from "@/components/PlaylistView";
 import SettingsView from "@/components/SettingsView";
+import SmartPlaylistView from "@/components/SmartPlaylistView";
 import SortingView from "@/components/SortingView";
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -36,6 +37,11 @@ export default new Router({
             path: '/playlist/:id',
             name: PLAYLIST,
             component: PlaylistView
+        },
+        {
+            path: '/smart-playlist/:id',
+            name: SMART_PLAYLIST,
+            component: SmartPlaylistView
         },
         {
             path: '/checkin',
