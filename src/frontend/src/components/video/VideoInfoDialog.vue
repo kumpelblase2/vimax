@@ -4,7 +4,7 @@
             <v-card-title>
                 <span class="headline">{{video.name}}</span>
                 <v-spacer />
-                <v-btn text icon color="orange" @click="startEditing">
+                <v-btn text icon color="primary" @click="startEditing">
                     <v-icon>edit</v-icon>
                 </v-btn>
             </v-card-title>

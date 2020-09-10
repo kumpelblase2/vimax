@@ -6,7 +6,7 @@
                     <v-toolbar-title>Playlists</v-toolbar-title>
                     <v-progress-circular v-if="loading" indeterminate width="3"></v-progress-circular>
                     <v-spacer></v-spacer>
-                    <v-text-field style="max-width: 300px; margin-right: 20px" v-model="newPlaylistName"
+                    <v-text-field style="max-width: 300px;" v-model="newPlaylistName" class="mr-5"
                                   hide-details></v-text-field>
                     <v-btn color="primary" @click="savePlaylist" :disabled="newPlaylistName.length === 0">Create</v-btn>
                 </v-toolbar>

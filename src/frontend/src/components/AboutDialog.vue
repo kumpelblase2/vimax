@@ -2,27 +2,27 @@
     <v-card>
         <v-card-title>About</v-card-title>
         <v-card-text>
-            <div style="text-align: center;">
+            <div class="text-center">
                 Vimax is made with ❤️ by <a href="https://github.com/kumpelblase2">kumpelblase2</a>.<br/>
                 Source code is located at <a href="https://github.com/kumpelblase2/vimax" target="_blank"
                                              referrerpolicy="no-referrer">GitHub</a> as well
                 as <a href="https://aura.eternalwings.de/tim/vimax" target="_blank" referrerpolicy="no-referrer">my mirror</a>.
             </div>
             <hr/>
-            <div style="text-align: center;">
+            <div class="text-center">
                 Vimax uses some open source libraries:
             </div>
 
             <v-row>
                 <v-col>
-                    <h4>Backend</h4>
+                    <h3>Backend</h3>
                     <span v-for="dependency in backendDependencies" :key="dependency.name">
                         <a :href="dependency.url">{{dependency.name}}</a> | {{dependency.license}}
                         <br />
                     </span>
                 </v-col>
                 <v-col>
-                    <h4>Frontend</h4>
+                    <h3>Frontend</h3>
                     <span v-for="dependency in frontendDependencies" :key="dependency.name">
                         <a :href="dependency.url">{{dependency.name}}</a> | {{dependency.license}}
                         <br/>

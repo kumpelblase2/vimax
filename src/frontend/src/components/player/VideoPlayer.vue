@@ -3,7 +3,7 @@
         <v-flex column fill-height>
             <video ref="videoPlayer" class="video-js vjs-big-play-centered" @ended="onVideoFinished" @playing="onVideoStarted"/>
         </v-flex>
-        <v-flex column xs2 fill-height v-if="hasQueue" style="max-height: 90vh; overflow-y: scroll;">
+        <v-flex column xs2 fill-height v-if="hasQueue" class="overflow-y-auto" style="max-height: 90vh;">
             <v-list>
                 <v-list-item v-for="video in videosInQueue" :key="video.id">
                     <v-list-item-avatar><v-img :src="_thumbnailForVideo(video)"></v-img></v-list-item-avatar>

@@ -13,9 +13,9 @@
                         <td>{{ props.item.information.description }}</td>
                         <td>{{ props.item.information.author }}</td>
                         <td>{{ props.item.information.version }}</td>
-                        <td style="display: flex;">
+                        <td class="flex">
                             <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
-                                      style="margin-top: 10px"></v-switch>
+                                      class="mt-3"></v-switch>
                             <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
                                     title="Reload Metadata for all videos">refresh
                             </v-icon>

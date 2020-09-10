@@ -21,7 +21,7 @@
                             </v-list-item-content>
                             <v-list-item-action>
                                 <v-row>
-                                    <v-icon @click="displayVideo(video.id)" style="margin-right: 5px">info</v-icon>
+                                    <v-icon @click="displayVideo(video.id)" class="mr-1">info</v-icon>
                                     <v-icon @click="deleteVideo(video.id)">close</v-icon>
                                 </v-row>
                             </v-list-item-action>

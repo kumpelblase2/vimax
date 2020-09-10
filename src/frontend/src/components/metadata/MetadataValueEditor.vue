@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 0">
+    <div class="pa-0">
         <v-combobox v-if="metadataDefinition.type === 'TEXT' && metadataDefinition.options.suggest" hide-no-data
                     :items="values" :label="metadataDefinition.name" :value="metadataValue"
                     :loading="isLoading" @change="update" :solo="solo"/>

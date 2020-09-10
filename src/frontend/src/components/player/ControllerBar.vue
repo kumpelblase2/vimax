@@ -2,11 +2,11 @@
     <div class="controller-bar" :class="{'expanded': !collapsed}">
         <video-progress-bar :video-url="videoUrl" @scrubb="$emit('scrubb', $event)"
                             :seek-progress="seekProgress" :duration="duration"></video-progress-bar>
-        <v-row style="margin: 0 !important;">
-            <div style="padding: 10px; width: 38%; height: 100px;">
+        <v-row class="ma-0 controller-bar-content">
+            <div style="width: 38%;" class="pa-3">
                 <v-hover v-slot:default="{ hover }" v-show="collapsed">
                     <div class="video-hover" :class="{ 'hovered': !!hover }">
-                        <v-btn large v-if="!!hover" style="margin-top: 20px; margin-left: 50px" icon @click="$emit('expand')">
+                        <v-btn large v-if="!!hover" class="mt-5 mx-12" icon @click="$emit('expand')">
                             <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
                     </div>
@@ -16,7 +16,7 @@
                     <v-row no-gutters>{{ videoTimestamp }} / {{ videoDuration }}</v-row>
                 </div>
             </div>
-            <div style="padding: 10px; width: 24%; height: 100px">
+            <div style="width: 24%;" class="pa-3">
                 <v-row justify="center" align="center" class="fill-height" no-gutters>
                     <v-btn icon :disabled="!hasPrevious" @click="previousVideo">
                         <v-icon>skip_previous</v-icon>
@@ -29,7 +29,7 @@
                     </v-btn>
                 </v-row>
             </div>
-            <div style="padding: 10px; width: 38%; height: 100px">
+            <div style="width: 38%;" class="pa-3">
                 <v-row justify="end" align="center" class="fill-height" no-gutters>
                     <v-btn icon @click="clear">
                         <v-icon>close</v-icon>
@@ -119,6 +119,10 @@
 
     .controller-bar.expanded {
         background-color: rgba(50, 51, 53, 0.85);
+    }
+
+    .controller-bar-content {
+        height: 100px;
     }
 
     .volume-slider {

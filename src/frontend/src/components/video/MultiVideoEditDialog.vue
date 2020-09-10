@@ -5,9 +5,9 @@
                 <span class="headline">Editing multiple Video(s)</span>
             </v-card-title>
             <v-card-text>
-                <v-row style="padding: 0" v-for="metadata in editableMetadata" :key="metadata.id">
+                <v-row class="pa-0" v-for="metadata in editableMetadata" :key="metadata.id">
                     <v-checkbox v-model="selected" :value="metadata.id" solo color="primary"/>
-                    <v-col style="padding: 0;">
+                    <v-col class="pa-0">
                         <metadata-value-editor class="col-md-auto" md="auto" :metadata-definition="metadata"
                                                :metadata-value="valueOrDefault(metadata)"
                                                @change="handleMetadataUpdate(metadata.id, $event)"/>

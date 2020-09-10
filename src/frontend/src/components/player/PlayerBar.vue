@@ -2,8 +2,7 @@
     <div v-if="hasVideoPlaying" class="player-container" :class="{'expanded': !collapsed}">
         <div :class="{ 'video-collapsed': collapsed, 'video-expanded': !collapsed }">
             <div v-if="!collapsed" class="top-video-bar">
-                <v-row no-gutters justify="space-between" align="center" class="fill-height" style="padding-left: 10px;
-            padding-right: 10px;">
+                <v-row no-gutters justify="space-between" align="center" class="fill-height px-3">
                     <v-btn icon @click="collapse">
                         <v-icon>keyboard_arrow_down</v-icon>
                     </v-btn>

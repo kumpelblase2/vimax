@@ -26,12 +26,12 @@
                 <v-flex xs8>
                     <single-video-player :autoplay="false" :disable-events="true" :video="video"/>
                 </v-flex>
-                <v-flex xs4 style="overflow-y: scroll">
+                <v-flex xs4 class="overflow-y-auto">
                     <v-card>
                         <v-card-title>
                             {{nextVideo.name}}
                             <v-spacer/>
-                            <v-btn text icon color="orange" small @click="edit">
+                            <v-btn text icon color="primary" small @click="edit">
                                 <v-icon>edit</v-icon>
                             </v-btn>
                         </v-card-title>
