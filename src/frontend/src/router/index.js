@@ -1,12 +1,12 @@
+import CheckinView from "@/components/CheckinView";
+import IndexView from "@/components/IndexView";
+import PlaylistsView from "@/components/PlaylistsView";
+import PlaylistView from "@/components/PlaylistView";
+import SettingsView from "@/components/SettingsView";
+import SortingView from "@/components/SortingView";
 import Vue from 'vue'
 import Router from 'vue-router'
-import SettingsView from "../components/SettingsView";
-import IndexView from "../components/IndexView";
-import SortingView from "../components/SortingView";
-import PlaylistsView from "../components/PlaylistsView";
-import { INDEX, PLAYLISTS, SETTINGS, SORTING, PLAYLIST, CHECKIN } from "./views";
-import PlaylistView from "../components/PlaylistView";
-import CheckinView from "../components/CheckinView";
+import { CHECKIN, INDEX, PLAYLIST, PLAYLISTS, SETTINGS, SMART_PLAYLIST, SORTING } from "./views";
 
 Vue.use(Router);
 
@@ -42,5 +42,5 @@ export default new Router({
             name: CHECKIN,
             component: CheckinView
         }
-    ],
+    ]
 })

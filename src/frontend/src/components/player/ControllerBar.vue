@@ -12,8 +12,8 @@
                     </div>
                 </v-hover>
                 <div class="fill-height details" :class="{ 'collapsed': this.collapsed}">
-                    <v-row no-gutters>{{currentVideo.name}}</v-row>
-                    <v-row no-gutters>{{videoTimestamp}} / {{videoDuration}}</v-row>
+                    <v-row no-gutters>{{ (currentVideo || {}).name }}</v-row>
+                    <v-row no-gutters>{{ videoTimestamp }} / {{ videoDuration }}</v-row>
                 </div>
             </div>
             <div style="padding: 10px; width: 24%; height: 100px">
@@ -22,7 +22,7 @@
                         <v-icon>skip_previous</v-icon>
                     </v-btn>
                     <v-btn icon large @click="$emit('playPauseVideo')">
-                        <v-icon>{{playIcon}}</v-icon>
+                        <v-icon>{{ playIcon }}</v-icon>
                     </v-btn>
                     <v-btn icon :disabled="!hasNext" @click="nextVideo">
                         <v-icon>skip_next</v-icon>
@@ -37,7 +37,7 @@
                     <v-btn icon large @click="$emit('togglePlaylist')">
                         <v-icon>playlist_play</v-icon>
                     </v-btn>
-                    <v-icon dense @click="toggleMuted">{{volumeIcon}}</v-icon>
+                    <v-icon dense @click="toggleMuted">{{ volumeIcon }}</v-icon>
                     <v-slider :disabled="isMuted" vertical hide-details class="volume-slider"
                               step="0.1" max="1" min="0" :value="currentVolume" @input="updateVolume" height="80px">
                     </v-slider>
@@ -48,9 +48,9 @@
 </template>
 
 <script>
-    import VideoProgressBar from "./VideoProgressBar";
+    import { getStreamURLForVideo } from "@/video";
     import { mapActions, mapGetters, mapMutations } from "vuex";
-    import { getStreamURLForVideo } from "../../video";
+    import VideoProgressBar from "./VideoProgressBar";
 
     function padLeft(number) {
         const numberString = number.toString();
@@ -103,7 +103,7 @@
         },
         methods: {
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
-            ...mapMutations('player', ['toggleMuted', 'updateVolume']),
+            ...mapMutations('player', ['toggleMuted', 'updateVolume'])
         }
     }
 </script>

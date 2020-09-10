@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <v-card-title>
-                {{playlist.name}}
+                {{ playlist.name }}
                 <v-spacer></v-spacer>
                 <v-icon @click="startPlaylist">play_arrow</v-icon>
             </v-card-title>
@@ -17,7 +17,7 @@
                                 <v-img :src="getThumbnailFor(video)"></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content>
-                                {{video.name}}
+                                {{ video.name }}
                             </v-list-item-content>
                             <v-list-item-action>
                                 <v-row>
@@ -30,15 +30,15 @@
                 </v-list>
             </v-card-text>
         </v-card>
-        <video-info-dialog />
+        <video-info-dialog/>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
-    import draggable from 'vuedraggable';
-    import { getSelectedThumbnailURLForVideo } from "@/video";
     import VideoInfoDialog from "@/components/video/VideoInfoDialog";
+    import { getSelectedThumbnailURLForVideo } from "@/video";
+    import draggable from 'vuedraggable';
+    import { mapActions, mapGetters, mapMutations } from "vuex";
 
     export default {
         name: "PlaylistView",

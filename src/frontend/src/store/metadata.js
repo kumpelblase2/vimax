@@ -1,5 +1,11 @@
 import metadataApi from "../api/metadata";
-import { isSortable } from "../helpers/metadata-display-helper";
+import { isSortable } from "@/helpers/metadata-display-helper";
+
+export const applicationSortableMetadata = [
+    { name: "Name", value: "name", ordering: "ASC" },
+    { name: "Updated", value: "updateTime", ordering: "DESC" },
+    { name: "Created", value: "creationTime", ordering: "DESC" }
+];
 
 export default {
     namespaced: true,

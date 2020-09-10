@@ -15,7 +15,7 @@ import com.github.h0tk3y.betterParse.parser.Parser
 object QueryParser : Grammar<FullQuery>() {
 
     private fun String.unquote(): String {
-        return if(this.startsWith("\"") && this.endsWith("\"")) {
+        return if (this.startsWith("\"") && this.endsWith("\"")) {
             this.substring(1, this.length - 1)
         } else {
             this
@@ -68,23 +68,22 @@ object QueryParser : Grammar<FullQuery>() {
         }
     }
 
-    val orExpr: Parser<QueryPart> by (parser(::andExpr) and -ws and OR and -ws and parser(
-            ::orExpr)).map { (first, _, second) ->
-        when {
-            first is UnionQuery -> UnionQuery(first.parts + second)
-            second is UnionQuery -> UnionQuery(second.parts + first)
-            else -> UnionQuery(listOf(first, second))
-        }
-    } or parser(::andExpr)
+    val orExpr: Parser<QueryPart> by (parser(::andExpr) and -ws and OR and -ws and parser(::orExpr))
+        .map { (first, _, second) ->
+            when {
+                first is UnionQuery -> UnionQuery(first.parts + second)
+                second is UnionQuery -> UnionQuery(second.parts + first)
+                else -> UnionQuery(listOf(first, second))
+            }
+        } or parser(::andExpr)
 
-    val andExpr: Parser<QueryPart> by (parser(::expr) and -ws and AND and -ws and parser(
-            ::andExpr)).map { (first, _, second) ->
+    val andExpr: Parser<QueryPart> by (parser(::expr) and -ws and AND and -ws and parser(::andExpr))
+        .map { (first, _, second) ->
         when {
             first is IntersectionQuery -> IntersectionQuery(first.parts + second)
             second is IntersectionQuery -> IntersectionQuery(second.parts + first)
             else -> IntersectionQuery(listOf(first, second))
         }
-
     } or parser(::expr)
 
     val expr: Parser<QueryPart> by (skip(openBrace) and separated(orExpr, ws) and skip(closeBrace)).map {

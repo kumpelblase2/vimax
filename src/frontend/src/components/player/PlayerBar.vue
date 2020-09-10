@@ -28,12 +28,12 @@
 </template>
 
 <script>
+    import { getStreamURLForVideo } from "@/video";
     import { mapActions, mapGetters, mapMutations } from "vuex";
-    import { getStreamURLForVideo } from "../../video";
     import events from "../../api/event";
-    import VideoProgressBar from "./VideoProgressBar";
-    import PlayQueue from "./PlayQueue";
     import ControllerBar from "./ControllerBar";
+    import PlayQueue from "./PlayQueue";
+    import VideoProgressBar from "./VideoProgressBar";
 
     export default {
         name: "PlayerBar",
