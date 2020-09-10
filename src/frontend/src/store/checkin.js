@@ -37,7 +37,7 @@ export default {
             }
         },
         videoDeleteUpdate({ dispatch, commit, getters }, videoId) {
-            if(getters.currentVideo.id === videoId) {
+            if(getters.currentVideo != null && getters.currentVideo.id === videoId) {
                 dispatch('nextVideo');
             }
             commit('removeVideoFromQueue', videoId);
