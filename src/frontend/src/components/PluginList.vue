@@ -13,12 +13,14 @@
                         <td>{{ props.item.information.description }}</td>
                         <td>{{ props.item.information.author }}</td>
                         <td>{{ props.item.information.version }}</td>
-                        <td class="flex">
-                            <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
-                                      class="mt-3"></v-switch>
-                            <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
-                                    title="Reload Metadata for all videos">refresh
-                            </v-icon>
+                        <td>
+                            <v-row>
+                                <v-switch :input-value="props.item.enabled" @change="togglePlugin(props.item.name)" dense
+                                          class="mt-0" hide-details></v-switch>
+                                <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
+                                        title="Reload Metadata for all videos">refresh
+                                </v-icon>
+                            </v-row>
                         </td>
                         <td>{{ displayDate(props.item.creationTime) }}</td>
                         <td>{{ displayDate(props.item.enabledAt) }}</td>

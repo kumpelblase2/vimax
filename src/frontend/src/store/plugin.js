@@ -8,7 +8,7 @@ export default {
             { text: "Description", value: "description", width: 500 },
             { text: "Author", value: "author", width: 200 },
             { text: "Version", value: "version", width: 150 },
-            { text: "Enabled", value: "enabled", width: 150 },
+            { text: "Enabled", value: "enabled", width: 120 },
             { text: "Added On", value: "createdAt", width: 150 },
             { text: "Enabled On", value: "enabledAt", width: 150 },
             { text: "Disabled On", value: "disabledAt", width: 150 }
