@@ -46,7 +46,7 @@
 
 <script>
     import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-    import SingleVideoPlayer from "./SingleVideoPlayer";
+    import SingleVideoPlayer from "./player/SingleVideoPlayer";
     import MetadataValueEditor from "./metadata/MetadataValueEditor";
     import { getThumbnailURL } from "../video";
 

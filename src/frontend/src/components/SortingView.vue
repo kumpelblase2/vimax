@@ -55,7 +55,7 @@
     import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
     import SortingBucketComponent from "./sortview/SortingBucketComponent";
     import SortingBucketAddComponent from "./sortview/SortingBucketAddComponent";
-    import SingleVideoPlayer from "./SingleVideoPlayer";
+    import SingleVideoPlayer from "./player/SingleVideoPlayer";
     import VideoMetadataDisplay from "./video/VideoMetadataDisplay";
     import VideoEditDialog from "./video/VideoEditDialog";
 

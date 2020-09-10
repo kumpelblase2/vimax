@@ -8,7 +8,7 @@
 
 <script>
     import { mapActions, mapGetters } from "vuex";
-    import { getSelectedThumbnailURLForVideo, getStreamURLForVideo } from "../video";
+    import { getSelectedThumbnailURLForVideo, getStreamURLForVideo } from "@/video";
     import videojs from 'video.js';
 
     export default {
