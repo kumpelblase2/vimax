@@ -5,7 +5,7 @@ export default {
         return axios.get('/api/videos').then(response => response.data);
     },
 
-    getVideosMatchingQuery(query = "", sortProp = 'Name', sortDir = 'ASC') {
+    getVideosMatchingQuery(query = "", sortProp = 'name', sortDir = 'ASC') {
         return axios.get(`/api/videos?query=${encodeURIComponent(query)}&sortby=${sortProp}&sortdir=${sortDir}`).then(response => response.data);
     },
 
