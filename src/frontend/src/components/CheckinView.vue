@@ -41,6 +41,11 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-row v-else-if="filter !== ''" justify="space-around">
+            <div class="mt-4">
+                No videos that need check-in.
+            </div>
+        </v-row>
     </v-col>
 </template>
 
