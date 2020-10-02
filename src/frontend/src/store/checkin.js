@@ -29,6 +29,7 @@ export default {
                 commit('updateNext');
             } else {
                 commit('updateNext');
+                await dispatch('videos/editing/editVideo', null, { root: true });
             }
         },
         async restartEditingIfPossible({ state, dispatch }) {
