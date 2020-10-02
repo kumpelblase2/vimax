@@ -8,11 +8,9 @@ import org.springframework.stereotype.Component
 @Component
 class NotificationPublisher(private val notificationService: SSENotificationService) {
 
-    private data class VideoDeleteContent(val videoId: Int)
-
     @EventListener
     fun onVideoDelete(event: VideoDeleteEvent) {
-        notificationService.publish(NotificationContent("video-delete", VideoDeleteContent(event.video.id!!)))
+        notificationService.publish(NotificationContent("video-delete", event.video.id!!))
     }
 
     @EventListener
