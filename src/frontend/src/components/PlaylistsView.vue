@@ -17,6 +17,9 @@
                             <td>
                                 <router-link :to="playlistRoute(props.item)">{{ props.item.name }}</router-link>
                             </td>
+                            <td>
+                                {{ props.item.videoIds.length }}
+                            </td>
                             <td class="justify-center">
                                 <v-icon :disabled="props.item.videoIds.length === 0" @click="playPlaylist(props.item)">
                                     play_arrow
@@ -87,6 +90,7 @@
                 return [
                     { text: '#', value: 'id', width: 100 },
                     { text: 'Name', value: 'name' },
+                    { text: 'Videos', value: 'videos', width: 150 },
                     { text: 'Actions', value: 'actions', sortable: false, width: 150 }
                 ];
             },
