@@ -7,13 +7,13 @@
             </v-flex>
         </v-row>
         <v-row v-if="editingVideo">
-            <v-col fill-height>
+            <v-col class="pa-0" xs6>
                 <single-video-player :autoplay="false" :disable-events="true" :video="editingVideo"/>
             </v-col>
-            <v-col>
-                <v-row>
-                    <v-flex xs6><v-btn @click="skip" block>Skip</v-btn></v-flex>
-                    <v-flex xs6><v-btn color="primary" block @click="next">Save and Next</v-btn></v-flex>
+            <v-col xs6>
+                <v-row class="px-2">
+                    <v-flex grow class="pa-1"><v-btn @click="skip" block>Skip</v-btn></v-flex>
+                    <v-flex grow class="pa-1"><v-btn color="primary" block @click="next">Save and Next</v-btn></v-flex>
                 </v-row>
                 <v-card class="editing-card">
                     <v-card-title>
