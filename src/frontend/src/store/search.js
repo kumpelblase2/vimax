@@ -1,3 +1,12 @@
+function createFilterTermFor(metadata, value) {
+    switch(metadata.type) {
+        case 'BOOLEAN':
+            return (value ? '+' : '-') + metadata.name;
+        default:
+            return metadata.name + ":" + value;
+    }
+}
+
 export default {
     namespaced: true,
     state: {
@@ -34,6 +43,19 @@ export default {
         },
         updateQueryError(state, error) {
             state.queryError = error;
+        },
+        addFilterTerm(state, value) {
+            if(state.query === "") {
+                state.query = value;
+            } else {
+                state.query += " " + value;
+            }
+        }
+    },
+    actions: {
+        addFilterFor({commit}, {metadata, value}) {
+            const term = createFilterTermFor(metadata, value);
+            commit('addFilterTerm', term);
         }
     }
 }

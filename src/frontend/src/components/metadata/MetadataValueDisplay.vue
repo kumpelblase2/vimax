@@ -1,15 +1,16 @@
 <template>
     <div class="text-truncate">
         <template v-if="metadataType === 'TAGLIST'">
-            <v-chip small v-for="item in metadataValue" :key="item">{{item}}</v-chip>
+            <v-chip small v-for="item in metadataValue" :key="item" @click="filterFor(item)">{{item}}</v-chip>
         </template>
-        <span v-else-if="displayAsText">{{ textValue }}</span>
+        <span v-else-if="displayAsText" @click="filter">{{ textValue }}</span>
         <span v-else><i>No display configured.</i></span>
     </div>
 </template>
 
 <script>
     import { canBeDisplayedAsText, toDisplayValue } from "@/helpers/metadata-display-helper";
+    import { mapActions } from "vuex";
 
     export default {
         name: "MetadataValueDisplay",
@@ -23,6 +24,15 @@
             },
             textValue() {
                 return toDisplayValue(this.metadataType, this.metadataValue);
+            }
+        },
+        methods: {
+            ...mapActions('search', ['addFilterFor']),
+            filterFor(value) {
+                this.addFilterFor({ metadata: this.metadataDefinition, value });
+            },
+            filter() {
+                this.addFilterFor({ metadata: this.metadataDefinition, value: this.metadataValue });
             }
         }
     }

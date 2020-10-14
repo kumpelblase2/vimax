@@ -37,6 +37,14 @@
                 }
             }
         },
+        watch: {
+            searchQuery(newValue) {
+                if(newValue !== this.query) {
+                    this.query = newValue;
+                    this.search();
+                }
+            }
+        },
         methods: {
             ...mapActions('videos', ['search']),
             ...mapMutations('search', ['updateQuery']),
