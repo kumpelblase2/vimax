@@ -100,4 +100,20 @@
         overflow-y: auto;
     }
 
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgb(18, 18, 18);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #ff9800;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #7a5000;
+    }
 </style>
