@@ -95,6 +95,10 @@ export default {
         async removeSmartPlaylist({commit}, id) {
             await smartPlaylists.deletePlaylist(id);
             commit('removeSmartPlaylist', id);
+        },
+        async updatePlaylistName({commit}, {id, name}) {
+            const updated = await playlists.renamePlaylist(id, name);
+            commit('addOrUpdatePlaylist', updated);
         }
     }
 }

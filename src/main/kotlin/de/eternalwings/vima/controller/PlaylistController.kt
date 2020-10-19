@@ -2,8 +2,11 @@ package de.eternalwings.vima.controller
 
 import de.eternalwings.vima.controller.PlaylistInformation.Companion
 import de.eternalwings.vima.domain.Playlist
+import de.eternalwings.vima.process.CollageCreator
 import de.eternalwings.vima.repository.PlaylistRepository
 import de.eternalwings.vima.repository.VideoRepository
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
@@ -28,7 +32,8 @@ data class PlaylistInformation(val id: Int, val name: String, val videoIds: List
 
 @RestController
 @RequestMapping("/api/playlists")
-class PlaylistController(private val playlistRepository: PlaylistRepository, private val videoRepository: VideoRepository) {
+class PlaylistController(private val playlistRepository: PlaylistRepository, private val videoRepository: VideoRepository,
+                         private val collageCreator: CollageCreator) {
     @GetMapping
     fun getAll(): List<PlaylistInformation> {
         return playlistRepository.findAll().map { PlaylistInformation.from(it) }
@@ -39,6 +44,15 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         val newPlaylist = Playlist(playlist.name)
         newPlaylist.addVideos(videoRepository.findAllById(playlist.videoIds))
         return PlaylistInformation.from(playlistRepository.save(newPlaylist))
+    }
+
+    @Transactional
+    @PutMapping("/{id}")
+    fun updatePlaylistName(@PathVariable("id") playlistId: Int, @RequestBody newName: String): PlaylistInformation {
+        val playlist = playlistRepository.getOne(playlistId)
+        playlist.name = newName
+        val saved = playlistRepository.save(playlist)
+        return Companion.from(saved)
     }
 
     @Transactional
@@ -71,5 +85,29 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
             playlistPosition.position = videos.indexOf(playlistPosition.video?.id)
         }
         return Companion.from(playlistRepository.save(playlist))
+    }
+
+    @GetMapping("/{id}/poster", produces = [MediaType.IMAGE_PNG_VALUE])
+    fun createPoster(@PathVariable("id") playlistId: Int, @RequestParam("width", defaultValue = "320") width: Int, @RequestParam
+    ("height", defaultValue = "180") height: Int):
+            ResponseEntity<ByteArray> {
+        val playlist = playlistRepository.getOne(playlistId)
+        val videosThumbnails = playlist.videos.mapNotNull { vip -> vip.video?.thumbnail }
+        if (videosThumbnails.isEmpty()) {
+            return ResponseEntity.notFound().build()
+        }
+
+        val thumbnailsToUse = when (videosThumbnails.size) {
+            3 -> (videosThumbnails + videosThumbnails.random()).shuffled()
+            2 -> (videosThumbnails + videosThumbnails).shuffled()
+            1 -> (listOf(videosThumbnails[0], videosThumbnails[0], videosThumbnails[0], videosThumbnails[0]))
+            else -> {
+                val randomIndexes = videosThumbnails.indices.shuffled().take(4)
+                randomIndexes.map { index -> videosThumbnails[index] }
+            }
+        }
+
+        val resultingImage = collageCreator.createCollageUsing(thumbnailsToUse, width, height)
+        return ResponseEntity.ok(resultingImage)
     }
 }

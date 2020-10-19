@@ -34,14 +34,14 @@ class VideoSearcher(@PersistenceContext private val entityManager: EntityManager
         return (dbQuery.resultStream as Stream<Int>).toList()
     }
 
-    fun search(query: String, sortProperty: String, sortDirection: Sort.Direction): List<Int> {
+    fun search(query: String, sortProperty: String = "name", sortDirection: Sort.Direction = ASC): List<Int> {
         val videoIds = if (query.isNotBlank()) {
             this.query(query)
         } else {
             videoRepository.getAllIds()
         }
 
-        val sorting = Sort.by(sortDirection ?: ASC, sortProperty)
+        val sorting = Sort.by(sortDirection, sortProperty)
         return if (internalOrderings.contains(sortProperty)) {
             videoRepository.findVideoIdsSortedByOwnProperty(videoIds, sorting)
         } else {

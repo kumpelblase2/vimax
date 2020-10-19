@@ -23,5 +23,13 @@ export default {
 
     updateOrderOf(id, videoIds) {
         return axios.put(`/api/playlists/${id}/order`, videoIds).then(response => response.data);
+    },
+
+    renamePlaylist(id, newName) {
+        return axios.put(`/api/playlists/${id}`, newName, {
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        }).then(response => response.data);
     }
 };

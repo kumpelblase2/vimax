@@ -38,6 +38,9 @@ data class Video(
     fun hasMetadata(metadataToCheck: Metadata) = hasMetadata(metadataToCheck.id!!)
 
     fun hasMetadata(metadataId: Int) = metadata?.containsKey(metadataId) ?: false
+
+    val thumbnail: Thumbnail?
+        get() = selectedThumbnail?.let { thumbnails[it] }
 }
 
 @Entity
