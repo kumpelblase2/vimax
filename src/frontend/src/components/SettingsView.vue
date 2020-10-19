@@ -1,5 +1,5 @@
 <template>
-    <div class="scroll-container">
+    <div class="scroll-container pa-5">
         <v-flex column>
             <library-list></library-list>
             <metadata-list></metadata-list>

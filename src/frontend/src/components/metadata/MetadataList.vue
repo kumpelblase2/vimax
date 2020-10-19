@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card class="my-5">
         <div>
             <v-toolbar flat>
                 <v-toolbar-title>Metadata</v-toolbar-title>
