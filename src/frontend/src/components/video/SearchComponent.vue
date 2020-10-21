@@ -1,5 +1,5 @@
 <template>
-    <form action="#" @submit="doSearch">
+    <form action="#" @submit.prevent="doSearch">
         <v-text-field
             v-model="query"
             @click:append.prevent="doSearch"
