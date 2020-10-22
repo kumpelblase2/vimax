@@ -3,7 +3,8 @@ function createFilterTermFor(metadata, value) {
         case 'BOOLEAN':
             return (value ? '+' : '-') + metadata.name;
         default:
-            return metadata.name + ":" + value;
+
+            return metadata.name + ":" + (value.includes(" ") ? `"${value}"` :value);
     }
 }
 
