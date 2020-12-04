@@ -1,3 +1,4 @@
+import { removeFromArray } from "@/helpers/array-helper";
 import videos from '../api/videos';
 
 const APPEND_VIDEO = 'appendSortableVideo';
@@ -69,10 +70,7 @@ export default {
             videoIds.forEach(id => state.sortingVideoIds.push(id));
         },
         removeVideoFromQueue(state, videoId) {
-            const index = state.sortingVideoIds.indexOf(videoId);
-            if(index >= 0) {
-                state.sortingVideoIds.splice(index, 1);
-            }
+            removeFromArray(state.sortingVideoIds, videoId);
         }
     },
     actions: {

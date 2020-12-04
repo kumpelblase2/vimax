@@ -1,4 +1,5 @@
-import videos from "../api/videos";
+import videoApi from "@/api/videos";
+import { removeFromArray } from "@/helpers/array-helper";
 
 export default {
     namespaced: true,
@@ -18,30 +19,39 @@ export default {
     actions: {
         async updateFilter({ commit, state, dispatch }, value) {
             commit('changeFilter', value);
-            const ids = await videos.getVideosMatchingQuery(value);
+            const ids = await videoApi.getVideosMatchingQuery(value);
             commit('updateRemaining', ids);
             dispatch('nextVideo');
         },
-        async nextVideo({ commit, state, dispatch }) {
+        async nextVideo({ commit, state, dispatch, rootGetters }) {
             if(state.remainingVideoIds.length > 0) {
                 const next = state.remainingVideoIds[0];
-                await dispatch('videos/editing/editVideo', next, { root: true });
-                commit('updateNext');
+                await dispatch('videos/reloadVideo', next, { root: true });
+                commit('changeCurrent', rootGetters["videos/getVideo"](next));
+                commit('removeVideoFromQueue', next);
             } else {
-                commit('updateNext');
-                await dispatch('videos/editing/editVideo', null, { root: true });
+                commit('changeCurrent', null);
             }
         },
-        async restartEditingIfPossible({ state, dispatch }) {
-            if(state.current) {
-                await dispatch('videos/editing/editVideo', state.current, { root: true });
+        async restartEditingIfPossible({ getters, dispatch, commit, rootGetters }) {
+            if(getters.currentVideo) {
+                const id = getters.currentVideo.id;
+                await dispatch('videos/reloadVideo', id, { root: true });
+                commit('changeCurrent', rootGetters["videos/getVideo"](id));
+            }
+        },
+        async saveAndContinue({ getters, dispatch, commit }) {
+            if(getters.currentVideo) {
+                const editedVideo = await videoApi.saveVideo(getters.currentVideo);
+                commit('videos/addOrUpdateVideo', editedVideo, { root: true });
+                dispatch('nextVideo');
             }
         },
         videoDeleteUpdate({ dispatch, commit, getters }, videoId) {
+            commit('removeVideoFromQueue', videoId);
             if(getters.currentVideo != null && getters.currentVideo.id === videoId) {
                 dispatch('nextVideo');
             }
-            commit('removeVideoFromQueue', videoId);
         }
     },
     mutations: {
@@ -51,18 +61,17 @@ export default {
         updateRemaining(state, videos) {
             state.remainingVideoIds = videos;
         },
-        updateNext(state) {
-            if(state.remainingVideoIds.length > 0) {
-                state.current = state.remainingVideoIds.shift();
-            } else {
-                state.current = null;
-            }
+        changeCurrent(state, video) {
+            state.current = video;
         },
         removeVideoFromQueue(state, videoId) {
-            const index = state.remainingVideoIds.indexOf(videoId);
-            if(index >= 0) {
-                state.remainingVideoIds.splice(index, 1);
-            }
-        }
+            removeFromArray(state.remainingVideoIds, videoId);
+        },
+        setEditingMetadataValue(state, { id, value }) {
+            state.current.metadata[id].value = value;
+        },
+        changeThumbnail(state, thumbnailIndex) {
+            state.current.selectedThumbnail = thumbnailIndex;
+        },
     }
 };

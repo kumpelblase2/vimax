@@ -1,3 +1,4 @@
+import { removeFromArray, removeFromArrayWhere } from "@/helpers/array-helper";
 import videoApi from "../api/videos";
 import videoEditing from "./videoEditing";
 import { getSelectedThumbnail } from "../video";
@@ -83,10 +84,7 @@ export default {
             }
         },
         [UNSELECT_VIDEO](state, videoId) {
-            const index = state.selectedVideoIds.indexOf(videoId);
-            if(index >= 0) {
-                state.selectedVideoIds.splice(index, 1);
-            }
+            removeFromArray(state.selectedVideoIds, videoId);
         },
         clearSelectedVideos(state) {
             state.selectedVideoIds = [];
@@ -132,10 +130,7 @@ export default {
             }
         },
         removeVideo(state, id) {
-            const idIndex = state.videos.findIndex(video => video.id === id);
-            if(idIndex >= 0) {
-                state.videos.splice(idIndex, 1);
-            }
+            removeFromArrayWhere(state.videos, video => video.id === id);
         },
         displayVideo(state, id) {
             state.displayedVideoId = id;

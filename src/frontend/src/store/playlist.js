@@ -1,3 +1,4 @@
+import { removeFromArrayWhere } from "@/helpers/array-helper";
 import playlists from "../api/playlists";
 import smartPlaylists from "../api/smart-playlists";
 
@@ -33,16 +34,10 @@ export default {
             }
         },
         removePlaylist(state, playlistId) {
-            const index = state.playlists.findIndex(existing => existing.id === playlistId);
-            if(index >= 0) {
-                state.playlists.splice(index, 1);
-            }
+            removeFromArrayWhere(state.playlists, playlist => playlist.id === playlistId);
         },
         removeSmartPlaylist(state, playlistId) {
-            const index = state.smartPlaylists.findIndex(existing => existing.id === playlistId);
-            if(index >= 0) {
-                state.smartPlaylists.splice(index, 1);
-            }
+            removeFromArrayWhere(state.smartPlaylists, playlist => playlist.id === playlistId);
         },
         clearPlaylists(state) {
             state.playlists = [];

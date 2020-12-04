@@ -1,3 +1,4 @@
+import { removeFromArrayWhere } from "@/helpers/array-helper";
 import libraryApi from '../api/library';
 
 export default {
@@ -46,10 +47,7 @@ export default {
             }
         },
         removeLibrary(state, library) {
-            const existingIndex = state.libraries.findIndex(existing => existing.id === library.id);
-            if(existingIndex >= 0) {
-                state.libraries.splice(existingIndex, 1);
-            }
+            removeFromArrayWhere(state.libraries, existing => existing.id === library.id);
         },
         resetEditItem(state) {
             state.editingItem = Object.assign({}, state.defaultItem);

@@ -1,3 +1,5 @@
+import { removeFromArray } from "@/helpers/array-helper";
+
 const BEFORE_FIRST_ELEMENT = -1;
 
 export default {
@@ -82,10 +84,7 @@ export default {
             state.currentlyPlayingVideoId = videoId;
         },
         removeVideoFromQueue(state, videoIdToRemove) {
-            const index = state.playQueue.findIndex(video => video === videoIdToRemove);
-            if(index >= 0) {
-                state.playQueue.splice(index, 1);
-            }
+            removeFromArray(state.playQueue, videoIdToRemove);
         },
         addToQueue(state, videoIds) {
             state.playQueue = [...state.playQueue, ...videoIds];

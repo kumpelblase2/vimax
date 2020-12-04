@@ -6,9 +6,9 @@
                               solo hide-details></v-text-field>
             </v-flex>
         </v-row>
-        <v-row v-if="editingVideo">
+        <v-row v-if="currentVideo">
             <v-col class="pa-0" xs6>
-                <single-video-player :autoplay="false" :disable-events="true" :video="editingVideo"/>
+                <single-video-player :autoplay="false" :disable-events="true" :video="currentVideo"/>
             </v-col>
             <v-col xs6>
                 <v-row class="px-2">
@@ -17,13 +17,13 @@
                 </v-row>
                 <v-card class="editing-card">
                     <v-card-title>
-                        {{editingVideo.name}}
+                        {{ currentVideo.name }}
                         <v-spacer/>
                     </v-card-title>
                     <v-card-text>
-                        <v-item-group mandatory @change="updateSelectedThumbnail" :value="editingVideo.selectedThumbnail">
+                        <v-item-group mandatory @change="updateSelectedThumbnail" :value="currentVideo.selectedThumbnail">
                             <v-row wrap>
-                                <v-col v-for="(thumbnail, index) in editingVideo.thumbnails" :key="index" cols="12" md="4">
+                                <v-col v-for="(thumbnail, index) in currentVideo.thumbnails" :key="index" cols="12" md="4">
                                     <v-item active-class="active" class="element">
                                         <v-img :src="thumbnailUrl(thumbnail)" :aspect-ratio="16/10"
                                                slot-scope="{ active, toggle }"
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
     import SingleVideoPlayer from "./player/SingleVideoPlayer";
     import MetadataValueEditor from "./metadata/MetadataValueEditor";
     import { getThumbnailURL } from "@/video";
@@ -58,24 +58,22 @@
     export default {
         name: "CheckinView",
         computed: {
-            ...mapGetters('checkin', ['filter']),
+            ...mapGetters('checkin', ['filter', 'currentVideo']),
             ...mapGetters('settings/metadata', ['editableMetadata']),
-            ...mapState('videos/editing', ['editingVideo'])
         },
         components: {
             MetadataValueEditor,
             SingleVideoPlayer
         },
         methods: {
-            ...mapMutations('videos/editing', ['changeThumbnailsInEdit', 'setEditingMetadataValue', 'resetEditingVideo']),
-            ...mapActions('videos/editing', ['saveEditingVideo']),
-            ...mapActions('checkin', ['updateFilter','nextVideo', 'restartEditingIfPossible']),
+            ...mapMutations('checkin', ['setEditingMetadataValue','changeThumbnail']),
+            ...mapActions('checkin', ['updateFilter','nextVideo', 'restartEditingIfPossible', 'saveAndContinue']),
             ...mapActions('settings/metadata', ['loadMetadata']),
             handleMetadataUpdate(id, event) {
                 this.setEditingMetadataValue({ id, value: event });
             },
             getValueOf(metadata) {
-                const value = this.editingVideo.metadata[metadata.id].value;
+                const value = this.currentVideo.metadata[metadata.id].value;
                 if(value != null) {
                     return value;
                 } else {
@@ -86,12 +84,11 @@
                 return getThumbnailURL(thumbnail);
             },
             updateSelectedThumbnail(thumbnailIndex) {
-                this.changeThumbnailsInEdit(thumbnailIndex);
+                this.changeThumbnail(thumbnailIndex);
             },
             async next() {
                 await this.$nextTick();
-                await this.saveEditingVideo();
-                await this.nextVideo();
+                await this.saveAndContinue();
             },
             async skip() {
                 await this.nextVideo();
@@ -99,11 +96,7 @@
         },
         async mounted() {
             await this.loadMetadata();
-            this.restartEditingIfPossible();
-        },
-        beforeRouteLeave(_to, _from, next) {
-            this.resetEditingVideo();
-            next();
+            await this.restartEditingIfPossible();
         }
     }
 </script>

@@ -1,3 +1,4 @@
+import { removeFromArrayWhere } from "@/helpers/array-helper";
 import metadataApi from "../api/metadata";
 import { isSortable } from "@/helpers/metadata-display-helper";
 
@@ -125,10 +126,7 @@ export default {
             }
         },
         hideMetadata(state, metadata) {
-            const existingIndex = state.visibleMetadatas.findIndex(existing => metadata.id === existing.id);
-            if(existingIndex >= 0) {
-                state.visibleMetadatas.splice(existingIndex, 1);
-            }
+            removeFromArrayWhere(state.visibleMetadatas, existing => existing.id === metadata.id);
         },
         addOrUpdateMetadata(state, metadata) {
             const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
@@ -149,10 +147,7 @@ export default {
             });
         },
         removeMetadata(state, metadata) {
-            const existingIndex = state.metadata.findIndex(existing => existing.id === metadata.id);
-            if(existingIndex >= 0) {
-                state.metadata.splice(existingIndex, 1);
-            }
+            removeFromArrayWhere(state.metadata, existing => existing.id === metadata.id);
         },
         setEditItem(state, item) {
             state.editingItem = Object.assign({}, item);
