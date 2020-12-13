@@ -9,7 +9,7 @@
             <v-card-text class="scroll-container" style="height: calc(100% - 75px)">
                 <v-list class="pa-0">
                     <v-list-item v-for="[id, video] in videos" :key="id">
-                        <v-list-item-avatar horizontal height="100" width="150" class="mr-3">
+                        <v-list-item-avatar horizontal height="100" width="150" class="mr-3" tile>
                             <v-img :src="getThumbnailFor(video)"></v-img>
                         </v-list-item-avatar>
                         <v-list-item-content>

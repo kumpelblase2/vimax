@@ -12,7 +12,7 @@ export default new Vuetify({
         dark: true,
         themes: {
             dark: {
-                primary: '#ff9800'
+                primary: '#ff9800' // Alternative: #7fcd91
             }
         }
     }

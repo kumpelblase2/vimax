@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Collections
 import java.util.concurrent.TimeUnit.DAYS
 import javax.persistence.EntityNotFoundException
@@ -85,9 +87,13 @@ class VideoController(private val videoRepository: VideoRepository,
     @GetMapping("/video/thumbnail/{thumb}")
     @Cacheable(cacheNames = ["thumbnails"], key = "#thumbnailId")
     fun getThumbnail(@PathVariable("thumb") thumbnailId: Int): ResponseEntity<Resource> {
-        val thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow { EntityNotFoundException() }
-        val location = thumbnail.location!!
-        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, DAYS)).lastModified(Instant.now())
+        val location = transactionTemplate.execute {
+            val thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow { EntityNotFoundException() }
+            thumbnail.location
+        }!!
+
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(365, DAYS))
+            .lastModified(Instant.from(ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)))
             .body(FileSystemResource(location))
     }
 

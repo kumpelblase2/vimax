@@ -1,7 +1,7 @@
 import { removeFromArray, removeFromArrayWhere } from "@/helpers/array-helper";
 import videoApi from "../api/videos";
 import videoEditing from "./videoEditing";
-import { getSelectedThumbnail } from "../video";
+import { getSelectedThumbnail } from "@/video";
 
 const UPDATE_VIDEO = 'addOrUpdateVideo';
 const CLEAR_VIDEOS = 'clearVideos';
@@ -9,9 +9,9 @@ const CLEAR_VIDEOS = 'clearVideos';
 const SELECT_VIDEO = 'selectVideo';
 const UNSELECT_VIDEO = 'unselectVideo';
 
-const MAX_VIDEOS = 50;
-
-export const MUTATIONS = { UPDATE_VIDEO, CLEAR_VIDEOS, SELECT_VIDEO, UNSELECT_VIDEO };
+const shouldLoad = (state, videoId) => {
+    return state.videos.find(video => video.id === videoId) == null && !state.loadingVideoIds.includes(videoId);
+}
 
 export default {
     namespaced: true,
@@ -23,10 +23,9 @@ export default {
         selectedVideoIds: [],
         isLoading: false,
         displayVideoIds: [],
-        searchResultVideoIds: [],
-        hasMoreVideos: true,
-        currentPage: 0,
-        displayedVideoId: null
+        displayedVideoId: null,
+        loadingVideoIds: [],
+        loaderTimeout: null
     },
     getters: {
         selectedVideos: (state) => {
@@ -56,9 +55,6 @@ export default {
         hasVideosSelected(state) {
             return state.selectedVideoIds.length > 0;
         },
-        searchedVideosAtPage: (state) => {
-            return (page, size) => state.searchResultVideoIds.slice(page * size, page * size + size);
-        },
         shouldShowVideoInfo: (state) => {
             return !!state.displayedVideoId;
         },
@@ -76,6 +72,10 @@ export default {
             }
         },
         addVideos(state, videos) {
+            const loadedIds = videos.map(video => video.id);
+            loadedIds.forEach(id => {
+                removeFromArray(state.loadingVideoIds, id);
+            });
             state.videos.push(...videos);
         },
         [SELECT_VIDEO](state, videoId) {
@@ -98,42 +98,38 @@ export default {
         [CLEAR_VIDEOS](state) {
             state.displayVideoIds = [];
             state.selectedVideoIds = [];
-            state.searchResultVideoIds = [];
         },
         setLoading(state, value) {
             state.isLoading = value;
         },
-        nextPage(state) {
-            state.currentPage += 1;
-        },
         resetPage(state) {
-            state.currentPage = 0;
-            state.hasMoreVideos = true;
             state.displayVideoIds = [];
         },
-        addDisplayVideos(state, videoIds) {
-            state.displayVideoIds.push(...videoIds);
-        },
-        noMoreVideos(state) {
-            state.hasMoreVideos = false;
+        setDisplayVideos(state, videoIds) {
+            state.displayVideoIds = videoIds;
         },
         selectAllVideos(state) {
             state.selectedVideoIds = [...state.displayVideoIds];
-        },
-        addSearchResultIds(state, ids) {
-            state.searchResultVideoIds.push(...ids);
-        },
-        removeVideoFromPage(state, id) {
-            const idIndex = state.displayVideoIds.indexOf(id);
-            if(idIndex >= 0) {
-                state.displayVideoIds.splice(idIndex, 1);
-            }
         },
         removeVideo(state, id) {
             removeFromArrayWhere(state.videos, video => video.id === id);
         },
         displayVideo(state, id) {
             state.displayedVideoId = id;
+        },
+        startLoadingVideos(state, ids) {
+            state.loadingVideoIds.push(...ids);
+        },
+        removeVideoFromDisplay(state, id) {
+            removeFromArray(state.displayVideoIds, id);
+            removeFromArray(state.loadingVideoIds, id);
+            removeFromArray(state.selectedVideoIds, id);
+        },
+        setupLoader(state, timer) {
+            state.loaderTimeout = timer;
+        },
+        markVideosLoaded(state, videoIds) {
+            videoIds.forEach(id => removeFromArray(state.loadingVideoIds, id));
         }
     },
     actions: {
@@ -144,18 +140,7 @@ export default {
                 commit('selectVideo', videoId);
             }
         },
-        async loadVideosOfCurrentPage({ commit, state, dispatch, getters }) {
-            commit('setLoading', true);
-            const videoIds = getters.searchedVideosAtPage(state.currentPage, 50);
-            commit('nextPage');
-            await dispatch('loadVideos', videoIds);
-            commit('addDisplayVideos', videoIds);
-            if(videoIds.length < MAX_VIDEOS) {
-                commit('noMoreVideos');
-            }
-            commit('setLoading', false);
-        },
-        async search({ commit, dispatch, rootState }) {
+        async search({ commit, rootState }) {
             let videoIds;
             try {
                 videoIds = await videoApi.getVideosMatchingQuery(rootState.search.query, rootState.search.sort.property, rootState.search.sort.direction);
@@ -166,23 +151,29 @@ export default {
                 return;
             }
             commit(CLEAR_VIDEOS);
-            commit('resetPage');
-            commit('addSearchResultIds', videoIds);
-            await dispatch('loadVideosOfCurrentPage');
+            commit('setDisplayVideos', videoIds);
         },
         async reloadVideo({ commit }, videoId) {
             const video = await videoApi.getVideo(videoId);
             commit(UPDATE_VIDEO, video);
         },
-        async loadVideos({ commit, getters }, videoIds = []) {
-            const videosToLoad = videoIds.filter(videoId => !getters.hasVideo(videoId));
+        async loadVideos({ commit, state, getters }, videoIds = []) {
+            const videosToLoad = videoIds.filter(videoId => shouldLoad(state, videoId));
             if(videosToLoad.length > 0) {
-                const videos = await videoApi.getVideosById(videosToLoad);
-                commit('addVideos', videos);
+                commit('startLoadingVideos', videosToLoad);
+                if(state.loaderTimeout == null) {
+                    commit('setupLoader', setTimeout(() => {
+                        videoApi.getVideosById(state.loadingVideoIds).then(videos => {
+                            commit('markVideosLoaded', videos.map(video => video.id));
+                            commit('setupLoader', null);
+                            commit('addVideos', videos);
+                        });
+                    }, 500));
+                }
             }
         },
         videoDeleteUpdate({commit}, videoId) {
-            commit('removeVideoFromPage', videoId);
+            commit('removeVideoFromDisplay', videoId);
             commit('removeVideo', videoId);
         }
     }

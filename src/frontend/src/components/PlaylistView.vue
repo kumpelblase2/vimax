@@ -13,7 +13,7 @@
                             <v-list-item-action>
                                 <v-icon class="drag-item">reorder</v-icon>
                             </v-list-item-action>
-                            <v-list-item-avatar horizontal height="100" width="150" class="mr-3">
+                            <v-list-item-avatar horizontal height="100" width="150" class="mr-3" tile>
                                 <v-img :src="getThumbnailFor(video)"></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content>

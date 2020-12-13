@@ -6,7 +6,7 @@ import java.nio.file.Files
 
 @Component
 class ThumbnailDeleter {
-    fun deleteThumbnailsOf(videos: Collection<Video>) = videos.forEach(this::deleteThumbnailsOf)
+    fun deleteThumbnailsOf(videos: Collection<Video>) = videos.forEach { deleteThumbnailsOf(it) }
 
     fun deleteThumbnailsOf(video: Video) {
         video.thumbnails.forEach { thumbnail ->

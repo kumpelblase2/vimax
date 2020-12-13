@@ -1,39 +1,43 @@
 <template>
     <v-flex xs12 sm6 md3 xl2 class="pa-1">
-        <v-card>
-            <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" :src="thumbnailUrl"
-                   @mouseenter="startHover" @mouseleave="stopHover">
-                <v-row fill-height v-show="hover" class="ma-1">
-                    <v-btn text icon color="primary" @click="toggleSelection">
-                        <v-icon v-if="selected">check_box</v-icon>
-                        <v-icon v-else>check_box_outline_blank</v-icon>
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-menu offset-y>
-                        <template v-slot:activator="{ on }">
-                            <v-btn icon color="primary" v-on="on">
-                                <v-icon>more_vert</v-icon>
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item @click="playNext"><v-list-item-title>Play Next</v-list-item-title></v-list-item>
-                            <v-list-item @click="appendQueue"><v-list-item-title>Add to Queue</v-list-item-title></v-list-item>
-                            <v-list-item @click="showVideo"><v-list-item-title>Info</v-list-item-title></v-list-item>
-                        </v-list>
-                    </v-menu>
-                    <v-btn text icon color="primary" @click="watchVideo">
-                        <v-icon>play_arrow</v-icon>
-                    </v-btn>
-                    <v-btn text icon color="primary" @click="edit">
-                        <v-icon>edit</v-icon>
-                    </v-btn>
-                </v-row>
-            </v-img>
-            <v-card-title><span class="ellipsis-text">{{ video.name }}</span></v-card-title>
-            <v-card-text v-show="hasVisibleMetadata">
-                <VideoMetadataDisplay :video-metadata="video.metadata"/>
-            </v-card-text>
-        </v-card>
+        <template v-if="video == null">
+            <v-skeleton-loader :type="skeletonTypes" :height="skeletonHeight" />
+        </template>
+        <template v-else>
+            <v-card>
+                <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" :src="thumbnailUrl">
+                    <v-row class="ma-1 video-hover-content fill-height">
+                        <v-btn text icon color="primary" @click="toggleSelection">
+                            <v-icon v-if="selected">check_box</v-icon>
+                            <v-icon v-else>check_box_outline_blank</v-icon>
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-menu offset-y>
+                            <template v-slot:activator="{ on }">
+                                <v-btn icon color="primary" v-on="on">
+                                    <v-icon>more_vert</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item @click="playNext"><v-list-item-title>Play Next</v-list-item-title></v-list-item>
+                                <v-list-item @click="appendQueue"><v-list-item-title>Add to Queue</v-list-item-title></v-list-item>
+                                <v-list-item @click="showVideo"><v-list-item-title>Info</v-list-item-title></v-list-item>
+                            </v-list>
+                        </v-menu>
+                        <v-btn text icon color="primary" @click="watchVideo">
+                            <v-icon>play_arrow</v-icon>
+                        </v-btn>
+                        <v-btn text icon color="primary" @click="edit">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
+                    </v-row>
+                </v-img>
+                <v-card-title><span class="ellipsis-text">{{ video.name }}</span></v-card-title>
+                <v-card-text v-show="hasVisibleMetadata">
+                    <VideoMetadataDisplay :video-metadata="video.metadata"/>
+                </v-card-text>
+            </v-card>
+        </template>
     </v-flex>
 </template>
 
@@ -48,6 +52,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    .video-hover-content {
+        opacity: 0;
+    }
+
+    .video-hover-content:hover {
+        opacity: 1;
+    }
 </style>
 
 <script>
@@ -58,15 +70,15 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
     export default {
         name: "VideoCard",
         components: { VideoMetadataDisplay },
-        props: ['video-id'],
-        data() {
-            return {
-                hover: false
+        props: ['videoId', 'skeletonHeight'],
+        mounted() {
+            if(this.video == null) {
+                this.loadVideos([this.videoId]);
             }
         },
         computed: {
             ...mapGetters('videos', ['getVideo', 'isSelected']),
-            ...mapGetters('settings/metadata', ['hasVisibleMetadata']),
+            ...mapGetters('settings/metadata', ['hasVisibleMetadata', 'visibleMetadata']),
             selected() {
                 return this.isSelected(this.videoId);
             },
@@ -75,6 +87,10 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
             },
             thumbnailUrl() {
                 return getSelectedThumbnailURLForVideo(this.video);
+            },
+            skeletonTypes() {
+                const types = ['card', ...this.visibleMetadata.map(_ => 'list-item')];
+                return types.join(',');
             }
         },
         methods: {
@@ -84,12 +100,6 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
             ...mapMutations('videos', ["displayVideo"]),
             edit() {
                 this.editVideo(this.videoId);
-            },
-            startHover() {
-                this.hover = true;
-            },
-            stopHover() {
-                this.hover = false;
             },
             toggleSelection() {
                 this.toggleSelectVideo(this.videoId);

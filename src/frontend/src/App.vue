@@ -53,12 +53,12 @@
             </v-list>
         </v-navigation-drawer>
         <top-bar :drawer="drawer" @drawer="drawer = $event"/>
-        <v-content>
+        <v-main>
             <v-dialog v-model="about" max-width="700px">
                 <about-dialog @close="closeAbout"/>
             </v-dialog>
             <router-view/>
-        </v-content>
+        </v-main>
         <player-bar />
     </v-app>
 </template>
@@ -91,7 +91,7 @@
         overflow: hidden !important;
     }
 
-    .v-content {
+    .v-main {
         max-height: 100vh;
     }
 
