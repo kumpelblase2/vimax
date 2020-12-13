@@ -2,6 +2,7 @@ package de.eternalwings.vima.query
 
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.Parsed
+import de.eternalwings.vima.query.db.DatabaseQueryCreator
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.data.domain.Sort
