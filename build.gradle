@@ -60,7 +60,8 @@ dependencies {
     implementation("com.github.h0tk3y.betterParse:better-parse-jvm:0.4.0-alpha-3")
     implementation("org.xerial:sqlite-jdbc:3.27.2.1")
     implementation("de.swirtz:ktsRunner:0.0.9")
-    implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.4.0")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.4.0")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.4.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
