@@ -27,9 +27,9 @@ class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
         val existingThumbnails =
                 this.discoverExistingThumbnails(thumbnailDir, videoPath.fileName.toString()
                     .substringBeforeLast("."))
-        val remainingThumbnails = Math.max(thumbnailCount - existingThumbnails.size, 0)
-        val allThumbnails = existingThumbnails + thumbnailGenerator.generateThumbnailsFor(videoPath, thumbnailDir,
-                remainingThumbnails)
+        val remainingThumbnails = (thumbnailCount - existingThumbnails.size).coerceAtLeast(0)
+        val generatedThumbnails = thumbnailGenerator.generateThumbnailsFor(videoPath, thumbnailDir, remainingThumbnails)
+        val allThumbnails = existingThumbnails + generatedThumbnails
         allThumbnails.forEach { thumb ->
             thumbnailRepository.insertThumbnailForVideo(thumb.toString(), videoId)
         }
