@@ -24,27 +24,31 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 @JsonTypeInfo(use = NAME, include = EXISTING_PROPERTY, property = "type", visible = false)
-@JsonSubTypes(value = [
-    Type(name = "TEXT", value = TextMetadataOptions::class),
-    Type(name = "NUMBER", value = NumberMetadataOptions::class),
-    Type(name = "RANGE", value = RangeMetadataOptions::class),
-    Type(name = "DURATION", value = DurationMetadataOptions::class),
-    Type(name = "SELECTION", value = SelectionMetadataOptions::class),
-    Type(name = "TAGLIST", value = TaglistMetadataOptions::class),
-    Type(name = "BOOLEAN", value = BooleanMetadataOptions::class),
-    Type(name = "DATE", value = DateMetadataOptions::class),
-    Type(name = "DATETIME", value = DateTimeMetadataOptions::class),
-    Type(name = "TIME", value = TimeMetadataOptions::class),
-    Type(name = "FLOAT", value = FloatMetadataOptions::class)
-])
-abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val metadataConstructor: (T?) -> MetadataValue<T>,
-                                  var defaultValue: T? = null) {
+@JsonSubTypes(
+    value = [
+        Type(name = "TEXT", value = TextMetadataOptions::class),
+        Type(name = "NUMBER", value = NumberMetadataOptions::class),
+        Type(name = "RANGE", value = RangeMetadataOptions::class),
+        Type(name = "DURATION", value = DurationMetadataOptions::class),
+        Type(name = "SELECTION", value = SelectionMetadataOptions::class),
+        Type(name = "TAGLIST", value = TaglistMetadataOptions::class),
+        Type(name = "BOOLEAN", value = BooleanMetadataOptions::class),
+        Type(name = "DATE", value = DateMetadataOptions::class),
+        Type(name = "DATETIME", value = DateTimeMetadataOptions::class),
+        Type(name = "TIME", value = TimeMetadataOptions::class),
+        Type(name = "FLOAT", value = FloatMetadataOptions::class)
+    ]
+)
+abstract class MetadataOptions<T, S>(
+    val type: MetadataType, @get:JsonIgnore val metadataConstructor: (T?) -> MetadataValue<S>,
+    var defaultValue: T? = null
+) {
     @JsonIgnore
-    fun toValue(): MetadataValue<T> = metadataConstructor(null)
+    fun toValue(): MetadataValue<S> = metadataConstructor(null)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is MetadataOptions<*>) return false
+        if (other !is MetadataOptions<*, *>) return false
 
         if (type != other.type) return false
         if (defaultValue != other.defaultValue) return false
@@ -60,30 +64,36 @@ abstract class MetadataOptions<T>(val type: MetadataType, @get:JsonIgnore val me
 
 }
 
-data class TextMetadataOptions(val suggest: Boolean = false) : MetadataOptions<String>(TEXT, ::StringMetadataValue)
+abstract class SimpleMetadataOptions<T>(
+    type: MetadataType,
+    metadataConstructor: (T?) -> MetadataValue<T>,
+    defaultValue: T? = null
+) : MetadataOptions<T, T>(type, metadataConstructor, defaultValue)
+
+data class TextMetadataOptions(val suggest: Boolean = false) : SimpleMetadataOptions<String>(TEXT, ::StringMetadataValue)
 
 data class NumberMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
-        MetadataOptions<Int>(NUMBER, ::NumberMetadataValue)
+    SimpleMetadataOptions<Int>(NUMBER, ::NumberMetadataValue)
 
 data class RangeMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
-        MetadataOptions<Int>(RANGE, ::NumberMetadataValue)
+    SimpleMetadataOptions<Int>(RANGE, ::NumberMetadataValue)
 
 data class DurationMetadataOptions(val min: Int? = null, val max: Int? = null, val step: Int? = null) :
-        MetadataOptions<Duration>(DURATION, ::DurationMetadataValue)
+    SimpleMetadataOptions<Duration>(DURATION, ::DurationMetadataValue)
 
 data class SelectionMetadataOptions(val values: List<SelectionValue> = emptyList()) :
-        MetadataOptions<SelectionValue>(SELECTION, ::SelectionMetadataValue)
+    MetadataOptions<SelectionValue, Int>(SELECTION, { selection -> SelectionMetadataValue(selection?.id) })
 
-data class SelectionValue(var name: String? = null)
+data class SelectionValue(var id: Int? = null, var name: String? = null)
 
-class TaglistMetadataOptions : MetadataOptions<Set<String>>(TAGLIST, ::TaglistMetadataValue)
+class TaglistMetadataOptions : SimpleMetadataOptions<Set<String>>(TAGLIST, ::TaglistMetadataValue)
 
-class BooleanMetadataOptions : MetadataOptions<Boolean>(BOOLEAN, ::BooleanMetadataValue)
+class BooleanMetadataOptions : SimpleMetadataOptions<Boolean>(BOOLEAN, ::BooleanMetadataValue)
 
-class TimeMetadataOptions : MetadataOptions<LocalTime>(TIME, ::TimeMetadataValue)
+class TimeMetadataOptions : SimpleMetadataOptions<LocalTime>(TIME, ::TimeMetadataValue)
 
-class DateTimeMetadataOptions : MetadataOptions<LocalDateTime>(DATETIME, ::TimestampMetadataValue)
+class DateTimeMetadataOptions : SimpleMetadataOptions<LocalDateTime>(DATETIME, ::TimestampMetadataValue)
 
-class DateMetadataOptions : MetadataOptions<LocalDate>(DATE, ::DateMetadataValue)
+class DateMetadataOptions : SimpleMetadataOptions<LocalDate>(DATE, ::DateMetadataValue)
 
-class FloatMetadataOptions : MetadataOptions<Double>(FLOAT, ::FloatMetadataValue)
+class FloatMetadataOptions : SimpleMetadataOptions<Double>(FLOAT, ::FloatMetadataValue)

@@ -5,6 +5,7 @@ import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.event.VideoDeleteEvent
+import de.eternalwings.vima.event.VideoUpdateEvent
 import de.eternalwings.vima.plugin.EventType.UPDATE
 import de.eternalwings.vima.plugin.PluginManager
 import de.eternalwings.vima.repository.MetadataRepository
@@ -80,10 +81,18 @@ class VideoProcess(private val videoRepository: VideoRepository,
         return videoRepository.saveAll(existingVideos)
     }
 
+    fun resetValuesToDefault(metadataId: Int, value: Any) {
+        val videos = videoRepository.findVideosWithMetadataValue(metadataId, value)
+        videoRepository.assignDefaultIfValueForMetadataIs(metadataId, value)
+        videos.forEach {
+            applicationEventPublisher.publishEvent(VideoUpdateEvent(this, it))
+        }
+    }
+
     private fun assignNewValuesToVideo(existing: Video, newVideo: Video, metadata: List<Metadata>) {
         existing.selectedThumbnail = newVideo.selectedThumbnail
         existing.name = newVideo.name
-        newVideo.metadata?.forEach { metadataId, value ->
+        newVideo.metadata?.forEach { (metadataId, value) ->
             val definition = metadata.find { it.id == metadataId } ?: return@forEach
             if (!definition.isSystemSpecified) { // Only update non-system metadata
                 val existingValue = existing.metadata?.get(metadataId) ?: throw IllegalStateException("Missing metadata")

@@ -175,6 +175,9 @@ export default {
         videoDeleteUpdate({commit}, videoId) {
             commit('removeVideoFromDisplay', videoId);
             commit('removeVideo', videoId);
+        },
+        async videoUpdateUpdate({dispatch}, videoId) {
+            dispatch('reloadVideo', videoId);
         }
     }
 };

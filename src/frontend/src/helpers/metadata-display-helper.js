@@ -27,9 +27,9 @@ export function isSortable(type) {
     }
 }
 
-export function toDisplayValue(type, value) {
+export function toDisplayValue(metadata, value) {
     if(value != null) {
-        switch(type) {
+        switch(metadata.type) {
             case 'TEXT':
             case 'NUMBER':
             case 'RANGE':
@@ -39,11 +39,15 @@ export function toDisplayValue(type, value) {
             case 'BOOLEAN':
                 return value ? 'Yes' : 'No';
             case 'SELECTION':
-                return value.name.toString();
+                if(value.id != null) {
+                    return value.name;
+                }
+                const selected = metadata.options.values.find(v => v.id === value);
+                return selected.name.toString();
             case 'DURATION':
                 return durationToString(value);
             default:
-                throw `No text representation for ${type}.`;
+                throw `No text representation for ${metadata.type}.`;
         }
     } else {
         return "";

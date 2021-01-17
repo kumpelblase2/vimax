@@ -41,32 +41,22 @@ sealed class MetadataValue<T> {
     }
 }
 
-data class StringMetadataValue(override var value: String? = null) : MetadataValue<String>() {
-}
+data class StringMetadataValue(override var value: String? = null) : MetadataValue<String>()
 
-data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<Int>() {
-}
+data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<Int>()
 
-data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>() {
-}
+data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>()
 
-data class TaglistMetadataValue(override var value: Set<String>? = emptySet()) : MetadataValue<Set<String>>() {
-}
+data class TaglistMetadataValue(override var value: Set<String>? = emptySet()) : MetadataValue<Set<String>>()
 
-data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>() {
-}
+data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>()
 
-data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) : MetadataValue<Duration>() {
-}
+data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) : MetadataValue<Duration>()
 
-data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>() {
-}
+data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>()
 
-data class SelectionMetadataValue(override var value: SelectionValue? = null) : MetadataValue<SelectionValue>() {
-}
+data class SelectionMetadataValue(override var value: Int? = null) : MetadataValue<Int>()
 
-data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>() {
-}
+data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>()
 
-data class TimeMetadataValue(override var value: LocalTime? = null) : MetadataValue<LocalTime>() {
-}
+data class TimeMetadataValue(override var value: LocalTime? = null) : MetadataValue<LocalTime>()

@@ -25,7 +25,7 @@ data class Metadata(
         var owner: PluginInformation? = null,
         @field:Column(columnDefinition = "text")
         @field:Convert(converter = SQLiteMetadataOptionsJsonConverter::class)
-        var options: MetadataOptions<*>? = null,
+        var options: MetadataOptions<*,*>? = null,
         var displayOrder: Int = 0
 ) : BasePersistable<Int>() {
     fun toValue(): MetadataValue<*> {

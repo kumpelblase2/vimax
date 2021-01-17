@@ -2,8 +2,10 @@ function createFilterTermFor(metadata, value) {
     switch(metadata.type) {
         case 'BOOLEAN':
             return (value ? '+' : '-') + metadata.name;
+        case 'SELECTION':
+            value = metadata.options.values.find(v => v.id === value).name;
+            // Intentional fall through
         default:
-
             return metadata.name + ":" + (value.includes(" ") ? `"${value}"` :value);
     }
 }

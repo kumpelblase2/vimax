@@ -23,7 +23,7 @@
                 return canBeDisplayedAsText(this.metadataType);
             },
             textValue() {
-                return toDisplayValue(this.metadataType, this.metadataValue);
+                return toDisplayValue(this.metadataDefinition, this.metadataValue);
             }
         },
         methods: {

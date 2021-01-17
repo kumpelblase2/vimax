@@ -9,14 +9,14 @@
         "build": "vue-cli-service build"
     },
     "dependencies": {
-        "axios": "^0.20.0",
+        "axios": "^0.21.1",
         "video.js": "^7.7.6",
+        "virtual-flex-wrap": "kumpelblase2/virtual-flex-wrap",
         "vue": "^2.6.12",
         "vue-router": "^3.4.3",
         "vuedraggable": "^2.24.1",
         "vuetify": "^2.3.10",
-        "vuex": "^3.5.1",
-        "virtual-flex-wrap": "kumpelblase2/virtual-flex-wrap"
+        "vuex": "^3.5.1"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^4.5.6",

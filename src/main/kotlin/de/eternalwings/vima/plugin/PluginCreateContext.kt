@@ -38,7 +38,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         return MetadataInfo.fromMetadata(metadataProcess.createOrUpdate(metadata))
     }
 
-    fun <T> metadata(name: String, order: Direction, options: MetadataOptions<T>): OwnedMetadata<T> {
+    fun <T,S> metadata(name: String, order: Direction, options: MetadataOptions<T,S>): OwnedMetadata<T, S> {
         val existing = metadataProcess.getSimpleReference(name) ?: createMetadata(
                 Metadata(name = name, type = options.type, ordering = order, readOnly = true, owner = pluginInformation,
                         options = options))
@@ -48,7 +48,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
             throw IllegalArgumentException("Another plugin already provides this metadata: " + existing.owner)
         }
 
-        val createdReference = OwnedMetadata(existing as MetadataInfo<T>)
+        val createdReference = OwnedMetadata<T,S>(existing as MetadataInfo<T>)
         ownedMetadata.add(createdReference)
         return createdReference
     }
@@ -98,7 +98,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
         addHandler(FINISH_WATCHING, priority, handler)
     }
 
-    operator fun <T> VideoContainer.set(reference: OwnedMetadata<T>, value: T) {
+    operator fun <T,S> VideoContainer.set(reference: OwnedMetadata<T,S>, value: S) {
         reference.set(this, value)
     }
 

@@ -36,12 +36,12 @@ sealed class MetadataContainer<T>(protected val metadata: MetadataInfo<T>) {
     }
 
     class ExternalMetadata<T>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata)
-    class OwnedMetadata<T>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata) {
-        fun set(video: VideoContainer, value: T) {
+    class OwnedMetadata<T,S>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata) {
+        fun set(video: VideoContainer, value: S) {
             check(video.hasMetadata(this.metadata.id))
             val existingMetadata = video.metadata
             val existingContainer = existingMetadata[this.metadata.id] ?: throw IllegalStateException()
-            (existingContainer as MetadataValue<T>).value = value
+            (existingContainer as MetadataValue<S>).value = value
             video.markChanged(this.metadata.id)
         }
     }

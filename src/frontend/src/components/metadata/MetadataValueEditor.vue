@@ -11,7 +11,7 @@
                       :label="metadataDefinition.name" :value="metadataValue"
                       @change="updateNumber" :solo="solo" dense/>
         <v-select v-else-if="metadataDefinition.type === 'SELECTION'" :label="metadataDefinition.name"
-                  @change="update" :value="metadataValue" :items="metadataDefinition.options.values"
+                  @change="updateSelection" :value="selectionValue" :items="metadataDefinition.options.values"
                   item-text="name" return-object :solo="solo" dense/>
         <v-combobox v-else-if="metadataDefinition.type === 'TAGLIST'" :label="metadataDefinition.name" :value="metadataValue"
                     @change="update" chips deletable-chips clearable multiple :items="values" :solo="solo"
@@ -39,6 +39,15 @@
             withSuggestions() {
                 return this.metadataDefinition.type === 'TAGLIST' || this.metadataDefinition.type === 'TEXT' &&
                     this.metadataDefinition.options.suggest;
+            },
+            selectionValue() {
+                if(this.metadataDefinition.type !== 'SELECTION') {
+                    return {};
+                } else if(this.metadataValue.id != null) {
+                    return this.metadataValue;
+                } else {
+                    return this.metadataDefinition.options.values.find(value => value.id === this.metadataValue);
+                }
             }
         },
         methods: {
@@ -50,6 +59,9 @@
             },
             updateNumber(ev) {
                 this.$emit('change', parseInt(ev));
+            },
+            updateSelection(ev) {
+                this.$emit('change', ev.id);
             }
         },
         mounted() {

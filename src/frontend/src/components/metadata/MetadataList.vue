@@ -156,7 +156,7 @@
                 'moveMetadataUp'
             ]),
             defaultValueToText(metadata) {
-                return toDisplayValue(metadata.type, metadata.options.defaultValue);
+                return toDisplayValue(metadata, metadata.options.defaultValue);
             }
         },
         mounted() {

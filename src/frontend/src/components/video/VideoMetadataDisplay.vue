@@ -18,7 +18,15 @@
     import { mapGetters } from "vuex";
 
     function valueOrDefault(metadataValue, definition) {
-        return metadataValue != null && metadataValue.value != null ? metadataValue.value : definition.options.defaultValue;
+        if(metadataValue != null && metadataValue.value != null) {
+            return metadataValue.value;
+        } else {
+            const defaultValue = definition.options.defaultValue;
+            if(definition.type === 'SELECTION') {
+                return defaultValue.id;
+            }
+            return defaultValue;
+        }
     }
 
     export default {

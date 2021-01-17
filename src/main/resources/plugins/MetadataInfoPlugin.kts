@@ -7,11 +7,11 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-val undefinedResolution = SelectionValue("Unknown")
-val SD = SelectionValue("SD")
-val lowRes = SelectionValue("480p")
-val higherRes = SelectionValue("720p")
-val highestRes = SelectionValue("1080p")
+val undefinedResolution = SelectionValue(1, "Unknown")
+val SD = SelectionValue(2, "SD")
+val lowRes = SelectionValue(3, "480p")
+val higherRes = SelectionValue(4, "720p")
+val highestRes = SelectionValue(5, "1080p")
 
 PluginRegistration.register("Metadata") {
     description = "Show video file metadata provided by ffmpeg."
@@ -31,11 +31,11 @@ PluginRegistration.register("Metadata") {
         it[bitRate] = videoStream.bit_rate.toInt()
         it[length] = Duration.of(videoStream.duration.toLong(), ChronoUnit.SECONDS)
         it[resolution] = when {
-            videoStream.height >= 1080 -> highestRes
-            videoStream.height >= 720 -> higherRes
-            videoStream.height >= 480 -> lowRes
-            else -> SD
-        }
+            videoStream.height >= 1080 -> highestRes.id
+            videoStream.height >= 720 -> higherRes.id
+            videoStream.height >= 480 -> lowRes.id
+            else -> SD.id
+        }!!
     }
 
     onCreate(NORMAL, update)

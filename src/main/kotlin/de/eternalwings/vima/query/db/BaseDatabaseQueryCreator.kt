@@ -9,6 +9,7 @@ import de.eternalwings.vima.MetadataType.SELECTION
 import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.domain.Metadata
+import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.query.BooleanQuery
 import de.eternalwings.vima.query.Comparator
 import de.eternalwings.vima.query.Comparator.EQUALS
@@ -95,10 +96,11 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
             TEXT -> textQueryOrDefault(foundMetadata.id!!, value, context, !like)
             FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toFloat(), context)
             NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context)
-            SELECTION -> valueQueryOrDefault(
-                foundMetadata.id!!, value, context, valuePath = "value.name",
-                defaultValuePath = "defaultValue.name"
-            )
+            SELECTION -> {
+                val foundId = (foundMetadata.options as SelectionMetadataOptions).values.find { it.name == value }?.id
+                    ?: throw RuntimeException("Specified selection value does not exist.")
+                valueQueryOrDefault(foundMetadata.id!!, foundId, context, defaultValuePath = "defaultValue.id")
+            }
             else -> throw NotImplementedError()
         }
     }
