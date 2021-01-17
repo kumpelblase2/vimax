@@ -1,9 +1,9 @@
 function createHandlers(vuex) {
     return {
-        'video-delete': ({videoId}) => {
-            vuex.dispatch('videos/videoDeleteUpdate', videoId);
-            vuex.dispatch('sorting/videoDeleteUpdate', videoId);
-            vuex.dispatch('checkin/videoDeleteUpdate', videoId);
+        'video-delete': (id) => {
+            vuex.dispatch('videos/videoDeleteUpdate', id);
+            vuex.dispatch('sorting/videoDeleteUpdate', id);
+            vuex.dispatch('checkin/videoDeleteUpdate', id);
         }
     }
 }
