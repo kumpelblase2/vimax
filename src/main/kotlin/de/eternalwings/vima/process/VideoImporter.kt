@@ -1,9 +1,7 @@
 package de.eternalwings.vima.process
 
 import de.eternalwings.vima.domain.Library
-import de.eternalwings.vima.job.EventCallStep
 import de.eternalwings.vima.job.LoadVideoStep
-import de.eternalwings.vima.job.ThumbnailStep
 import org.jobrunr.scheduling.JobScheduler
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

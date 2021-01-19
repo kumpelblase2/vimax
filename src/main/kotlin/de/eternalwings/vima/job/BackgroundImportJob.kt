@@ -1,13 +1,14 @@
 package de.eternalwings.vima.job
 
+import de.eternalwings.vima.process.VideoThumbnailCreator
 import org.springframework.stereotype.Component
 import java.nio.file.Path
 
 @Component
-class BackgroundImportJob(private val thumbnailStep: ThumbnailStep, private val eventCallStep: EventCallStep) {
+class BackgroundImportJob(private val thumbnailCreator: VideoThumbnailCreator, private val eventCallStep: EventCallStep) {
 
     fun execute(videoId: Int, videoPath: Path) {
-        thumbnailStep.execute(videoId, videoPath)
+        thumbnailCreator.createThumbnailsFor(videoPath, videoId)
         eventCallStep.execute(videoId)
     }
 

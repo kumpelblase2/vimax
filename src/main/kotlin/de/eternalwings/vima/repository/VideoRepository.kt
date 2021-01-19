@@ -17,6 +17,12 @@ interface VideoRepository : JpaRepository<Video, Int> {
     fun findByLocation(location: String): Video?
     fun findByLibrary(library: Library): List<Video>
 
+    @Query("SELECT v FROM Video v WHERE v.thumbnails IS EMPTY")
+    fun findVideosWithMissingThumbnails(): List<Video>
+
+    @Query("SELECT v FROM Video v WHERE SIZE(v.thumbnails) <> ?1")
+    fun findVideosWithThumbnailCountNotMatching(count: Int): List<Video>
+
     @Query(
         "SELECT DISTINCT v.id FROM video v WHERE json_extract(v.metadata_values, '$.' || ?1 || '.value') IS NULL ORDER BY v.name",
         nativeQuery = true

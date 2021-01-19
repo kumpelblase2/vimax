@@ -15,5 +15,8 @@ interface ThumbnailRepository : JpaRepository<Thumbnail, Int> {
     @Transactional
     fun insertThumbnailForVideo(location: String, videoId: Int)
 
+    @Query("SELECT t.location FROM Thumbnail t")
+    fun getAllLocations(): List<String>
+
     fun findByVideo(video: Video): List<Thumbnail>
 }

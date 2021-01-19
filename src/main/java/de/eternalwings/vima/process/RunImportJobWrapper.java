@@ -10,4 +10,8 @@ public class RunImportJobWrapper {
     public static void enqueueImportJob(JobScheduler scheduler, Integer videoId, Path filePath) {
         scheduler.<BackgroundImportJob>enqueue(importJob -> importJob.execute(videoId, filePath));
     }
+
+    public static void enqueueThumbnailJob(JobScheduler scheduler, Integer videoId, Path filePath) {
+        scheduler.<VideoThumbnailCreator>enqueue(generator -> generator.createThumbnailsFor(filePath, videoId));
+    }
 }
