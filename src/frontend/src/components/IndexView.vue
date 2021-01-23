@@ -32,6 +32,9 @@
             }
         },
         async mounted() {
+            if(this.$route.query.search != null) {
+                this.updateQuery(this.$route.query.search);
+            }
             this.container = this.$refs.container;
             this.onResize();
             this.setLoading(true);
@@ -54,6 +57,7 @@
         methods: {
             ...mapActions('videos', ['search', 'loadVideos']),
             ...mapMutations('videos', ['resetPage', 'setLoading']),
+            ...mapMutations('search', ['updateQuery']),
             ...mapActions('settings/metadata', ['loadMetadata']),
             refreshVideoSize(containerWidth, columns) {
                 const availableWidth = containerWidth - (12 * 2) /*Remove padding*/;

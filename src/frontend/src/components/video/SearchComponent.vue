@@ -16,6 +16,7 @@
 
 <script>
     import { mapActions, mapGetters, mapMutations } from 'vuex';
+    import router from '@/router';
 
     export default {
         name: "SearchComponent",
@@ -50,6 +51,7 @@
             ...mapMutations('search', ['updateQuery']),
             doSearch() {
                 this.updateQuery(this.query);
+                router.push(`/?search=${encodeURIComponent(this.query)}`);
                 this.search();
             },
             reset() {
@@ -58,7 +60,7 @@
             }
         },
         mounted() {
-            this.query = this.searchQuery;
+            this.query = this.searchQuery || "";
         }
     }
 </script>
