@@ -2,7 +2,7 @@ package de.eternalwings.vima.query
 
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.Parsed
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class QueryParserTest {
     @Test
