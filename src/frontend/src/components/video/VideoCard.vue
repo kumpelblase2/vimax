@@ -7,7 +7,7 @@
             <v-card>
                 <v-img :class="{ 'selected-video': selected }" :aspect-ratio="16/10" :src="thumbnailUrl">
                     <v-row class="ma-1 video-hover-content fill-height">
-                        <v-btn text icon color="primary" @click="toggleSelection">
+                        <v-btn text icon color="primary" @click="toggleSelection($event)">
                             <v-icon v-if="selected">check_box</v-icon>
                             <v-icon v-else>check_box_outline_blank</v-icon>
                         </v-btn>
@@ -101,8 +101,8 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
             edit() {
                 this.editVideo(this.videoId);
             },
-            toggleSelection() {
-                this.toggleSelectVideo(this.videoId);
+            toggleSelection(ev) {
+                this.toggleSelectVideo({videoId: this.videoId, heldSelection: ev.shiftKey });
             },
             watchVideo() {
                 this.playVideo(this.videoId);

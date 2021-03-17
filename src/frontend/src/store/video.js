@@ -1,13 +1,13 @@
 import { removeFromArray, removeFromArrayWhere } from "@/helpers/array-helper";
+import { getSelectedThumbnail } from "@/video";
 import videoApi from "../api/videos";
 import videoEditing from "./videoEditing";
-import { getSelectedThumbnail } from "@/video";
 
 const UPDATE_VIDEO = 'addOrUpdateVideo';
 const CLEAR_VIDEOS = 'clearVideos';
 
-const SELECT_VIDEO = 'selectVideo';
-const UNSELECT_VIDEO = 'unselectVideo';
+const SELECT_VIDEO = 'selectVideos';
+const UNSELECT_VIDEO = 'unselectVideos';
 
 const shouldLoad = (state, videoId) => {
     return state.videos.find(video => video.id === videoId) == null && !state.loadingVideoIds.includes(videoId);
@@ -78,13 +78,17 @@ export default {
             });
             state.videos.push(...videos);
         },
-        [SELECT_VIDEO](state, videoId) {
-            if(state.selectedVideoIds.indexOf(videoId) < 0) {
-                state.selectedVideoIds.push(videoId);
-            }
+        [SELECT_VIDEO](state, videoIds) {
+            videoIds.forEach(videoId => {
+                if(state.selectedVideoIds.indexOf(videoId) < 0) {
+                    state.selectedVideoIds.push(videoId);
+                }
+            })
         },
-        [UNSELECT_VIDEO](state, videoId) {
-            removeFromArray(state.selectedVideoIds, videoId);
+        [UNSELECT_VIDEO](state, videoIds) {
+            videoIds.forEach(videoId => {
+                removeFromArray(state.selectedVideoIds, videoId);
+            });
         },
         clearSelectedVideos(state) {
             state.selectedVideoIds = [];
@@ -133,11 +137,20 @@ export default {
         }
     },
     actions: {
-        toggleSelectVideo({ getters, commit }, videoId) {
+        toggleSelectVideo({ getters, commit, state }, { videoId, heldSelection }) {
             if(getters.isSelected(videoId)) {
-                commit('unselectVideo', videoId);
+                commit('unselectVideos', videoId);
             } else {
-                commit('selectVideo', videoId);
+                if(heldSelection && getters.hasVideosSelected) {
+                    const lastSelectedId = state.selectedVideoIds[state.selectedVideoIds.length - 1];
+                    const lastSelectedIndex = state.displayVideoIds.indexOf(lastSelectedId);
+                    const newSelectedIndex = state.displayVideoIds.indexOf(videoId);
+                    const startSelect = lastSelectedIndex > newSelectedIndex ? newSelectedIndex : lastSelectedIndex;
+                    const endSelect = lastSelectedIndex > newSelectedIndex ? lastSelectedIndex : newSelectedIndex;
+                    commit('selectVideos', state.displayVideoIds.slice(startSelect, endSelect + 1));
+                } else {
+                    commit('selectVideos', [videoId]);
+                }
             }
         },
         async search({ commit, rootState }) {
@@ -172,11 +185,11 @@ export default {
                 }
             }
         },
-        videoDeleteUpdate({commit}, videoId) {
+        videoDeleteUpdate({ commit }, videoId) {
             commit('removeVideoFromDisplay', videoId);
             commit('removeVideo', videoId);
         },
-        async videoUpdateUpdate({dispatch}, videoId) {
+        async videoUpdateUpdate({ dispatch }, videoId) {
             dispatch('reloadVideo', videoId);
         }
     }
