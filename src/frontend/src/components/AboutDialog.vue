@@ -111,6 +111,11 @@
             name: "Faster XML Kotlin",
             url: "https://github.com/FasterXML/jackson-module-kotlin",
             license: "Apache License, 2.0"
+        },
+        {
+            name: "JobRunr",
+            url: "https://github.com/jobrunr/jobrunr",
+            license: "LGPL, 3.0"
         }
     ];
 
