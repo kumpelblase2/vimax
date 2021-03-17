@@ -18,10 +18,17 @@ export default {
     },
     actions: {
         async updateFilter({ commit, state, dispatch }, value) {
+            if(state.query === value) {
+                return;
+            }
+
             commit('changeFilter', value);
-            const ids = await videoApi.getVideosMatchingQuery(value);
+            await dispatch('refreshQueue');
+        },
+        async refreshQueue({ state, commit, dispatch }) {
+            const ids = await videoApi.getVideosMatchingQuery(state.query);
             commit('updateRemaining', ids);
-            dispatch('nextVideo');
+            await dispatch('nextVideo');
         },
         async nextVideo({ commit, state, dispatch, rootGetters }) {
             if(state.remainingVideoIds.length > 0) {

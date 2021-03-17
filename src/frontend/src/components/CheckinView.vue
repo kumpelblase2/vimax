@@ -1,10 +1,13 @@
 <template>
     <v-col fill-height>
-        <v-row>
+        <v-row align="center">
             <v-flex xs4 offset-4>
                 <v-text-field label="Filtering Query" id="filter" :value="filter" @change="updateFilter"
                               solo hide-details></v-text-field>
             </v-flex>
+            <v-btn class="ml-2" icon @click="refreshQueue">
+                <v-icon>refresh</v-icon>
+            </v-btn>
         </v-row>
         <v-row v-if="currentVideo">
             <v-col class="pa-0" xs6>
@@ -67,7 +70,7 @@
         },
         methods: {
             ...mapMutations('checkin', ['setEditingMetadataValue','changeThumbnail']),
-            ...mapActions('checkin', ['updateFilter','nextVideo', 'restartEditingIfPossible', 'saveAndContinue']),
+            ...mapActions('checkin', ['updateFilter','nextVideo', 'restartEditingIfPossible', 'saveAndContinue', 'refreshQueue']),
             ...mapActions('settings/metadata', ['loadMetadata']),
             handleMetadataUpdate(id, event) {
                 this.setEditingMetadataValue({ id, value: event });
