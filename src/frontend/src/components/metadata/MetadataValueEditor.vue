@@ -43,7 +43,7 @@
             selectionValue() {
                 if(this.metadataDefinition.type !== 'SELECTION') {
                     return {};
-                } else if(this.metadataValue.id != null) {
+                } else if(this.metadataValue != null && this.metadataValue.id != null) {
                     return this.metadataValue;
                 } else {
                     return this.metadataDefinition.options.values.find(value => value.id === this.metadataValue);

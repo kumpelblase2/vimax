@@ -1,3 +1,4 @@
+import Vue from "vue";
 import videoApi from "../api/videos";
 
 export default {
@@ -26,7 +27,7 @@ export default {
             state.editingVideo.metadata[id].value = value;
         },
         setMultiEditValue(state, { id, value }) {
-            state.multiEditValues[id] = value;
+            Vue.set(state.multiEditValues, id, value);
         },
         changeThumbnailsInEdit(state, thumbnailIndex) {
             state.editingVideo.selectedThumbnail = thumbnailIndex;
@@ -68,16 +69,22 @@ export default {
             commit('updateEditingThumbnails', newThumbnails);
         },
         async saveMultiVideoEdit({ commit, getters, state, rootGetters }, metadataToSave) {
-            const newVideos = [];
-            for(let videoId of state.multiEditIds) {
-                const copy = Object.assign({}, rootGetters['videos/getVideo'](videoId));
-                for(let metadataKey of metadataToSave) {
-                    copy.metadata[metadataKey].value = state.multiEditValues[metadataKey];
+            const newValues = { };
+            const allMetadata = rootGetters['settings/metadata/editableMetadata'];
+            for(let key of metadataToSave) {
+                const metadata = allMetadata.find(m => m.id === key);
+                if(metadata == null) {
+                    console.error(`Tried to update metadata with id ${key} but it's not editable.`);
+                    continue;
                 }
-                newVideos.push(copy);
+
+                newValues[key] = {
+                    'meta-type': metadata.type, // need this info for backend
+                    value: state.multiEditValues[key]
+                };
             }
 
-            const saved = await videoApi.saveVideos(newVideos);
+            const saved = await videoApi.saveVideos(state.multiEditIds, newValues);
             saved.forEach(video => {
                 commit('videos/addOrUpdateVideo', video, { root: true });
             });

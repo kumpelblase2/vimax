@@ -1,5 +1,7 @@
 package de.eternalwings.vima.controller
 
+import de.eternalwings.vima.domain.MetadataValue
+import de.eternalwings.vima.domain.TaglistMetadataValue
 import de.eternalwings.vima.domain.Thumbnail
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.process.VideoProcess
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit.DAYS
 import javax.persistence.EntityNotFoundException
 
 data class VideoFileInformation(val location: String, val timestamp: LocalDateTime)
+data class MultiVideoChangeInformation(val videoIds: List<Int>, val newValues: Map<Int, MetadataValue<*>>)
 
 @RestController
 @RequestMapping("/api")
@@ -105,8 +108,30 @@ class VideoController(private val videoRepository: VideoRepository,
 
     @Transactional
     @PutMapping("/videos")
-    fun updateVideos(@RequestBody newVideos: List<Video>): List<Video> {
-        return videoProcess.updateVideos(newVideos)
+    fun updateVideos(@RequestBody changeData: MultiVideoChangeInformation): List<Video> {
+        val videos = videoRepository.findAllById(changeData.videoIds)
+        changeData.newValues.forEach { (id, value) ->
+            if(value is TaglistMetadataValue) {
+                val tags = value.value ?: emptySet()
+                videos.forEach { video ->
+                    val currentValues = video.metadata!![id] as TaglistMetadataValue
+                    tags.forEach { tag ->
+                        val tagName = tag.substring(1)
+                        val changeType = tag[0]
+                        currentValues.value = when (changeType) {
+                            '-' -> (currentValues.value ?: emptySet()) - setOf(tagName)
+                            '+' -> (currentValues.value ?: emptySet()) + setOf(tagName)
+                            else -> throw IllegalArgumentException("Tag $tag was wrongly formatter for update.")
+                        }
+                    }
+                }
+            } else {
+                videos.forEach { video ->
+                    video.metadata!![id] = value
+                }
+            }
+        }
+        return videoProcess.updateVideos(videos)
     }
 
     @PostMapping("/video/{id}/refresh")

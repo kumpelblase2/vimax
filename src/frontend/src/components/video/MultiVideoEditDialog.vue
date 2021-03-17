@@ -8,8 +8,12 @@
                 <v-row class="pa-0" v-for="metadata in editableMetadata" :key="metadata.id">
                     <v-checkbox v-model="selected" :value="metadata.id" solo color="primary"/>
                     <v-col class="pa-0">
-                        <metadata-value-editor class="col-md-auto" md="auto" :metadata-definition="metadata"
-                                               :metadata-value="valueOrDefault(metadata)"
+                        <multi-tag-value-editor v-if="metadata.type === 'TAGLIST'" class="col-md-auto" md="auto"
+                                                :metadata-definition="metadata"
+                                                :metadata-value="getValueOf(metadata)"
+                                                @change="handleMetadataUpdate(metadata.id, $event)"/>
+                        <metadata-value-editor v-else class="col-md-auto" md="auto" :metadata-definition="metadata"
+                                               :metadata-value="getValueOf(metadata)"
                                                @change="handleMetadataUpdate(metadata.id, $event)"/>
                     </v-col>
                 </v-row>
@@ -25,45 +29,45 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters, mapMutations } from "vuex";
-    import MetadataValueEditor from "../metadata/MetadataValueEditor";
+import MultiTagValueEditor from "@/components/metadata/MultiTagValueEditor";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import MetadataValueEditor from "../metadata/MetadataValueEditor";
 
-    export default {
-        name: "MultiVideoEditDialog",
-        components: { MetadataValueEditor },
-        data() {
-            return {
-                selected: []
+export default {
+    name: "MultiVideoEditDialog",
+    components: { MultiTagValueEditor, MetadataValueEditor },
+    data() {
+        return {
+            selected: []
+        }
+    },
+    computed: {
+        ...mapGetters('videos/editing', ['isEditingMultiple', 'getMultiEditValue']),
+        ...mapGetters('settings/metadata', ['editableMetadata'])
+    },
+    methods: {
+        ...mapActions('videos/editing', ['saveMultiVideoEdit']),
+        ...mapMutations('videos/editing', ['setMultiEditValue', 'resetMultiEdit']),
+        close() {
+            this.resetMultiEdit();
+            this.selected = [];
+        },
+        async save() {
+            await this.saveMultiVideoEdit(this.selected);
+            this.$emit('finish-edit');
+            this.selected = [];
+        },
+        handleMetadataUpdate(id, event) {
+            this.setMultiEditValue({ id, value: event });
+            if(!this.selected.includes(id)) {
+                this.selected.push(id);
             }
         },
-        computed: {
-            ...mapGetters('videos/editing', ['isEditingMultiple', 'getMultiEditValue']),
-            ...mapGetters('settings/metadata', ['editableMetadata'])
-        },
-        methods: {
-            ...mapActions('videos/editing', ['saveMultiVideoEdit']),
-            ...mapMutations('videos/editing', ['setMultiEditValue', 'resetMultiEdit']),
-            close() {
-                this.resetMultiEdit();
-                this.selected = [];
-            },
-            async save() {
-                await this.saveMultiVideoEdit(this.selected);
-                this.$emit('finish-edit');
-                this.selected = [];
-            },
-            handleMetadataUpdate(id, event) {
-                this.setMultiEditValue({ id, value: event });
-                if(!this.selected.includes(id)) {
-                    this.selected.push(id);
-                }
-            },
-            valueOrDefault(metadata) {
-                const value = this.getMultiEditValue(metadata.id);
-                return (value == null ? metadata.options.defaultValue : value);
-            }
+        getValueOf(metadata) {
+            return this.getMultiEditValue(metadata.id);
         }
     }
+}
 </script>
 
 <style scoped>

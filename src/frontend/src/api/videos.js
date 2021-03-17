@@ -21,8 +21,8 @@ export default {
         return axios.put(`/api/video/${video.id}`, video).then(response => response.data);
     },
 
-    saveVideos(videos) {
-        return axios.put("/api/videos", videos).then(response => response.data);
+    saveVideos(videoIds, changedMetadata) {
+        return axios.put("/api/videos", { videoIds, newValues: changedMetadata }).then(response => response.data);
     },
 
     refreshThumbnails(video) {
