@@ -26,6 +26,9 @@
             Deselect All
         </v-btn>
         <v-spacer/>
+        <v-btn @click="playSelectedRandomly" icon>
+            <v-icon>shuffle</v-icon>
+        </v-btn>
         <v-btn @click="playSelected" icon>
             <v-icon>play_arrow</v-icon>
         </v-btn>
@@ -37,6 +40,7 @@
 </template>
 
 <script>
+    import { shuffle } from "@/helpers/array-helper";
     import SortDirectionToggle from "./metadata/SortDirectionToggle";
     import SortSelect from "./metadata/SortSelect";
     import MetadataSelection from "./metadata/MetadataSelection";
@@ -64,6 +68,10 @@
             ...mapActions('player', ['playVideos']),
             playSelected() {
                 this.playVideos(this.selectedVideoIds);
+                this.clearSelectedVideos();
+            },
+            playSelectedRandomly() {
+                this.playVideos(shuffle(this.selectedVideoIds));
                 this.clearSelectedVideos();
             },
             goBack() {
