@@ -4,6 +4,7 @@
             <v-card-title>
                 {{ (playlist || {}).name }}
                 <v-spacer></v-spacer>
+                <v-icon @click="shufflePlaylist">shuffle</v-icon>
                 <v-icon @click="startPlaylist">play_arrow</v-icon>
             </v-card-title>
             <v-card-text class="scroll-container" style="height: calc(100% - 75px)">
@@ -37,6 +38,7 @@
 <script>
     import smartPlaylists from "@/api/smart-playlists";
     import VideoInfoDialog from "@/components/video/VideoInfoDialog";
+    import { shuffle } from "@/helpers/array-helper";
     import { getSelectedThumbnailURLForVideo } from "@/video";
     import { mapActions, mapGetters, mapMutations } from "vuex";
 
@@ -91,6 +93,9 @@
             },
             async startPlaylist() {
                 await this.playVideos(this.videoIds);
+            },
+            async shufflePlaylist() {
+                await this.playVideos(shuffle(this.videoIds));
             },
             async startPlaylistAt(id) {
                 await this.startPlaylist();

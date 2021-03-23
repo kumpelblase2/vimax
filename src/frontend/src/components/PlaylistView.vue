@@ -4,6 +4,7 @@
             <v-card-title>
                 {{ playlist.name }}
                 <v-spacer></v-spacer>
+                <v-icon @click="shufflePlay">shuffle</v-icon>
                 <v-icon @click="startPlaylist">play_arrow</v-icon>
             </v-card-title>
             <v-card-text>
@@ -83,7 +84,7 @@
         methods: {
             ...mapActions('videos', ['loadVideos']),
             ...mapActions('playlist', ['updateOrder', 'removeFromPlaylist']),
-            ...mapActions('player', ['playPlaylist']),
+            ...mapActions('player', ['playPlaylist', 'playPlaylistRandom']),
             ...mapMutations('videos', ["displayVideo"]),
             deleteVideo(videoId) {
                 this.removeFromPlaylist({ playlistId: this.playlistId, videoIds: [videoId] });
@@ -93,6 +94,9 @@
             },
             startPlaylist() {
                 this.playPlaylist(this.playlist);
+            },
+            shufflePlay() {
+                this.playPlaylistRandom(this.playlist);
             }
         }
     }

@@ -1,4 +1,4 @@
-import { removeFromArray } from "@/helpers/array-helper";
+import { removeFromArray, shuffle } from "@/helpers/array-helper";
 
 const BEFORE_FIRST_ELEMENT = -1;
 
@@ -138,6 +138,9 @@ export default {
         },
         async playPlaylist({ dispatch }, playlist) {
             await dispatch('playVideos', playlist.videoIds);
+        },
+        async playPlaylistRandom({dispatch}, playlist) {
+            await dispatch('playVideos', shuffle(playlist.videoIds));
         },
         skipToVideo({ commit, getters }, videoId) {
             if(getters.containsVideo(videoId)) {
