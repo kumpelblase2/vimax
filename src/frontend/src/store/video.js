@@ -139,7 +139,7 @@ export default {
     actions: {
         toggleSelectVideo({ getters, commit, state }, { videoId, heldSelection }) {
             if(getters.isSelected(videoId)) {
-                commit('unselectVideos', videoId);
+                commit('unselectVideos', [videoId]);
             } else {
                 if(heldSelection && getters.hasVideosSelected) {
                     const lastSelectedId = state.selectedVideoIds[state.selectedVideoIds.length - 1];
