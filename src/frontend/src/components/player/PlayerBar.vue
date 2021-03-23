@@ -251,4 +251,9 @@
         background-color: #323335;
         padding: 75px 100px;
     }
+
+    .faded {
+        opacity: 0;
+        transition: opacity 1s;
+    }
 </style>

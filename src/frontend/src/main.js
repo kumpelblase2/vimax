@@ -6,7 +6,6 @@ import vuetify from './plugin/Vuetify';
 import { setup } from './eventsource'
 
 import 'video.js/dist/video-js.css';
-import './styles/custom-app.css';
 import './video/setup-video-thumbnail-plugin';
 
 Vue.config.productionTip = false;
