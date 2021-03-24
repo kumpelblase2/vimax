@@ -161,7 +161,11 @@
                 this.collapsed = true;
             },
             fullscreen() {
-                this.$refs.videoPlayer.requestFullscreen();
+                if(window.fullScreen) {
+                    document.exitFullscreen();
+                } else {
+                    this.$el.requestFullscreen();
+                }
             },
             togglePlaylist() {
                 this.showPlaylist = !this.showPlaylist;
