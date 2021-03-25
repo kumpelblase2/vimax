@@ -4,7 +4,7 @@
             v-model="query"
             @click:append.prevent="doSearch"
             placeholder="Search..."
-            append-icon="search"
+            :append-icon="icon"
             color="white"
             :hide-details="!hasError"
             clearable
@@ -27,6 +27,13 @@
         },
         computed: {
             ...mapGetters('search', ['searchQuery', 'error']),
+            icon() {
+                if(this.searchQuery == this.query) {
+                    return "refresh";
+                } else {
+                    return "search";
+                }
+            },
             hasError() {
                 return this.error != null && this.error.length > 0;
             },
@@ -36,6 +43,9 @@
                 } else {
                     return [];
                 }
+            },
+            queryValue() {
+                return this.query || "";
             }
         },
         watch: {
@@ -50,8 +60,10 @@
             ...mapActions('videos', ['search']),
             ...mapMutations('search', ['updateQuery']),
             doSearch() {
-                this.updateQuery(this.query);
-                router.push(`/?search=${encodeURIComponent(this.query)}`);
+                if(this.queryValue != this.searchQuery) {
+                    this.updateQuery(this.queryValue);
+                    router.push(`/?search=${encodeURIComponent(this.queryValue)}`);
+                }
                 this.search();
             },
             reset() {
