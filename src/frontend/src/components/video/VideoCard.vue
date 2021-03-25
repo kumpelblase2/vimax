@@ -32,7 +32,7 @@
                         </v-btn>
                     </v-row>
                 </v-img>
-                <v-card-title><span class="ellipsis-text">{{ video.name }}</span></v-card-title>
+                <v-card-title><span class="ellipsis-text" :title="video.name">{{ video.name }}</span></v-card-title>
                 <v-card-text v-show="hasVisibleMetadata">
                     <VideoMetadataDisplay :video-metadata="video.metadata"/>
                 </v-card-text>
