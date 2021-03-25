@@ -1,5 +1,5 @@
 <template>
-    <div class="text-truncate">
+    <div class="text-truncate clickable">
         <template v-if="metadataType === 'TAGLIST'">
             <v-chip small v-for="item in metadataValue" :key="item" @click="filterFor(item)">{{item}}</v-chip>
         </template>
@@ -37,3 +37,10 @@
         }
     }
 </script>
+
+
+<style>
+    .clickable {
+        cursor: pointer;
+    }
+</style>
