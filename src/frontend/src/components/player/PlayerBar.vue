@@ -107,7 +107,7 @@
         methods: {
             mountListener() {
                 this.keyListener = event => {
-                    if(this.hasVideo) {
+                    if(this.currentVideo != null) {
                         if(event.key === " ") {
                             this.playPauseVideo();
                         } else if(event.key === "ArrowRight") {
@@ -118,7 +118,10 @@
                             this.updateVolume(this.currentVolume + 0.1);
                         } else if(event.key === "ArrowDown" && !this.isMuted) {
                             this.updateVolume(this.currentVolume - 0.1);
+                        } else {
+                            return;
                         }
+                        event.preventDefault();
                     }
                 };
 
