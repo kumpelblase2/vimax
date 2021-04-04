@@ -1,21 +1,38 @@
 <template>
     <v-app-bar app fixed clipped-left v-if="selectedVideoIds.length === 0">
-        <v-btn icon @click="goBack" v-show="shouldShowBack"><v-icon>arrow_back</v-icon></v-btn>
-        <v-app-bar-nav-icon @click.stop="$emit('drawer', !drawer)"/>
-        <v-toolbar-title>Vima</v-toolbar-title>
-        <v-spacer v-show="shouldShowMetadata"/>
-        <MetadataSelection v-show="shouldShowMetadata"/>
-        <v-spacer v-show="shouldShowSort"/>
-        <SortSelect v-show="shouldShowSort"/>
-        <SortDirectionToggle v-show="shouldShowSort"/>
-        <v-spacer/>
-        <v-row v-show="shouldShowSearch" align-center style="max-width: 650px">
-            <SearchComponent/>
+        <v-row justify="space-between" class="pt-2" align="center" dense>
+            <v-col sm="auto" class="pa-0">
+                <v-row align="center">
+                    <v-btn icon @click="goBack" v-show="shouldShowBack">
+                        <v-icon>arrow_back</v-icon>
+                    </v-btn>
+                    <v-app-bar-nav-icon @click.stop="$emit('drawer', !drawer)"/>
+                    <v-toolbar-title>Vima</v-toolbar-title>
+                </v-row>
+            </v-col>
+            <v-col sm="3" class="pa-0" align-self="center" v-show="shouldShowMetadata">
+                <MetadataSelection/>
+            </v-col>
+            <v-col sm="3" class="pa-0" align-self="center" v-show="shouldShowSort">
+                <v-row align="center">
+                    <v-col class="pa-0">
+                        <SortSelect/>
+                    </v-col>
+                    <v-col sm="auto" class="pa-0">
+                        <SortDirectionToggle/>
+                    </v-col>
+                </v-row>
+            </v-col>
+            <v-col sm="4" v-show="shouldShowSearch" align-center class="pa-0">
+                <SearchComponent/>
+            </v-col>
         </v-row>
     </v-app-bar>
     <v-app-bar app fixed clipped-left v-else>
-        <v-btn icon @click="clearSelectedVideos"><v-icon>close</v-icon></v-btn>
-        <v-toolbar-title>{{selectedVideoIds.length}} Video(s) selected</v-toolbar-title>
+        <v-btn icon @click="clearSelectedVideos">
+            <v-icon>close</v-icon>
+        </v-btn>
+        <v-toolbar-title>{{ selectedVideoIds.length }} Video(s) selected</v-toolbar-title>
         <v-spacer/>
         <v-btn @click="selectAllVideos" text color="primary">
             <v-icon>check</v-icon>

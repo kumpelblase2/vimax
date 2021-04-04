@@ -1,17 +1,22 @@
 <template>
-    <form action="#" @submit.prevent="doSearch">
-        <v-text-field
-            v-model="query"
-            @click:append.prevent="doSearch"
-            placeholder="Search..."
-            :append-icon="icon"
-            color="white"
-            :hide-details="!hasError"
-            clearable
-            :error-messages="queryErrors"
-            @click:clear="reset"
-        />
-    </form>
+    <v-row align="center">
+        <v-col sm="auto" v-if="shouldShowVideoCount" class="subtitle-1 text--disabled">{{ videosAmount }} Videos</v-col>
+        <v-col class="pa-0">
+            <form action="#" @submit.prevent="doSearch">
+                <v-text-field
+                    v-model="query"
+                    @click:append.prevent="doSearch"
+                    placeholder="Search..."
+                    :append-icon="icon"
+                    color="white"
+                    :hide-details="!hasError"
+                    clearable
+                    :error-messages="queryErrors"
+                    @click:clear="reset"
+                />
+            </form>
+        </v-col>
+    </v-row>
 </template>
 
 <script>
@@ -27,6 +32,10 @@
         },
         computed: {
             ...mapGetters('search', ['searchQuery', 'error']),
+            ...mapGetters('videos', ['videosAmount']),
+            shouldShowVideoCount() {
+                return ['lg', 'xl'].includes(this.$vuetify.breakpoint.name);
+            },
             icon() {
                 if(this.searchQuery == this.query) {
                     return "refresh";

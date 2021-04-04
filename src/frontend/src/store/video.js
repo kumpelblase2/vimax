@@ -60,6 +60,9 @@ export default {
         },
         videoInfoId: (state) => {
             return state.displayedVideoId;
+        },
+        videosAmount: (state) => {
+            return state.displayVideoIds.length;
         }
     },
     mutations: {
