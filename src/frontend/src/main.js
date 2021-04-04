@@ -5,6 +5,7 @@ import store from './store';
 import vuetify from './plugin/Vuetify';
 import { setup } from './eventsource'
 
+import './styles/fix-row.css';
 import 'video.js/dist/video-js.css';
 import './video/setup-video-thumbnail-plugin';
 

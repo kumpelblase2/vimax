@@ -1,6 +1,6 @@
 <template>
-    <v-col fill-height>
-        <v-row align="center">
+    <v-col class="fill-height">
+        <v-row align="center" class="mb-2">
             <v-flex xs4 offset-4>
                 <v-text-field label="Filtering Query" id="filter" :value="filter" @change="updateFilter"
                               solo hide-details></v-text-field>
@@ -9,16 +9,16 @@
                 <v-icon>refresh</v-icon>
             </v-btn>
         </v-row>
-        <v-row v-if="currentVideo">
+        <v-row v-if="currentVideo" class="fill-height">
             <v-col class="pa-0" xs6>
                 <single-video-player :autoplay="false" :disable-events="true" :video="currentVideo"/>
             </v-col>
-            <v-col xs6>
+            <v-col xs6 class="fill-height">
                 <v-row class="px-2">
                     <v-flex grow class="pa-1"><v-btn @click="skip" block>Skip</v-btn></v-flex>
                     <v-flex grow class="pa-1"><v-btn color="primary" block @click="next">Save and Next</v-btn></v-flex>
                 </v-row>
-                <v-card class="editing-card">
+                <v-card class="editing-card fill-height" max-height="calc(100% - 90px)">
                     <v-card-title>
                         {{ currentVideo.name }}
                         <v-spacer/>
