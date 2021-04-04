@@ -250,6 +250,7 @@
         width: 100%;
         height: 50px;
         background-color: rgba(60, 60, 60, 0.7);
+        z-index: 1;
     }
 
     .playlist-view {
