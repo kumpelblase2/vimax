@@ -1,8 +1,8 @@
 package de.eternalwings.vima.domain
 
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.Table
@@ -17,6 +17,7 @@ class VideoInPlaylist(
         var position: Int? = null
 ) {
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue
+    @Column(updatable = false, nullable = false)
     private var id: Int? = null
 }

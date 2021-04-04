@@ -17,18 +17,18 @@ import javax.persistence.Transient
 
 @Entity
 data class Video(
-        @field:Column(updatable = false)
-        var location: String? = null,
-        var name: String? = null,
-        @field:ManyToOne(optional = false)
-        var library: Library? = null,
-        @Suppress("JpaAttributeTypeInspection")
-        @field:Column(columnDefinition = "text", name = "metadata_values")
-        @field:Convert(converter = SQLiteMetadataValueJsonConverter::class)
-        var metadata: MutableMap<Int, MetadataValue<*>>? = mutableMapOf(),
-        @field:OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
-        var thumbnails: MutableList<Thumbnail> = mutableListOf(),
-        var selectedThumbnail: Int? = 0
+    @field:Column(updatable = false)
+    var location: String? = null,
+    var name: String? = null,
+    @field:ManyToOne(optional = false)
+    var library: Library? = null,
+    @Suppress("JpaAttributeTypeInspection")
+    @field:Column(columnDefinition = "text", name = "metadata_values")
+    @field:Convert(converter = SQLiteMetadataValueJsonConverter::class)
+    var metadata: MutableMap<Int, MetadataValue<*>>? = mutableMapOf(),
+    @field:OneToMany(cascade = [ALL], mappedBy = "video", fetch = LAZY, orphanRemoval = true)
+    var thumbnails: MutableList<Thumbnail> = mutableListOf(),
+    var selectedThumbnail: Int? = 0
 ) : BasePersistable<Int>() {
 
     fun addMetadataValue(metadataId: Int, value: MetadataValue<*>) {
@@ -45,13 +45,15 @@ data class Video(
 
 @Entity
 data class Thumbnail(
-        @Id @GeneratedValue
-        var id: Int? = null,
-        @field:Column(updatable = false)
-        var location: String? = null,
-        @ManyToOne
-        @JsonIgnore
-        var video: Video? = null
+    @field:Id
+    @field:GeneratedValue
+    @field:Column(updatable = false, nullable = false)
+    var id: Int? = null,
+    @field:Column(updatable = false)
+    var location: String? = null,
+    @field:ManyToOne
+    @field:JsonIgnore
+    var video: Video? = null
 ) {
     @get:Transient
     @get:JsonIgnore

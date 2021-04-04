@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.domain.Persistable
 import java.io.Serializable
 import java.time.LocalDateTime
+import javax.persistence.Column
 import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType.IDENTITY
 import javax.persistence.Id
 import javax.persistence.MappedSuperclass
 import javax.persistence.PrePersist
@@ -14,11 +14,14 @@ import javax.persistence.Version
 
 @MappedSuperclass
 abstract class BasePersistable<T : Serializable> : Persistable<T> {
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id
+    @GeneratedValue
+    @Column(nullable = false, updatable = false)
     private var id: T? = null
 
     var creationTime: LocalDateTime? = null
     var updateTime: LocalDateTime? = null
+
     @Version
     var version: Int? = 1
 
