@@ -1,5 +1,7 @@
 package de.eternalwings.vima.process
 
+import de.eternalwings.vima.domain.Thumbnail
+import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.repository.ThumbnailRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -8,10 +10,12 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Pattern
 import java.util.stream.Collectors
+import javax.persistence.EntityManager
 
 @Component
 class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
                             private val thumbnailRepository: ThumbnailRepository,
+                            private val entityManager: EntityManager,
                             @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int,
                             @Value("\${thumbnail-relative-dir:.thumbnails}") thumbnailsRelativePath: String) {
 
@@ -31,7 +35,9 @@ class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
         val generatedThumbnails = thumbnailGenerator.generateThumbnailsFor(videoPath, thumbnailDir, remainingThumbnails)
         val allThumbnails = existingThumbnails + generatedThumbnails
         allThumbnails.forEach { thumb ->
-            thumbnailRepository.insertThumbnailForVideo(thumb.toString(), videoId)
+            val video = entityManager.getReference(Video::class.java, videoId)
+            val thumbnail = Thumbnail(location = thumb.toString(), video = video)
+            thumbnailRepository.save(thumbnail)
         }
         thumbnailRepository.flush()
     }
