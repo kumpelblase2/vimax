@@ -19,6 +19,7 @@ import kotlin.streams.toList
 class VideoSearcher(@PersistenceContext private val entityManager: EntityManager,
                     private val videoRepository: VideoRepository,
                     private val metadataRepository: MetadataRepository,
+                    private val searchShorthandEvaluator: SearchShorthandEvaluator,
                     private val databaseQueryCreator: DatabaseQueryCreator) {
     private fun query(searchString: String): List<Int> {
         val userQueryAst = when (val userQuery = QueryParser.tryParseToEnd(searchString)) {
@@ -26,7 +27,9 @@ class VideoSearcher(@PersistenceContext private val entityManager: EntityManager
             else -> throw IllegalStateException()
         }
 
-        val finalQuery = this.databaseQueryCreator.createQueryFrom(userQueryAst)
+        val updatedQuery = searchShorthandEvaluator.handleQuery(userQueryAst)
+
+        val finalQuery = this.databaseQueryCreator.createQueryFrom(updatedQuery)
         val dbQuery = entityManager.createNativeQuery(finalQuery.first)
         finalQuery.second.parameterMap.forEach {
             dbQuery.setParameter(it.first, it.second)

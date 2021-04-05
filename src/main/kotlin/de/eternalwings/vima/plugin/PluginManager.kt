@@ -4,6 +4,7 @@ import de.eternalwings.vima.domain.PluginInformation
 import de.eternalwings.vima.domain.Video
 import de.eternalwings.vima.plugin.EventType.UPDATE
 import de.eternalwings.vima.process.MetadataProcess
+import de.eternalwings.vima.query.SearchShorthandProvider
 import de.eternalwings.vima.repository.PluginInformationRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.slf4j.LoggerFactory
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 class PluginManager(private val pluginRepository: PluginInformationRepository,
                     private val videoRepository: VideoRepository,
                     private val metadataProcess: MetadataProcess,
+                    private val shorthandProvider: SearchShorthandProvider,
                     pluginBindings: PluginBindings) {
     private var plugins: List<Pair<PluginInformation, PluginConfig>> = emptyList()
 
@@ -33,6 +35,7 @@ class PluginManager(private val pluginRepository: PluginInformationRepository,
         val updatedInformation = pluginRepository.save(information)
         if (plugins.any { it.first.name == updatedInformation.name }) throw PluginAlreadyRegisteredException(updatedInformation.name)
         LOGGER.info("Loaded plugin ${updatedInformation.name}")
+        pluginConfig.searchShorthands.forEach { (name, replacement) -> shorthandProvider.registerShorthand(name, replacement) }
         plugins = plugins + (updatedInformation to pluginConfig)
     }
 

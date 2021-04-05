@@ -1,5 +1,7 @@
 package de.eternalwings.vima.plugin
 
+import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
+import com.github.h0tk3y.betterParse.parser.Parsed
 import de.eternalwings.vima.domain.BooleanMetadataOptions
 import de.eternalwings.vima.domain.DurationMetadataOptions
 import de.eternalwings.vima.domain.FloatMetadataOptions
@@ -21,6 +23,7 @@ import de.eternalwings.vima.plugin.MetadataContainer.ExternalMetadata
 import de.eternalwings.vima.plugin.MetadataContainer.OwnedMetadata
 import de.eternalwings.vima.plugin.PluginPriority.NORMAL
 import de.eternalwings.vima.process.MetadataProcess
+import de.eternalwings.vima.query.QueryParser
 import org.springframework.data.domain.Sort.Direction
 import java.time.Duration
 
@@ -28,6 +31,7 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
                           val context: PluginExecutionContext) {
     internal val eventHandlers: MutableMap<EventType, MutableCollection<VideoHandler>> = mutableMapOf()
     internal val ownedMetadata: MutableList<MetadataContainer<*>> = arrayListOf()
+    internal val searchShorthands: MutableMap<String, String> = mutableMapOf()
 
     internal val name: String = pluginInformation.name!!
     var description by prop(pluginInformation.description::description)
@@ -96,6 +100,14 @@ class PluginCreateContext(private val metadataProcess: MetadataProcess, private 
 
     fun onFinishWatching(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
         addHandler(FINISH_WATCHING, priority, handler)
+    }
+
+    fun registerSearchShorthand(name: String, result: String) {
+        if(QueryParser.tryParseToEnd(result) !is Parsed) {
+            throw IllegalArgumentException("Not a valid query for replacement")
+        }
+
+        searchShorthands[name] = result
     }
 
     operator fun <T,S> VideoContainer.set(reference: OwnedMetadata<T,S>, value: S) {

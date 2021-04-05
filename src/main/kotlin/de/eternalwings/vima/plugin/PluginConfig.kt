@@ -5,7 +5,7 @@ import de.eternalwings.vima.domain.Video
 import java.util.Collections
 
 data class PluginConfig(val pluginName: String, private val eventHandlers: Map<EventType, Collection<VideoHandler>>,
-                        private val allMetadata: List<MetadataContainer<*>>) {
+                        val searchShorthands: Map<String, String>, private val allMetadata: List<MetadataContainer<*>>) {
 
     fun callHandlerFor(eventType: EventType, video: Video) {
         callHandlerFor(eventType, listOf(video))
@@ -33,7 +33,8 @@ data class PluginConfig(val pluginName: String, private val eventHandlers: Map<E
 
     companion object {
         fun fromCreationContext(pluginCreateContext: PluginCreateContext): PluginConfig {
-            return PluginConfig(pluginCreateContext.name, pluginCreateContext.eventHandlers, pluginCreateContext.ownedMetadata)
+            return PluginConfig(pluginCreateContext.name, pluginCreateContext.eventHandlers, pluginCreateContext.searchShorthands,
+                pluginCreateContext.ownedMetadata)
         }
     }
 }
