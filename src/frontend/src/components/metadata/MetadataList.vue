@@ -52,6 +52,7 @@
                         <td>{{ props.item.name }}</td>
                         <td>{{ props.item.type }}</td>
                         <td>{{ defaultValueToText(props.item) }}</td>
+                        <td>{{ props.item.owner ? props.item.owner.name : "" }}</td>
                         <td class="justify-center">
                             <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
                                     @click="moveDown(props.item)" :title="'Move ' + props.item.name + ' down'">

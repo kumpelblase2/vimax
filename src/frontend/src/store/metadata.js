@@ -24,10 +24,11 @@ export default {
             { text: 'Switch', value: 'BOOLEAN' }
         ],
         headers: [
-            { text: 'Order', value: 'displayOrder', sortable: false },
+            { text: 'Order', value: 'displayOrder', sortable: false, width: 30 },
             { text: 'Name', value: 'name', sortable: false },
             { text: 'Type', value: 'type', sortable: false },
             { text: 'Default Value', values: 'defaultValue', sortable: false },
+            { text: 'Owner', value: 'owner', sortable: false },
             { text: 'Actions', value: 'actions', sortable: false, width: 150 }
         ],
         editingItem: {
