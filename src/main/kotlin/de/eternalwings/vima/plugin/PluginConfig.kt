@@ -2,10 +2,14 @@ package de.eternalwings.vima.plugin
 
 import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.plugin.api.MetadataRef
+import de.eternalwings.vima.plugin.api.PluginConfigurationEnvironment
 import java.util.Collections
 
-data class PluginConfig(val pluginName: String, private val eventHandlers: Map<EventType, Collection<VideoHandler>>,
-                        val searchShorthands: Map<String, String>, private val allMetadata: List<MetadataContainer<*>>) {
+data class PluginConfig(
+    val pluginDescription: PluginDescription, private val eventHandlers: Map<EventType, Collection<VideoHandler>>,
+    val searchShorthands: Map<String, String>, val allMetadata: List<MetadataRef<*>>
+) {
 
     fun callHandlerFor(eventType: EventType, video: Video) {
         callHandlerFor(eventType, listOf(video))
@@ -32,9 +36,17 @@ data class PluginConfig(val pluginName: String, private val eventHandlers: Map<E
     }
 
     companion object {
-        fun fromCreationContext(pluginCreateContext: PluginCreateContext): PluginConfig {
-            return PluginConfig(pluginCreateContext.name, pluginCreateContext.eventHandlers, pluginCreateContext.searchShorthands,
-                pluginCreateContext.ownedMetadata)
+        fun fromCreationContext(pluginCreateContext: PluginConfigurationEnvironment): PluginConfig {
+            val description = de.eternalwings.vima.plugin.PluginDescription(
+                pluginCreateContext.name, pluginCreateContext.description,
+                pluginCreateContext.author, pluginCreateContext.version
+            )
+            return PluginConfig(
+                description,
+                pluginCreateContext.eventHandlers,
+                pluginCreateContext.searchShorthands,
+                pluginCreateContext.metadata
+            )
         }
     }
 }

@@ -15,5 +15,9 @@ export default {
 
     refresh(name) {
         return axios.post(`/api/plugin/${name}/refresh`).then(response => response.data);
+    },
+
+    reload(name) {
+        return axios.post(`/api/plugin/${name}/reload`).then(response => response.data);
     }
 };

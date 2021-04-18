@@ -19,6 +19,9 @@
                             <v-icon class="ml-2" small @click="refreshPlugin(props.item.name)"
                                     title="Reload Metadata for all videos">refresh
                             </v-icon>
+                            <v-icon class="ml-2" small @click="reload(props.item.name)"
+                                    title="Reload the plugin from disk">sync
+                            </v-icon>
                         </v-row>
                     </td>
                     <td>{{ displayDate(props.item.creationTime) }}</td>
@@ -58,10 +61,15 @@
             ...mapState('settings/plugin', ['plugins', 'headers'])
         },
         methods: {
-            ...mapActions('settings/plugin', ['togglePlugin', 'loadPlugins']),
+            ...mapActions('settings/plugin', ['togglePlugin', 'loadPlugins', 'reloadPlugin']),
             async refreshPlugin(name) {
                 this.updating = true;
                 await pluginApi.refresh(name);
+                this.updating = false;
+            },
+            async reload(name) {
+                this.updating = true;
+                await this.reloadPlugin(name);
                 this.updating = false;
             },
             displayDate(date) {

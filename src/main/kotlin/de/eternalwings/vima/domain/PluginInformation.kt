@@ -37,4 +37,8 @@ class PluginInformation(
         disabledAt = LocalDateTime.now()
         enabledAt = null
     }
+
+    fun copy(): PluginInformation {
+        return PluginInformation(name, enabled, information?.copy(), disabledAt, enabledAt, settings).also { it.id = this.id }
+    }
 }

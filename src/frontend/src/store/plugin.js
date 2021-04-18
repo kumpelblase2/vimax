@@ -4,11 +4,11 @@ export default {
     namespaced: true,
     state: {
         headers: [
-            { text: "Name", value: "name" },
-            { text: "Description", value: "description", width: 500 },
+            { text: "Name", value: "name", width: 150 },
+            { text: "Description", value: "description", width: 700 },
             { text: "Author", value: "author", width: 200 },
-            { text: "Version", value: "version", width: 150 },
-            { text: "Enabled", value: "enabled", width: 120 },
+            { text: "Version", value: "version", width: 100 },
+            { text: "Enabled", value: "enabled", width: 130 },
             { text: "Added On", value: "createdAt", width: 150 },
             { text: "Enabled On", value: "enabledAt", width: 150 },
             { text: "Disabled On", value: "disabledAt", width: 150 }
@@ -29,6 +29,10 @@ export default {
                 newPlugin = await pluginApi.enable(name);
             }
 
+            commit('addOrUpdatePlugin', newPlugin);
+        },
+        async reloadPlugin({commit}, name) {
+            const newPlugin = await pluginApi.reload(name);
             commit('addOrUpdatePlugin', newPlugin);
         }
     },

@@ -5,11 +5,8 @@ import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValue
 import de.eternalwings.vima.event.VideoUpdateEvent
-import de.eternalwings.vima.plugin.MetadataInfo
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import javax.persistence.EntityNotFoundException
@@ -21,19 +18,7 @@ class MetadataProcess(
     private val metadataRepository: MetadataRepository,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
-
-    @Cacheable(cacheNames = ["metadata"], key = "#name")
-    fun getSimpleReference(name: String): MetadataInfo<*>? {
-        return getReadOnlyCopyOf(name)
-    }
-
-    private fun getReadOnlyCopyOf(name: String): MetadataInfo<*>? {
-        val metadata = metadataRepository.findByName(name) ?: return null
-        return MetadataInfo.fromMetadata(metadata)
-    }
-
     @Transactional
-    @CacheEvict(cacheNames = ["metadata"], allEntries = true)
     fun createOrUpdate(metadata: Metadata): Metadata {
         val isNew = metadata.isNew
         if (isNew) {
@@ -94,6 +79,10 @@ class MetadataProcess(
         this.metadataRepository.delete(metadata)
         this.metadataRepository.updateDisplayOrderWithValuesHigher(oldDisplayOrder)
         this.videoRepository.removeMetadataValueOf(metadata.id!!)
+    }
+
+    fun getAll(): List<Metadata> {
+        return metadataRepository.findAll()
     }
 
     private fun updateSelectionIds(options: SelectionMetadataOptions, previousValues: List<SelectionValue>) {

@@ -1,68 +1,37 @@
 package de.eternalwings.vima.plugin
 
-import de.eternalwings.vima.domain.Metadata
-import de.eternalwings.vima.domain.MetadataValue
-import de.eternalwings.vima.process.MetadataProcess
-
-class MetadataInfo<T>(
-        val id: Int,
-        val name: String,
-        val defaultValue: T?,
-        val owner: String?,
-        val ownerId: Int?
-) {
-    companion object {
-        fun fromMetadata(metadata: Metadata): MetadataInfo<*> {
-            return MetadataInfo(metadata.id!!, metadata.name!!, metadata.options!!.defaultValue, metadata.owner?.name,
-                    metadata.owner?.id)
-        }
-    }
-}
-
-sealed class MetadataContainer<T>(protected val metadata: MetadataInfo<T>) {
-    fun get(video: VideoContainer): T? {
-        val defaultValue = this.metadata.defaultValue
-        val existingMetadata = video.metadata
-        val value = existingMetadata[this.metadata.id] as? MetadataValue<T> ?: return defaultValue
-        return value.value
-    }
-
-    fun update(video: VideoContainer, updater: (T?) -> T?) {
-        val defaultValue = this.metadata.defaultValue
-        val existingMetadata = video.metadata
-        val value = existingMetadata[this.metadata.id] as MetadataValue<T>
-        val updated = updater(value.value ?: defaultValue)
-        value.value = updated
-    }
-
-    class ExternalMetadata<T>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata)
-    class OwnedMetadata<T,S>(metadata: MetadataInfo<T>) : MetadataContainer<T>(metadata) {
-        fun set(video: VideoContainer, value: S) {
-            check(video.hasMetadata(this.metadata.id))
-            val existingMetadata = video.metadata
-            val existingContainer = existingMetadata[this.metadata.id] ?: throw IllegalStateException()
-            (existingContainer as MetadataValue<S>).value = value
-            video.markChanged(this.metadata.id)
-        }
-    }
-}
+import de.eternalwings.vima.plugin.api.PluginConfigurationEnvironment
+import java.nio.file.Path
 
 object PluginRegistration {
-    private lateinit var pluginManager: PluginManager
-    private lateinit var metadataProcess: MetadataProcess
-    private lateinit var pluginExecutionContext: PluginExecutionContext
+    private lateinit var pluginBindings: PluginBindings
+    private val configs: MutableList<Pair<Path, PluginConfig>> = mutableListOf()
 
-    internal fun setup(pluginManager: PluginManager, metadataProcess: MetadataProcess, pluginBindings: PluginBindings) {
-        this.pluginManager = pluginManager
-        this.metadataProcess = metadataProcess
-        this.pluginExecutionContext = pluginBindings.createBindings()
+    private var nextPluginPath: Path? = null
+
+    internal fun setup(bindings: PluginBindings) {
+        this.pluginBindings = bindings
     }
 
-    fun register(name: String, config: PluginCreateContext.() -> Unit) {
-        val info = pluginManager.getOrCreatePlugin(name)
-        val context =
-                PluginCreateContext(metadataProcess, info, pluginExecutionContext)
+    internal fun prepareRegistration(path: Path) {
+        nextPluginPath = path
+    }
+
+    fun register(name: String, config: PluginConfigurationEnvironment.() -> Unit) {
+        val path = nextPluginPath ?: throw IllegalStateException("Trying to register plugin outside of cycle")
+
+        val context = PluginConfigurationEnvironment(name, pluginBindings)
         context.config()
-        pluginManager.addPlugin(info, PluginConfig.fromCreationContext(context))
+        configs.add(path to PluginConfig.fromCreationContext(context))
+    }
+
+    internal fun cleanUpRegistration() {
+        nextPluginPath = null
+    }
+
+    internal fun getAndClearRegistrationQueue(): List<Pair<Path, PluginConfig>> {
+        val configCopy = ArrayList(configs)
+        configs.clear()
+        return configCopy
     }
 }

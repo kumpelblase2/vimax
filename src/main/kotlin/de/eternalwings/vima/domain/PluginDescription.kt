@@ -9,4 +9,12 @@ class PluginDescription {
     var author: String? = null
     @Column(name = "PLUGIN_VERSION")
     var version: String? = null
+
+    fun copy(): PluginDescription {
+        return PluginDescription().also {
+            it.description = this.description
+            it.author = this.author
+            it.version = this.version
+        }
+    }
 }

@@ -38,4 +38,11 @@ class PluginController(private val pluginRepository: PluginInformationRepository
     fun refreshPlugin(@PathVariable name: String) {
         pluginManager.refreshPlugin(name)
     }
+
+    @Transactional
+    @PostMapping("{name}/reload")
+    fun reloadPlugin(@PathVariable name: String): PluginInformation? {
+        pluginManager.reloadPlugin(name)
+        return pluginRepository.findByName(name)
+    }
 }
