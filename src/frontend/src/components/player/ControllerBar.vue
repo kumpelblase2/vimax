@@ -1,5 +1,6 @@
 <template>
-    <div class="controller-bar" :class="{'expanded': !collapsed}">
+    <div class="controller-bar" :class="{'expanded': !collapsed}" @mouseenter="$emit('mouseenter', $event)"
+         @mouseleave="$emit('mouseleave', $event)">
         <video-progress-bar :video-url="videoUrl" @scrubb="$emit('scrubb', $event)"
                             :seek-progress="seekProgress" :duration="duration"></video-progress-bar>
         <v-row class="ma-0 controller-bar-content">

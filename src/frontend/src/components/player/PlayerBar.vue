@@ -1,7 +1,8 @@
 <template>
     <div v-if="hasVideoPlaying" class="player-container" :class="{'expanded': !collapsed}">
         <div :class="{ 'video-collapsed': collapsed, 'video-expanded': !collapsed }">
-            <div v-if="!collapsed" class="top-video-bar" :class="{ 'faded': hasFaded }">
+            <div v-if="!collapsed" class="top-video-bar" :class="{ 'faded': hasFaded }" @mouseenter="enterPlayerControl"
+                 @mouseleave="leavePlayerControl">
                 <v-row no-gutters justify="space-between" align="center" class="fill-height px-3">
                     <v-btn icon @click="collapse">
                         <v-icon>keyboard_arrow_down</v-icon>
@@ -22,7 +23,8 @@
         </div>
         <controller-bar :collapsed="collapsed" :playing="playing" :seek-progress="seekProgress" :duration="duration"
                         :current-time="currentTime" :volume="volume" @expand="expand" @togglePlaylist="togglePlaylist"
-                        @playPauseVideo="playPauseVideo" @scrubb="scrubb" :class="{ 'faded': hasFaded }"/>
+                        @playPauseVideo="playPauseVideo" @scrubb="scrubb" :class="{ 'faded': hasFaded }"
+                        @mouseenter="enterPlayerControl" @mouseleave="leavePlayerControl"/>
     </div>
 </template>
 
@@ -52,7 +54,8 @@
                 keyListener: null,
                 mouseListener: null,
                 fadeTimeout: null,
-                hasFaded: false
+                hasFaded: false,
+                isOverControl: false
             }
         },
         computed: {
@@ -67,7 +70,7 @@
                 return (100 / this.duration) * this.currentTime;
             },
             canFade() {
-                return this.currentVideo != null && !this.collapsed && this.playing;
+                return this.currentVideo != null && !this.collapsed && this.playing && !this.showPlaylist && !this.isOverControl;
             }
         },
         watch: {
@@ -138,6 +141,12 @@
             unmountListener() {
                 document.removeEventListener('keyup', this.keyListener)
                 document.removeEventListener('mousemove', this.mouseListener);
+            },
+            enterPlayerControl() {
+                this.isOverControl = true;
+            },
+            leavePlayerControl() {
+                this.isOverControl = false;
             },
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
             ...mapMutations('player', ['updateVolume']),
