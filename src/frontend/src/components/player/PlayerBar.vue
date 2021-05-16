@@ -17,7 +17,7 @@
                 <play-queue/>
             </div>
             <video :src="videoUrl" ref="videoPlayer" @play="playing = true" @pause="playing = false" width="100%"
-                   height="100%" autoplay @ended="onVideoFinished"
+                   height="100%" autoplay @ended="onVideoFinished" @playing="onVideoStarted"
                    @loadedmetadata="onVideoLoaded" @timeupdate="refreshCurrentTime" @click="playPauseVideo"
                    preload="auto"></video>
         </div>
@@ -55,7 +55,8 @@
                 mouseListener: null,
                 fadeTimeout: null,
                 hasFaded: false,
-                isOverControl: false
+                isOverControl: false,
+                hasVideoStarted: false
             }
         },
         computed: {
@@ -88,6 +89,7 @@
                 }
             },
             currentVideoId(newValue) {
+                this.hasVideoStarted = false;
                 if(newValue > 0) {
                     this.loadVideos([newValue]);
                 }
@@ -183,6 +185,12 @@
                 this.showPlaylist = !this.showPlaylist;
                 if(this.showPlaylist) {
                     this.collapsed = false;
+                }
+            },
+            onVideoStarted() {
+                if(!this.hasVideoStarted) {
+                    this.hasVideoStarted = true;
+                    events.watchStartEvent(this.currentVideoId);
                 }
             },
             onVideoFinished() {
