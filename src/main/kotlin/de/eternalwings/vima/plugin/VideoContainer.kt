@@ -20,8 +20,11 @@ class VideoContainer(
 
     fun <T> updateMetadata(id: Int, value: T?) {
         val metadata = this.metadata[id] ?: throw IllegalStateException("No such metadata with id $id")
-        (metadata as MetadataValue<T>).value = value
-        markChanged(id)
+        val originalMetadataValue = metadata as MetadataValue<T>
+        if(originalMetadataValue.value != value) {
+            originalMetadataValue.value = value
+            markChanged(id)
+        }
     }
 
     fun <T> getMetadataValue(id: Int): T? {
@@ -31,7 +34,10 @@ class VideoContainer(
 
     companion object {
         fun fromVideo(video: Video): VideoContainer {
-            return VideoContainer(video.id!!, video.name!!, video.location!!, HashMap(video.metadata!!))
+            val metadata = video.metadata!!.map { entry ->
+                entry.key to entry.value.clone()
+            }.toMap()
+            return VideoContainer(video.id!!, video.name!!, video.location!!, metadata)
         }
     }
 }

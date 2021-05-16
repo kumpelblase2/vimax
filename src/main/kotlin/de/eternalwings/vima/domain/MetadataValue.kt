@@ -39,24 +39,67 @@ sealed class MetadataValue<T> {
     override fun hashCode(): Int {
         return value.hashCode()
     }
+
+    abstract fun clone(): MetadataValue<T>
 }
 
-data class StringMetadataValue(override var value: String? = null) : MetadataValue<String>()
+data class StringMetadataValue(override var value: String? = null) : MetadataValue<String>() {
+    override fun clone(): MetadataValue<String> {
+        return StringMetadataValue(value)
+    }
+}
 
-data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<Int>()
+data class NumberMetadataValue(override var value: Int? = null) : MetadataValue<Int>() {
+    override fun clone(): MetadataValue<Int> {
+        return NumberMetadataValue(value)
+    }
+}
 
-data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>()
+data class TimestampMetadataValue(override var value: LocalDateTime? = LocalDateTime.now()) : MetadataValue<LocalDateTime>() {
+    override fun clone(): MetadataValue<LocalDateTime> {
+        return TimestampMetadataValue(value)
+    }
+}
 
-data class TaglistMetadataValue(override var value: Set<String>? = emptySet()) : MetadataValue<Set<String>>()
+data class TaglistMetadataValue(override var value: Set<String>? = emptySet()) : MetadataValue<Set<String>>() {
+    override fun clone(): MetadataValue<Set<String>> {
+        return TaglistMetadataValue(value)
+    }
+}
 
-data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>()
+data class DateMetadataValue(override var value: LocalDate? = LocalDate.now()) : MetadataValue<LocalDate>() {
+    override fun clone(): MetadataValue<LocalDate> {
+        return DateMetadataValue(value)
+    }
+}
 
-data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) : MetadataValue<Duration>()
+data class DurationMetadataValue(override var value: Duration? = Duration.ZERO) : MetadataValue<Duration>() {
+    override fun clone(): MetadataValue<Duration> {
+        return DurationMetadataValue(value)
+    }
+}
 
-data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>()
+data class BooleanMetadataValue(override var value: Boolean? = false) : MetadataValue<Boolean>() {
+    override fun clone(): MetadataValue<Boolean> {
+        return BooleanMetadataValue(value)
+    }
+}
 
-data class SelectionMetadataValue(override var value: Int? = null) : MetadataValue<Int>()
+data class SelectionMetadataValue(override var value: Int? = null) : MetadataValue<Int>() {
+    override fun clone(): MetadataValue<Int> {
+        return SelectionMetadataValue(value)
+    }
+}
 
-data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>()
+data class FloatMetadataValue(override var value: Double? = null) : MetadataValue<Double>() {
+    override fun clone(): MetadataValue<Double> {
+        return FloatMetadataValue(value)
+    }
+}
 
-data class TimeMetadataValue(override var value: LocalTime? = null) : MetadataValue<LocalTime>()
+data class TimeMetadataValue(override var value: LocalTime? = null) : MetadataValue<LocalTime>() {
+    override fun clone(): MetadataValue<LocalTime> {
+        return TimeMetadataValue(value)
+    }
+}
+
