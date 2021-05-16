@@ -57,7 +57,7 @@ class VideoProcess(private val videoRepository: VideoRepository,
     }
 
     @Transactional
-    fun updateVideo(video: Video) : Video {
+    fun updateVideoFromUser(video: Video) : Video {
         val existing = videoRepository.findById(video.id!!).orElseThrow { EntityNotFoundException() }
         val metadata = metadataRepository.findAll()
         this.assignNewValuesToVideo(existing, video, metadata)
@@ -68,7 +68,7 @@ class VideoProcess(private val videoRepository: VideoRepository,
     }
 
     @Transactional
-    fun updateVideos(videos: List<Video>) : List<Video> {
+    fun updateVideosFromUser(videos: List<Video>) : List<Video> {
         val existingVideos = videoRepository.findAllById(videos.map { it.id!! })
         val metadata = metadataRepository.findAll()
         existingVideos.forEach { old ->
@@ -94,7 +94,7 @@ class VideoProcess(private val videoRepository: VideoRepository,
         existing.name = newVideo.name
         newVideo.metadata?.forEach { (metadataId, value) ->
             val definition = metadata.find { it.id == metadataId } ?: return@forEach
-            if (!definition.isSystemSpecified) { // Only update non-system metadata
+            if (!definition.readOnly) { // Only update non-system metadata
                 val existingValue = existing.metadata?.get(metadataId) ?: throw IllegalStateException("Missing metadata")
                 @Suppress("UNCHECKED_CAST") // Can't do it without the cast :(
                 (existingValue as MetadataValue<Any>).value = value.value

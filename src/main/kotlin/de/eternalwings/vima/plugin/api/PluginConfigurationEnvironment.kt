@@ -46,9 +46,14 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
         }
     }
 
-    private fun <T, S> createMetadata(name: String, order: Direction, options: MetadataOptions<T, S>): MetadataRef<S> {
+    private fun <T, S> createMetadata(
+        name: String,
+        order: Direction,
+        options: MetadataOptions<T, S>,
+        editable: Boolean = false
+    ): MetadataRef<S> {
         checkConfigurable()
-        val ref = OwnedMetadataRef(name, order, options)
+        val ref = OwnedMetadataRef(name, order, options, editable)
         metadata.add(ref)
         return ref
     }
@@ -60,24 +65,29 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
         return ref
     }
 
-    fun number(name: String, order: Direction, defaultValue: Int): MetadataRef<Int> {
-        return createMetadata(name, order, NumberMetadataOptions().also { it.defaultValue = defaultValue })
+    fun number(name: String, order: Direction, defaultValue: Int, editable: Boolean = false): MetadataRef<Int> {
+        return createMetadata(name, order, NumberMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun numberRef(name: String): MetadataRef<Int> {
         return createSharedMetadata(name)
     }
 
-    fun text(name: String, order: Direction, defaultValue: String): MetadataRef<String> {
-        return createMetadata(name, order, TextMetadataOptions().also { it.defaultValue = defaultValue })
+    fun text(name: String, order: Direction, defaultValue: String, editable: Boolean = false): MetadataRef<String> {
+        return createMetadata(name, order, TextMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun textRef(name: String): MetadataRef<Int> {
         return createSharedMetadata(name)
     }
 
-    fun taglist(name: String, order: Direction, defaultValue: Set<String> = emptySet()): MetadataRef<Set<String>> {
-        return createMetadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue })
+    fun taglist(
+        name: String,
+        order: Direction,
+        defaultValue: Set<String> = emptySet(),
+        editable: Boolean = false
+    ): MetadataRef<Set<String>> {
+        return createMetadata(name, order, TaglistMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun taglistRef(name: String): MetadataRef<Set<String>> {
@@ -88,33 +98,34 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
         name: String,
         order: Direction,
         values: List<SelectionValue>,
-        defaultValue: SelectionValue
+        defaultValue: SelectionValue,
+        editable: Boolean = false
     ): MetadataRef<Int> {
-        return createMetadata(name, order, SelectionMetadataOptions(values).also { it.defaultValue = defaultValue })
+        return createMetadata(name, order, SelectionMetadataOptions(values).also { it.defaultValue = defaultValue }, editable)
     }
 
     fun selectionRef(name: String): MetadataRef<Int> {
         return createSharedMetadata(name)
     }
 
-    fun duration(name: String, order: Direction, defaultValue: Duration): MetadataRef<Duration> {
-        return createMetadata(name, order, DurationMetadataOptions().also { it.defaultValue = defaultValue })
+    fun duration(name: String, order: Direction, defaultValue: Duration, editable: Boolean = false): MetadataRef<Duration> {
+        return createMetadata(name, order, DurationMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun durationRef(name: String): MetadataRef<Duration> {
         return createSharedMetadata(name)
     }
 
-    fun switch(name: String, order: Direction, defaultValue: Boolean): MetadataRef<Boolean> {
-        return createMetadata(name, order, BooleanMetadataOptions().also { it.defaultValue = defaultValue })
+    fun switch(name: String, order: Direction, defaultValue: Boolean, editable: Boolean = false): MetadataRef<Boolean> {
+        return createMetadata(name, order, BooleanMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun switchRef(name: String): MetadataRef<Boolean> {
         return createSharedMetadata(name)
     }
 
-    fun float(name: String, order: Direction, defaultValue: Double): MetadataRef<Double> {
-        return createMetadata(name, order, FloatMetadataOptions().also { it.defaultValue = defaultValue })
+    fun float(name: String, order: Direction, defaultValue: Double, editable: Boolean = false): MetadataRef<Double> {
+        return createMetadata(name, order, FloatMetadataOptions().also { it.defaultValue = defaultValue }, editable)
     }
 
     fun floatRef(name: String): MetadataRef<Double> {
@@ -127,9 +138,10 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
         defaultValue: Int,
         min: Int? = null,
         max: Int? = null,
-        step: Int? = null
+        step: Int? = null,
+        editable: Boolean = false
     ): MetadataRef<Int> {
-        return createMetadata(name, order, RangeMetadataOptions(min, max, step).also { it.defaultValue = defaultValue })
+        return createMetadata(name, order, RangeMetadataOptions(min, max, step).also { it.defaultValue = defaultValue }, editable)
     }
 
     private fun addHandler(eventType: EventType, priority: PluginPriority, handler: VideoHandlerCall) {

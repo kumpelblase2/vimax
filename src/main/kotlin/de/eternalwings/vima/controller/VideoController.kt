@@ -103,7 +103,7 @@ class VideoController(private val videoRepository: VideoRepository,
     @Transactional
     @PutMapping("/video/{id}")
     fun updateVideo(@RequestBody newVideo: Video, @PathVariable("id") id: Int): Video {
-        return videoProcess.updateVideo(newVideo)
+        return videoProcess.updateVideoFromUser(newVideo)
     }
 
     @Transactional
@@ -131,7 +131,7 @@ class VideoController(private val videoRepository: VideoRepository,
                 }
             }
         }
-        return videoProcess.updateVideos(videos)
+        return videoProcess.updateVideosFromUser(videos)
     }
 
     @PostMapping("/video/{id}/refresh")

@@ -49,6 +49,7 @@ class PluginManager(
                     }
                     existing.ordering = metadataRef.ordering
                     existing.options = metadataRef.options
+                    existing.readOnly = !metadataRef.editable
                     val updated = metadataProcess.createOrUpdate(existing)
                     metadataRef.assignId(updated.id!!)
                 } else {
@@ -60,7 +61,7 @@ class PluginManager(
                         name = metadataRef.name,
                         type = metadataRef.options.type,
                         ordering = metadataRef.ordering,
-                        readOnly = true,
+                        readOnly = !metadataRef.editable,
                         owner = pluginInformation,
                         options = metadataRef.options
                     )

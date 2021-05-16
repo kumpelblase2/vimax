@@ -25,7 +25,12 @@ sealed class MetadataRef<T>(val name: String) {
         this.internalId = null
     }
 
-    class OwnedMetadataRef<T, S>(name: String, val ordering: Direction, val options: MetadataOptions<T, S>) :
+    class OwnedMetadataRef<T, S>(
+        name: String,
+        val ordering: Direction,
+        val options: MetadataOptions<T, S>,
+        val editable: Boolean = true
+    ) :
         MetadataRef<S>(name) {
     }
 

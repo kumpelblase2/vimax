@@ -29,6 +29,7 @@ export default {
             { text: 'Type', value: 'type', sortable: false },
             { text: 'Default Value', values: 'defaultValue', sortable: false },
             { text: 'Owner', value: 'owner', sortable: false },
+            { text: 'Read Only', value: 'readOnly', sortable: false },
             { text: 'Actions', value: 'actions', sortable: false, width: 150 }
         ],
         editingItem: {
@@ -55,7 +56,7 @@ export default {
             return [...state.metadata].sort((first, second) => first.displayOrder - second.displayOrder);
         },
         editableMetadata(state) {
-            return state.metadata.filter(metadata => metadata.owner == null).sort((first, second) => first.displayOrder - second.displayOrder)
+            return state.metadata.filter(metadata => !metadata.readOnly).sort((first, second) => first.displayOrder - second.displayOrder)
         },
         visibleMetadata(state) {
             return state.visibleMetadatas;
