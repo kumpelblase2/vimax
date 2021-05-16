@@ -152,7 +152,8 @@
             },
             ...mapActions('player', ['clear', 'nextVideo', 'previousVideo']),
             ...mapMutations('player', ['updateVolume']),
-            ...mapActions('videos', ['reloadVideo', 'loadVideos']),
+            ...mapMutations('videos', ['addOrUpdateVideo']),
+            ...mapActions('videos', ['loadVideos']),
             playPauseVideo() {
                 if(this.playing) {
                     this.$refs.videoPlayer.pause();
@@ -190,11 +191,19 @@
             onVideoStarted() {
                 if(!this.hasVideoStarted) {
                     this.hasVideoStarted = true;
-                    events.watchStartEvent(this.currentVideoId);
+                    events.watchStartEvent(this.currentVideoId).then(video => {
+                        if(video) {
+                            this.addOrUpdateVideo(video);
+                        }
+                    });
                 }
             },
             onVideoFinished() {
-                events.watchFinishEvent(this.currentVideoId).then(() => this.reloadVideo(this.currentVideoId));
+                events.watchFinishEvent(this.currentVideoId).then(video => {
+                    if(video) {
+                        this.addOrUpdateVideo(video);
+                    }
+                });
                 if(this.hasNext) {
                     this.nextVideo();
                 } else {

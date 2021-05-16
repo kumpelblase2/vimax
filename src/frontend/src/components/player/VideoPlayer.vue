@@ -26,7 +26,7 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
     import { getSelectedThumbnailURLForVideo, getStreamURLForVideo } from "../../video";
     import videojs from 'video.js';
     import events from '../../api/event';
@@ -100,8 +100,8 @@
             }
         },
         methods: {
-            ...mapActions('videos', ['reloadVideo']),
             ...mapActions('player', ['nextVideo', 'removeVideo', 'skipToVideo']),
+            ...mapMutations('videos', ['addOrUpdateVideo']),
             refreshCurrentVideo() {
                 this.player.src([
                     {
@@ -115,14 +115,22 @@
             },
             onVideoFinished() {
                 if(!this.disableEvents) {
-                    events.watchFinishEvent(this.currentVideo.id).then(() => this.reloadVideo(this.currentVideo.id));
+                    events.watchFinishEvent(this.currentVideo.id).then(video => {
+                        if(video) {
+                            this.addOrUpdateVideo(video);
+                        }
+                    });
                 }
                 this.nextVideo();
             },
             onVideoStarted() {
                 if(!this.disableEvents && !this.hasStarted) {
                     this.hasStarted = true;
-                    events.watchStartEvent(this.currentVideo.id).then(() => this.reloadVideo(this.currentVideo.id));
+                    events.watchStartEvent(this.currentVideo.id).then(video => {
+                        if(video) {
+                            this.addOrUpdateVideo(video);
+                        }
+                    });
                 }
             },
             _thumbnailForVideo(video) {

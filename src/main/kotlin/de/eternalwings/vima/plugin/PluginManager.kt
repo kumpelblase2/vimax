@@ -83,12 +83,12 @@ class PluginManager(
         pluginConfig.allMetadata.forEach { it.resetId() }
     }
 
-    fun callEvent(eventType: EventType, video: Video) {
-        callEvent(eventType, listOf(video))
+    fun callEvent(eventType: EventType, video: Video): Boolean {
+        return callEvent(eventType, listOf(video)).isNotEmpty()
     }
 
-    fun callEvent(eventType: EventType, videos: List<Video>) {
-        enabledPlugins.forEach { it.config.callHandlerFor(eventType, videos) }
+    fun callEvent(eventType: EventType, videos: List<Video>): Set<Int> {
+        return enabledPlugins.map { it.config.callHandlerFor(eventType, videos) }.reduce { acc, set -> acc + set }
     }
 
     fun disablePlugin(name: String) {

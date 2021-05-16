@@ -8,6 +8,16 @@ export default {
         return this.publishEvent(id, 'FINISH_WATCHING');
     },
     publishEvent(videoId, event) {
-        return axios.post(`/api/event?type=${event}&video=${videoId}`).then(response => response.data);
+        return axios.post(`/api/event?type=${event}&video=${videoId}`, {}, {
+            validateStatus(value) {
+                return value === 200 || value === 304;
+            }
+        }).then(res => {
+            if(res.status === 200) {
+                return res.data;
+            } else {
+                return null;
+            }
+        });
     }
 };
