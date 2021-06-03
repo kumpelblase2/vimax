@@ -10,6 +10,8 @@ import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.use
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.literalToken
+import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 
 object QueryParser : Grammar<FullQuery>() {
@@ -23,20 +25,20 @@ object QueryParser : Grammar<FullQuery>() {
     }
 
     // Base tokens
-    val plus by token("\\+")
-    val minus by token("-")
-    val colon by token(":")
-    val smaller by token("<")
-    val larger by token(">")
-    val equals by token("=")
-    val like by token("~")
-    val AND by token("AND|and")
-    val OR by token("OR|or")
-    val openBrace by token("\\(")
-    val closeBrace by token("\\)")
-    val word by token("\\w+")
-    val ws by token("\\s+")
-    val quoteString by token("\"[^\"]*\"")
+    val plus by regexToken("\\+")
+    val minus by literalToken("-")
+    val colon by literalToken(":")
+    val smaller by literalToken("<")
+    val larger by literalToken(">")
+    val equals by literalToken("=")
+    val like by literalToken("~")
+    val AND by regexToken("AND|and")
+    val OR by regexToken("OR|or")
+    val openBrace by regexToken("\\(")
+    val closeBrace by regexToken("\\)")
+    val word by regexToken("\\w+")
+    val ws by regexToken("\\s+")
+    val quoteString by regexToken("\"[^\"]*\"")
 
     val value by (quoteString.map { it.text.unquote() } or word.map { it.text })
 

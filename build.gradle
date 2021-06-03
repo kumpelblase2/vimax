@@ -29,8 +29,7 @@ compileTestKotlin {
 repositories {
 	mavenCentral()
 	maven { url "https://repo.spring.io/milestone" }
-    maven { url "https://dl.bintray.com/hotkeytlt/maven" }
-    maven { url "https://dl.bintray.com/s1m0nw1/KtsRunner" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -42,9 +41,9 @@ dependencies {
     implementation("net.bramp.ffmpeg:ffmpeg:0.6.2")
     implementation("org.flywaydb:flyway-core:7.4.0")
     implementation("com.vladmihalcea:hibernate-types-52:2.4.2")
-    implementation("com.github.h0tk3y.betterParse:better-parse-jvm:0.4.0-alpha-3")
+    implementation("com.github.h0tk3y.betterParse:better-parse-jvm:0.4.2")
     implementation("org.xerial:sqlite-jdbc:3.27.2.1")
-    implementation("de.swirtz:ktsRunner:0.0.9")
+    implementation("com.github.s1monw1:KtsRunner:0.0.9")
     implementation("org.jobrunr:jobrunr-spring-boot-starter:1.2.3")
     implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.4.21")
     runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.4.21")
