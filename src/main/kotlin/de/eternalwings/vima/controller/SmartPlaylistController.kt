@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.ASC
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.transaction.Transactional
 
 data class SmartPlaylistCreateInformation(val name: String, val query: String, val orderDirection: Sort.Direction,
                                           val orderBy: String)
@@ -39,8 +39,8 @@ class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylist
         return videoSearcher.search(playlist.query!!, playlist.orderBy!!, playlist.orderDirection ?: ASC)
     }
 
-    @PutMapping("/{id}")
     @Transactional
+    @PutMapping("/{id}")
     fun updatePlaylist(@PathVariable id: Int, @RequestBody playlist: SmartPlaylistCreateInformation): SmartPlaylist {
         val existing = smartPlaylistRepository.getOne(id)
         existing.name = playlist.name

@@ -12,11 +12,11 @@ import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.persistence.EntityNotFoundException
-import javax.transaction.Transactional
 
 @Component
 class VideoProcess(private val videoRepository: VideoRepository,
@@ -25,6 +25,8 @@ class VideoProcess(private val videoRepository: VideoRepository,
                    private val pluginManager: PluginManager,
                    private val metadataRepository: MetadataRepository,
                    private val applicationEventPublisher: ApplicationEventPublisher) {
+
+    @Transactional
     fun deleteAllVideosInLibrary(library: Library, deleteThumbnails: Boolean = false) {
         val videosToDelete = videoRepository.findByLibrary(library)
         if (deleteThumbnails) {

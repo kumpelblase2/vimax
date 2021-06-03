@@ -7,6 +7,7 @@ import de.eternalwings.vima.repository.PlaylistRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.persistence.EntityNotFoundException
-import javax.transaction.Transactional
 
 data class PlaylistCreateInformation(val name: String, val videoIds: List<Int>)
 

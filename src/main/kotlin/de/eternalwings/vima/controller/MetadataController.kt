@@ -9,6 +9,7 @@ import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.process.MetadataProcess
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.transaction.Transactional
 import kotlin.math.max
 import kotlin.math.min
 
@@ -29,8 +29,8 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     @GetMapping("/metadata")
     fun getAll(): List<Metadata> = metadataRepository.findAll()
 
-    @PostMapping("/metadata")
     @Transactional
+    @PostMapping("/metadata")
     fun createOrUpdateMetadata(@RequestBody metadata: Metadata): Metadata {
         if(metadata.isSystemSpecified) throw IllegalArgumentException("Cannot update system metadata.")
         return metadataProcess.createOrUpdate(metadata)

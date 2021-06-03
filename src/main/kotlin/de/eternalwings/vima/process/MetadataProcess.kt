@@ -9,8 +9,8 @@ import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityNotFoundException
-import javax.transaction.Transactional
 
 @Component
 class MetadataProcess(
