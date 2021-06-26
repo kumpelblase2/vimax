@@ -37,7 +37,7 @@
                 return ['lg', 'xl'].includes(this.$vuetify.breakpoint.name);
             },
             icon() {
-                if(this.searchQuery == this.query) {
+                if(this.searchQuery == this.queryValue) {
                     return "refresh";
                 } else {
                     return "search";
