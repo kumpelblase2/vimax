@@ -21,8 +21,8 @@
             <v-divider/>
             <v-card-actions>
                 <v-spacer/>
-                <v-btn @click="save">Save</v-btn>
                 <v-btn @click="close">Cancel</v-btn>
+                <v-btn color="primary" @click="save">Save</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

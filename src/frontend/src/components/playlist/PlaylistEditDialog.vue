@@ -11,8 +11,8 @@
 
             <v-card-actions>
                 <v-spacer/>
-                <v-btn text @click="cancel">Cancel</v-btn>
-                <v-btn color="primary darken-1" text @click="save">Save</v-btn>
+                <v-btn @click="cancel">Cancel</v-btn>
+                <v-btn color="primary darken-1" @click="save">Save</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
