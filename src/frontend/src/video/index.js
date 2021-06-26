@@ -4,7 +4,7 @@ export function getSelectedThumbnailURLForVideo(video) {
 
 export function getThumbnailURL(thumbnail) {
     if(thumbnail == null) return "";
-    return `/api/video/thumbnail/${thumbnail.id}`;
+    return `/api/video/thumbnail/${thumbnail}`;
 }
 
 export function getStreamURLForVideo(video) {

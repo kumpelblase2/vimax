@@ -28,11 +28,13 @@ data class SmartPlaylistCreateInformation(val name: String, val query: String, v
 class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylistRepository,
                               private val videoSearcher: VideoSearcher, private val videoRepository: VideoRepository,
                               private val collageCreator: CollageCreator) {
+    @Transactional(readOnly = true)
     @GetMapping
     fun getAll(): List<SmartPlaylist> {
         return smartPlaylistRepository.findAll()
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/{id}")
     fun getVideosOf(@PathVariable id: Int): List<Int> {
         val playlist = smartPlaylistRepository.getOne(id)
@@ -50,6 +52,7 @@ class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylist
         return smartPlaylistRepository.save(existing)
     }
 
+    @Transactional
     @PostMapping
     fun createSmartPlaylist(@RequestBody information: SmartPlaylistCreateInformation): SmartPlaylist {
         val playlist = SmartPlaylist(information.name, information.query, information.orderBy, information.orderDirection)
@@ -62,6 +65,7 @@ class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylist
         smartPlaylistRepository.deleteById(playlistId)
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/{id}/poster", produces = [MediaType.IMAGE_PNG_VALUE])
     fun createPoster(@PathVariable("id") playlistId: Int, @RequestParam("width", defaultValue = "320") width: Int, @RequestParam
     ("height", defaultValue = "180") height: Int):

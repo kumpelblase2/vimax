@@ -7,6 +7,7 @@ import de.eternalwings.vima.process.VideoLoader
 import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.repository.LibraryRepository
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,6 +27,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
                         private val videoProcess: VideoProcess,
                         private val eventPublisher: ApplicationEventPublisher) {
 
+    @Transactional(readOnly = true)
     @PostMapping
     fun saveLibrary(@RequestBody library: Library): Library {
         val path = Paths.get(library.path)
@@ -56,9 +58,11 @@ class LibraryController(private val libraryRepository: LibraryRepository,
         }
     }
 
+    @Transactional(readOnly = true)
     @GetMapping
     fun getLibraries(): List<Library> = libraryRepository.findAll()
 
+    @Transactional
     @DeleteMapping("/{id}")
     fun deleteLibrary(@PathVariable("id") id: Int,
                       @RequestParam("delete_thumbnails", required = false, defaultValue = "false")
@@ -75,6 +79,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
         videoLoader.scanAllLibraries()
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/scan/{id}")
     fun scanDirectory(@PathVariable("id") libraryId: Int) {
         val library = libraryRepository.findById(libraryId).orElseThrow { EntityNotFoundException() }

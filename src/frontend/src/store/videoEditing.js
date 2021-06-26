@@ -65,8 +65,8 @@ export default {
         },
         async refreshThumbnails({ commit, state }) {
             const newThumbnails = await videoApi.refreshThumbnails(state.editingVideo);
-            commit('videos/updateThumbnail', { videoId: state.editingVideo.id, thumbnails: newThumbnails }, { root: true });
-            commit('updateEditingThumbnails', newThumbnails);
+            commit('videos/updateThumbnail', { videoId: state.editingVideo.id, thumbnails: newThumbnails.map(thumb => thumb.id) }, { root: true });
+            commit('updateEditingThumbnails', newThumbnails.map(thumb => thumb.id));
         },
         async saveMultiVideoEdit({ commit, getters, state, rootGetters }, metadataToSave) {
             const newValues = { };

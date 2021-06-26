@@ -4,6 +4,7 @@ import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.TaglistMetadataValue
 import de.eternalwings.vima.domain.Thumbnail
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.dto.VideoDTO
 import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.query.VideoSearcher
 import de.eternalwings.vima.repository.ThumbnailRepository
@@ -41,33 +42,42 @@ data class MultiVideoChangeInformation(val videoIds: List<Int>, val newValues: M
 
 @RestController
 @RequestMapping("/api")
-class VideoController(private val videoRepository: VideoRepository,
-                      private val thumbnailRepository: ThumbnailRepository,
-                      private val videoProcess: VideoProcess,
-                      private val videoSearcher: VideoSearcher,
-                      transactionManager: PlatformTransactionManager) {
+class VideoController(
+    private val videoRepository: VideoRepository,
+    private val thumbnailRepository: ThumbnailRepository,
+    private val videoProcess: VideoProcess,
+    private val videoSearcher: VideoSearcher,
+    transactionManager: PlatformTransactionManager
+) {
 
     private val transactionTemplate = TransactionTemplate(transactionManager)
 
+    @Transactional(readOnly = true)
     @GetMapping("/videos")
-    fun getVideos(@RequestParam("query", required = false, defaultValue = "") query: String,
-                  @RequestParam("sortby", required = false, defaultValue = "name") sortProperty: String,
-                  @RequestParam("sortdir", required = false) sortDirection: Direction?): List<Int> {
+    fun getVideos(
+        @RequestParam("query", required = false, defaultValue = "") query: String,
+        @RequestParam("sortby", required = false, defaultValue = "name") sortProperty: String,
+        @RequestParam("sortdir", required = false) sortDirection: Direction?
+    ): List<Int> {
         return videoSearcher.search(query, sortProperty, sortDirection ?: ASC)
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/videos/byid")
-    fun getVideosById(@RequestParam("ids", required = true) ids: List<Int>): List<Video> {
-        return videoRepository.findAllById(ids)
+    fun getVideosById(@RequestParam("ids", required = true) ids: List<Int>): List<VideoDTO> {
+        return videoRepository.findAllById(ids).map { VideoDTO.fromVideo(it) }
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/home")
-    fun getRecentVideos(): List<Video> {
+    fun getRecentVideos(): List<VideoDTO> {
         return videoRepository.findAllByOrderByCreationTimeDesc(PageRequest.of(0, 10)).content
+            .map { VideoDTO.fromVideo(it) }
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/video/{id}")
-    fun getVideo(@PathVariable("id") id: Int) = videoRepository.getOne(id)
+    fun getVideo(@PathVariable("id") id: Int) = VideoDTO.fromVideo(videoRepository.getOne(id))
 
     @GetMapping("/video/{id}/stream")
     @Cacheable(cacheNames = ["streams"], key = "#id")
@@ -81,6 +91,7 @@ class VideoController(private val videoRepository: VideoRepository,
             .body(FileSystemResource(information.location))
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/video/{id}/thumbnails")
     fun thumbnails(@PathVariable("id") id: Int): List<Int> {
         return videoRepository.findById(id).map { it.thumbnails }.orElse(Collections.emptyList())
@@ -102,16 +113,22 @@ class VideoController(private val videoRepository: VideoRepository,
 
     @Transactional
     @PutMapping("/video/{id}")
-    fun updateVideo(@RequestBody newVideo: Video, @PathVariable("id") id: Int): Video {
-        return videoProcess.updateVideoFromUser(newVideo)
+    fun updateVideo(@RequestBody newVideo: VideoDTO, @PathVariable("id") id: Int): VideoDTO {
+        val updatedVideo = Video().also {
+            it.id = newVideo.id
+            it.name = newVideo.name
+            it.metadata = newVideo.metadata.toMutableMap()
+            it.selectedThumbnail = newVideo.selectedThumbnail
+        }
+        return VideoDTO.fromVideo(videoProcess.updateVideoFromUser(updatedVideo))
     }
 
     @Transactional
     @PutMapping("/videos")
-    fun updateVideos(@RequestBody changeData: MultiVideoChangeInformation): List<Video> {
+    fun updateVideos(@RequestBody changeData: MultiVideoChangeInformation): List<VideoDTO> {
         val videos = videoRepository.findAllById(changeData.videoIds)
         changeData.newValues.forEach { (id, value) ->
-            if(value is TaglistMetadataValue) {
+            if (value is TaglistMetadataValue) {
                 val tags = value.value ?: emptySet()
                 videos.forEach { video ->
                     val currentValues = video.metadata!![id] as TaglistMetadataValue
@@ -131,9 +148,10 @@ class VideoController(private val videoRepository: VideoRepository,
                 }
             }
         }
-        return videoProcess.updateVideosFromUser(videos)
+        return videoProcess.updateVideosFromUser(videos).map { VideoDTO.fromVideo(it) }
     }
 
+    @Transactional
     @PostMapping("/video/{id}/refresh")
     fun refreshThumbnails(@PathVariable("id") videoId: Int): List<Thumbnail> {
         val video = videoRepository.findById(videoId).orElseThrow { EntityNotFoundException() }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/plugin")
 class PluginController(private val pluginRepository: PluginInformationRepository, private val pluginManager: PluginManager) {
 
+    @Transactional(readOnly = true)
     @GetMapping
     fun getAllPlugins(): List<PluginInformation> {
         return pluginRepository.findAll()

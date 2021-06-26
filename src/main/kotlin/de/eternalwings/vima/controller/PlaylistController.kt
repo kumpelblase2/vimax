@@ -34,11 +34,14 @@ data class PlaylistInformation(val id: Int, val name: String, val videoIds: List
 @RequestMapping("/api/playlists")
 class PlaylistController(private val playlistRepository: PlaylistRepository, private val videoRepository: VideoRepository,
                          private val collageCreator: CollageCreator) {
+
+    @Transactional(readOnly = true)
     @GetMapping
     fun getAll(): List<PlaylistInformation> {
         return playlistRepository.findAll().map { PlaylistInformation.from(it) }
     }
 
+    @Transactional
     @PostMapping
     fun createPlaylist(@RequestBody playlist: PlaylistCreateInformation): PlaylistInformation {
         val newPlaylist = Playlist(playlist.name)
@@ -72,6 +75,7 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         return Companion.from(playlistRepository.getOne(playlistId))
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") playlistId: Int) {
         playlistRepository.deleteById(playlistId)
@@ -87,6 +91,7 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         return Companion.from(playlistRepository.save(playlist))
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/{id}/poster", produces = [MediaType.IMAGE_PNG_VALUE])
     fun createPoster(@PathVariable("id") playlistId: Int, @RequestParam("width", defaultValue = "320") width: Int, @RequestParam
     ("height", defaultValue = "180") height: Int):

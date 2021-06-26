@@ -6,6 +6,7 @@ import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.SelectionMetadataOptions
+import de.eternalwings.vima.dto.MetadataDTO
 import de.eternalwings.vima.process.MetadataProcess
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
@@ -26,14 +27,16 @@ import kotlin.math.min
 class MetadataController(private val metadataRepository: MetadataRepository,
                          private val videoRepository: VideoRepository,
                          private val metadataProcess: MetadataProcess) {
+
+    @Transactional(readOnly = true)
     @GetMapping("/metadata")
-    fun getAll(): List<Metadata> = metadataRepository.findAll()
+    fun getAll(): List<MetadataDTO> = metadataRepository.findAll().map { MetadataDTO.fromMetadata(it) }
 
     @Transactional
     @PostMapping("/metadata")
-    fun createOrUpdateMetadata(@RequestBody metadata: Metadata): Metadata {
+    fun createOrUpdateMetadata(@RequestBody metadata: Metadata): MetadataDTO {
         if(metadata.isSystemSpecified) throw IllegalArgumentException("Cannot update system metadata.")
-        return metadataProcess.createOrUpdate(metadata)
+        return MetadataDTO.fromMetadata(metadataProcess.createOrUpdate(metadata))
     }
 
     @DeleteMapping("/metadata/{id}")
@@ -56,7 +59,7 @@ class MetadataController(private val metadataRepository: MetadataRepository,
 
     @Transactional
     @PutMapping("/metadata/{id}/insertAt/{pos}")
-    fun moveMetadataUp(@PathVariable("id") id: Int, @PathVariable("pos") target: Int): List<Metadata> {
+    fun moveMetadataUp(@PathVariable("id") id: Int, @PathVariable("pos") target: Int): List<MetadataDTO> {
         val metadata = metadataRepository.findAll().sortedBy { it.displayOrder }
         val targetPosition = min(metadata.size - 1, max(0, target))
         val currentIndex = metadata.indexOfFirst { it.id == id }
@@ -72,6 +75,6 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         metadataToMove.displayOrder = currentTargetOrder
         val saved = metadataRepository.saveAll(affectedMetadata)
         val selfSaved = metadataRepository.save(metadataToMove)
-        return saved + selfSaved
+        return (saved + selfSaved).map { MetadataDTO.fromMetadata(it) }
     }
 }
