@@ -10,10 +10,10 @@
             </v-btn>
         </v-row>
         <v-row v-if="currentVideo" class="fill-height">
-            <v-col class="pa-0" xs6>
+            <v-col class="pa-0" xs6 style="max-height: calc(100% - 60px)">
                 <single-video-player :autoplay="false" :disable-events="true" :video="currentVideo"/>
             </v-col>
-            <v-col xs6 class="fill-height">
+            <v-col xs6 class="fill-height" style="max-height: 100%">
                 <v-row class="px-2">
                     <v-flex grow class="pa-1"><v-btn @click="skip" block>Skip</v-btn></v-flex>
                     <v-flex grow class="pa-1"><v-btn color="primary" block @click="next">Save and Next</v-btn></v-flex>
