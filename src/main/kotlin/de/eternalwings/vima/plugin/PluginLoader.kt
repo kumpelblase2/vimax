@@ -1,11 +1,9 @@
 package de.eternalwings.vima.plugin
 
-import de.swirtz.ktsrunner.objectloader.KtsObjectLoader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
-import java.io.Reader
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -18,7 +16,7 @@ class PluginLoader(
     @Value("\${external-plugin-dir}") private val externalPluginDir: Path
 ) {
     private val matcher = FileSystems.getDefault().getPathMatcher("glob:**.kts")
-    private val scriptLoader = KtsObjectLoader(this.javaClass.classLoader)
+    private val executor = ScriptExecutor()
 
     private val externalPluginFiles: Stream<Path>
         get() {
@@ -48,13 +46,9 @@ class PluginLoader(
     fun loadPluginAt(source: PluginSource) {
         PluginRegistration.prepareRegistration(source)
         source.openInputStream().use {
-            scriptLoader.execute(it.reader())
+            executor.execute(it.reader())
         }
         PluginRegistration.cleanUpRegistration()
-    }
-
-    private fun KtsObjectLoader.execute(reader: Reader) {
-        kotlin.runCatching { engine.eval(reader) }.getOrElse { throw RuntimeException("Cannot load plugin", it) }
     }
 
     companion object {
