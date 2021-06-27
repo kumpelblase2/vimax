@@ -17,14 +17,14 @@
                 <v-col>
                     <h3>Backend</h3>
                     <span v-for="dependency in backendDependencies" :key="dependency.name">
-                        <a :href="dependency.url">{{dependency.name}}</a> | {{dependency.license}}
+                        <a :href="dependency.url" target="_blank">{{dependency.name}}</a> | {{dependency.license}}
                         <br />
                     </span>
                 </v-col>
                 <v-col>
                     <h3>Frontend</h3>
                     <span v-for="dependency in frontendDependencies" :key="dependency.name">
-                        <a :href="dependency.url">{{dependency.name}}</a> | {{dependency.license}}
+                        <a :href="dependency.url" target="_blank">{{dependency.name}}</a> | {{dependency.license}}
                         <br/>
                     </span>
                 </v-col>
@@ -113,9 +113,14 @@
             license: "Apache License, 2.0"
         },
         {
-            name: "JobRunr",
-            url: "https://github.com/jobrunr/jobrunr",
-            license: "LGPL, 3.0"
+            name: "Quartz",
+            url: "https://github.com/quartz-scheduler/quartz",
+            license: "Apache License, 2.0"
+        },
+        {
+            name: "FFmpeg Cli Wrapper",
+            url: "https://github.com/bramp/ffmpeg-cli-wrapper",
+            license: "BSD 2-clause"
         }
     ];
 

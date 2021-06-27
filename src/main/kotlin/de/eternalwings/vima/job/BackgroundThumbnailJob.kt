@@ -1,13 +1,12 @@
 package de.eternalwings.vima.job
 
-import de.eternalwings.vima.process.RunImportJobWrapper
 import de.eternalwings.vima.repository.LibraryRepository
 import de.eternalwings.vima.repository.ThumbnailRepository
 import de.eternalwings.vima.repository.VideoRepository
-import org.jobrunr.jobs.context.JobRunrDashboardLogger
-import org.jobrunr.scheduling.JobScheduler
+import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.quartz.QuartzJobBean
 import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
@@ -19,14 +18,14 @@ class BackgroundThumbnailJob(
     private val videoRepository: VideoRepository,
     private val thumbnailRepository: ThumbnailRepository,
     private val libraryRepository: LibraryRepository,
-    private val jobScheduler: JobScheduler,
+    private val backgroundJobController: BackgroundJobController,
     @Value("\${thumbnail-relative-dir:.thumbnails}") private val thumbnailsRelativePath: String,
     @Value("\${cleanup-lingering-thumbnails:false}") private val removeLingeringThumbnails: Boolean,
     @Value("\${sync-thumbnail-count:false}") private val generateToCountThumbnails: Boolean,
     @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int
-) {
+) : QuartzJobBean() {
 
-    fun execute() {
+    override fun executeInternal(context: JobExecutionContext) {
         generateThumbnailsForVideosWithout()
         if (generateToCountThumbnails) {
             generateRemainingThumbnails()
@@ -41,7 +40,7 @@ class BackgroundThumbnailJob(
             videoRepository.findVideosWithThumbnailCountNotMatching(thumbnailCount).map { it.id!! to Paths.get(it.location!!) }
         videosWithLessThumbnails.map {
             LOGGER.info("Generating more thumbnails for video id ${it.first}")
-            RunImportJobWrapper.enqueueThumbnailJob(jobScheduler, it.first, it.second)
+            backgroundJobController.scheduleThumbnailJob(it.first, it.second)
         }
     }
 
@@ -50,7 +49,7 @@ class BackgroundThumbnailJob(
             videoRepository.findVideosWithMissingThumbnails().map { it.id!! to Paths.get(it.location!!) }
         videosWithoutThumbnails.map {
             LOGGER.info("Regenerating thumbnails for video id ${it.first}")
-            RunImportJobWrapper.enqueueThumbnailJob(jobScheduler, it.first, it.second)
+            backgroundJobController.scheduleThumbnailJob(it.first, it.second)
         }
     }
 
@@ -73,6 +72,6 @@ class BackgroundThumbnailJob(
     }
 
     companion object {
-        private val LOGGER = JobRunrDashboardLogger(LoggerFactory.getLogger(BackgroundThumbnailJob::class.java))
+        private val LOGGER = LoggerFactory.getLogger(BackgroundThumbnailJob::class.java)
     }
 }

@@ -20,7 +20,7 @@ import javax.persistence.EntityNotFoundException
 
 @Component
 class VideoProcess(private val videoRepository: VideoRepository,
-                   private val thumbnailDeleter: ThumbnailDeleter,
+                   private val thumbnailProcess: ThumbnailProcess,
                    private val thumbnailCreator: VideoThumbnailCreator,
                    private val pluginManager: PluginManager,
                    private val metadataRepository: MetadataRepository,
@@ -30,14 +30,14 @@ class VideoProcess(private val videoRepository: VideoRepository,
     fun deleteAllVideosInLibrary(library: Library, deleteThumbnails: Boolean = false) {
         val videosToDelete = videoRepository.findByLibrary(library)
         if (deleteThumbnails) {
-            thumbnailDeleter.deleteThumbnailsOf(videosToDelete)
+            thumbnailProcess.deleteThumbnailsOf(videosToDelete)
         }
         videoRepository.deleteAll(videosToDelete)
     }
 
     @Transactional
     fun refreshThumbnailsFor(video: Video) {
-        thumbnailDeleter.deleteThumbnailsOf(video)
+        thumbnailProcess.deleteThumbnailsOf(video)
         video.thumbnails.clear()
         videoRepository.save(video)
         thumbnailCreator.createThumbnailsFor(Paths.get(video.location!!), video.id!!)

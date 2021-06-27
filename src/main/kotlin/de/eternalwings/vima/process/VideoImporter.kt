@@ -1,8 +1,8 @@
 package de.eternalwings.vima.process
 
 import de.eternalwings.vima.domain.Library
+import de.eternalwings.vima.job.BackgroundJobController
 import de.eternalwings.vima.job.LoadVideoStep
-import org.jobrunr.scheduling.JobScheduler
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.nio.file.Files
@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 @Component
 class VideoImporter(
-    private val jobScheduler: JobScheduler,
+    private val backgroundJobController: BackgroundJobController,
     private val loadStep: LoadVideoStep
 ) {
 
@@ -21,7 +21,7 @@ class VideoImporter(
     fun considerForImport(videoPath: Path, libraryId: Int) {
         if (!isVideoFile(videoPath)) return
         val videoId = loadStep.execute(videoPath, libraryId)
-        RunImportJobWrapper.enqueueImportJob(jobScheduler, videoId, videoPath)
+        backgroundJobController.scheduleBackgroundImport(videoId, videoPath)
         LOGGER.debug("Started import job for video at $videoPath")
     }
 

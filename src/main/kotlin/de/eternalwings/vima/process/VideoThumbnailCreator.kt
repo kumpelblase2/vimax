@@ -1,8 +1,5 @@
 package de.eternalwings.vima.process
 
-import de.eternalwings.vima.domain.Thumbnail
-import de.eternalwings.vima.domain.Video
-import de.eternalwings.vima.repository.ThumbnailRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.nio.file.Files
@@ -10,36 +7,33 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Pattern
 import java.util.stream.Collectors
-import javax.persistence.EntityManager
 
 @Component
-class VideoThumbnailCreator(private val thumbnailGenerator: ThumbnailGenerator,
-                            private val thumbnailRepository: ThumbnailRepository,
-                            private val entityManager: EntityManager,
-                            @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int,
-                            @Value("\${thumbnail-relative-dir:.thumbnails}") thumbnailsRelativePath: String) {
+class VideoThumbnailCreator(
+    private val thumbnailGenerator: ThumbnailGenerator,
+    private val thumbnailProcess: ThumbnailProcess,
+    @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int,
+    @Value("\${thumbnail-relative-dir:.thumbnails}") thumbnailsRelativePath: String
+) {
 
-    private val rediscoverPattern: Pattern = Pattern.compile("(.+)_\\d+\\.jpg")
+    private val rediscoverPattern: Pattern = Pattern.compile("^(.+)_\\d+\\.jpg$")
     private val relativeThumbnailDir: Path = Paths.get(thumbnailsRelativePath)
 
     fun createThumbnailsFor(videoPath: Path, videoId: Int) {
         val parentPath = videoPath.parent
         val thumbnailDir = parentPath.resolve(relativeThumbnailDir)
-        if(!Files.exists(thumbnailDir)) {
+        if (!Files.exists(thumbnailDir)) {
             Files.createDirectory(thumbnailDir)
         }
         val existingThumbnails =
-                this.discoverExistingThumbnails(thumbnailDir, videoPath.fileName.toString()
-                    .substringBeforeLast("."))
+            this.discoverExistingThumbnails(
+                thumbnailDir, videoPath.fileName.toString()
+                    .substringBeforeLast(".")
+            )
         val remainingThumbnails = (thumbnailCount - existingThumbnails.size).coerceAtLeast(0)
         val generatedThumbnails = thumbnailGenerator.generateThumbnailsFor(videoPath, thumbnailDir, remainingThumbnails)
         val allThumbnails = existingThumbnails + generatedThumbnails
-        allThumbnails.forEach { thumb ->
-            val video = entityManager.getReference(Video::class.java, videoId)
-            val thumbnail = Thumbnail(location = thumb.toString(), video = video)
-            thumbnailRepository.save(thumbnail)
-        }
-        thumbnailRepository.flush()
+        thumbnailProcess.addThumbnailsToVideo(videoId, allThumbnails.map { it.toString() })
     }
 
     private fun discoverExistingThumbnails(dir: Path, videoName: String): List<Path> {

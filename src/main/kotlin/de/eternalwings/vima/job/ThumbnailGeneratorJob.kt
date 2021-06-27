@@ -7,15 +7,12 @@ import org.springframework.stereotype.Component
 import java.nio.file.Path
 
 @Component
-class BackgroundImportJob(private val thumbnailCreator: VideoThumbnailCreator, private val eventCallStep: EventCallStep) :
-    QuartzJobBean() {
+class ThumbnailGeneratorJob(private val videoThumbnailCreator: VideoThumbnailCreator) : QuartzJobBean() {
 
     override fun executeInternal(context: JobExecutionContext) {
         val dataMap = context.jobDetail.jobDataMap
         val videoId = dataMap.getInt("id")
         val videoPath = dataMap["path"] as Path
-        thumbnailCreator.createThumbnailsFor(videoPath, videoId)
-        eventCallStep.execute(videoId)
+        videoThumbnailCreator.createThumbnailsFor(videoPath, videoId)
     }
-
 }
