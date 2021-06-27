@@ -20,7 +20,7 @@ interface VideoRepository : JpaRepository<Video, Int> {
     @Query("SELECT v FROM Video v WHERE v.thumbnails IS EMPTY")
     fun findVideosWithMissingThumbnails(): List<Video>
 
-    @Query("SELECT v FROM Video v WHERE SIZE(v.thumbnails) <> ?1")
+    @Query("SELECT v FROM Video v WHERE SIZE(v.thumbnails) < ?1")
     fun findVideosWithThumbnailCountNotMatching(count: Int): List<Video>
 
     @Query(
