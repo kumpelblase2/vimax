@@ -88,7 +88,11 @@ class PluginManager(
     }
 
     fun callEvent(eventType: EventType, videos: List<Video>): Set<Int> {
-        return enabledPlugins.map { it.config.callHandlerFor(eventType, videos) }.reduce { acc, set -> acc + set }
+        return if(enabledPlugins.isNotEmpty()){
+            enabledPlugins.map { it.config.callHandlerFor(eventType, videos) }.reduce { acc, set -> acc + set }
+        } else {
+            emptySet()
+        }
     }
 
     fun disablePlugin(name: String) {
