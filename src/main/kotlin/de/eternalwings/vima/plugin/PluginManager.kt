@@ -22,7 +22,11 @@ class PluginManager(
     private val shorthandProvider: SearchShorthandProvider,
     private val pluginsLoader: PluginLoader
 ) {
-    private data class ActivePluginRegistration(val source: PluginSource, val information: PluginInformation, val config: PluginConfig)
+    private data class ActivePluginRegistration(
+        val source: PluginSource,
+        val information: PluginInformation,
+        val config: PluginConfig
+    )
 
     private var plugins: List<ActivePluginRegistration> = emptyList()
 
@@ -43,8 +47,8 @@ class PluginManager(
             if (existing != null) {
                 if (metadataRef is OwnedMetadataRef<*, *>) {
                     val owner = existing.owner
-                    if(owner == null || owner.id != pluginInformation.id) {
-                        throw IllegalStateException("The metadata already exists")
+                    if (owner == null || owner.id != pluginInformation.id) {
+                        throw IllegalStateException("Plugin ${pluginInformation.name} tried to register metadata ${metadataRef.name} but it already exists")
                     }
                     existing.ordering = metadataRef.ordering
                     existing.options = metadataRef.options
@@ -67,7 +71,7 @@ class PluginManager(
                     val saved = metadataProcess.createOrUpdate(newMetadata)
                     metadataRef.assignId(saved.id!!)
                 } else {
-                    throw IllegalStateException("Such metadata does not exist!")
+                    throw IllegalStateException("Metadata ${metadataRef.name} does not exist but was referenced by ${pluginInformation.name}")
                 }
             }
         }
@@ -87,7 +91,7 @@ class PluginManager(
     }
 
     fun callEvent(eventType: EventType, videos: List<Video>): Set<Int> {
-        return if(enabledPlugins.isNotEmpty()){
+        return if (enabledPlugins.isNotEmpty()) {
             enabledPlugins.map { it.config.callHandlerFor(eventType, videos) }.reduce { acc, set -> acc + set }
         } else {
             emptySet()
@@ -188,7 +192,7 @@ class PluginManager(
             this.pluginRepository.save(config.pluginDescription.toInformation())
         } else {
             val shouldUpdate = checkAndUpdateInfo(existingInfo, config)
-            if(shouldUpdate) {
+            if (shouldUpdate) {
                 this.pluginRepository.save(existingInfo)
             } else {
                 existingInfo
