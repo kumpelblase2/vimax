@@ -1,24 +1,23 @@
 package de.eternalwings.vima.plugin
 
 import de.eternalwings.vima.plugin.api.PluginConfigurationEnvironment
-import java.nio.file.Path
 
 object PluginRegistration {
     private lateinit var pluginBindings: PluginBindings
-    private val configs: MutableList<Pair<Path, PluginConfig>> = mutableListOf()
+    private val configs: MutableList<Pair<PluginSource, PluginConfig>> = mutableListOf()
 
-    private var nextPluginPath: Path? = null
+    private var nextPluginSource: PluginSource? = null
 
     internal fun setup(bindings: PluginBindings) {
         this.pluginBindings = bindings
     }
 
-    internal fun prepareRegistration(path: Path) {
-        nextPluginPath = path
+    internal fun prepareRegistration(pluginSource: PluginSource) {
+        nextPluginSource = pluginSource
     }
 
     fun register(name: String, config: PluginConfigurationEnvironment.() -> Unit) {
-        val path = nextPluginPath ?: throw IllegalStateException("Trying to register plugin outside of cycle")
+        val path = nextPluginSource ?: throw IllegalStateException("Trying to register plugin outside of cycle")
 
         val context = PluginConfigurationEnvironment(name, pluginBindings)
         context.config()
@@ -26,10 +25,10 @@ object PluginRegistration {
     }
 
     internal fun cleanUpRegistration() {
-        nextPluginPath = null
+        nextPluginSource = null
     }
 
-    internal fun getAndClearRegistrationQueue(): List<Pair<Path, PluginConfig>> {
+    internal fun getAndClearRegistrationQueue(): List<Pair<PluginSource, PluginConfig>> {
         val configCopy = ArrayList(configs)
         configs.clear()
         return configCopy

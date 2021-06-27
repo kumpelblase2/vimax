@@ -12,7 +12,6 @@ import de.eternalwings.vima.repository.VideoRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.nio.file.Path
 import java.time.LocalDateTime
 
 @Component
@@ -23,18 +22,18 @@ class PluginManager(
     private val shorthandProvider: SearchShorthandProvider,
     private val pluginsLoader: PluginLoader
 ) {
-    private data class ActivePluginRegistration(val path: Path, val information: PluginInformation, val config: PluginConfig)
+    private data class ActivePluginRegistration(val source: PluginSource, val information: PluginInformation, val config: PluginConfig)
 
     private var plugins: List<ActivePluginRegistration> = emptyList()
 
     private val enabledPlugins: List<ActivePluginRegistration>
         get() = plugins.filter { it.information.enabled }
 
-    private fun addPlugin(path: Path, information: PluginInformation, pluginConfig: PluginConfig) {
+    private fun addPlugin(source: PluginSource, information: PluginInformation, pluginConfig: PluginConfig) {
         if (plugins.any { it.information.name == information.name }) throw PluginAlreadyRegisteredException(information.name)
         val updatedInformation = pluginRepository.save(information)
         LOGGER.info("Loaded plugin ${updatedInformation.name}")
-        plugins = plugins + ActivePluginRegistration(path, information.copy(), pluginConfig)
+        plugins = plugins + ActivePluginRegistration(source, information.copy(), pluginConfig)
     }
 
     private fun enablePluginFunctionality(pluginInformation: PluginInformation, pluginConfig: PluginConfig) {
@@ -157,7 +156,7 @@ class PluginManager(
         plugins = plugins - toReload
         this.disablePluginFunctionality(toReload.information.id!!, toReload.config)
 
-        this.pluginsLoader.loadPluginAt(toReload.path)
+        this.pluginsLoader.loadPluginAt(toReload.source)
         val loadedPlugins = PluginRegistration.getAndClearRegistrationQueue()
         check(loadedPlugins.size == 1) {
             "Expected only one plugin to be reloaded."
@@ -184,7 +183,7 @@ class PluginManager(
         }
     }
 
-    private fun handlePluginLoaded(existingInfo: PluginInformation?, config: PluginConfig, path: Path) {
+    private fun handlePluginLoaded(existingInfo: PluginInformation?, config: PluginConfig, source: PluginSource) {
         val info = if (existingInfo == null) {
             this.pluginRepository.save(config.pluginDescription.toInformation())
         } else {
@@ -196,7 +195,7 @@ class PluginManager(
             }
         }
 
-        this.addPlugin(path, info, config)
+        this.addPlugin(source, info, config)
         if (info.enabled) {
             LOGGER.info("Enabling plugin ${info.name}")
             this.enablePluginFunctionality(info, config)

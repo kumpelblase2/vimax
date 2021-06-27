@@ -10,7 +10,6 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Stream
-import kotlin.streams.toList
 
 @Component
 class PluginLoader(
@@ -34,19 +33,21 @@ class PluginLoader(
         PluginRegistration.setup(pluginBindingProvider.createBindings())
     }
 
-    fun getAvailablePlugins(): List<Path> {
+    fun getAvailablePlugins(): List<PluginSource> {
         val internalFileResources =
             ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:$internalPluginDir/*.kts")
-        return Stream.concat(externalPluginFiles, Stream.of(*internalFileResources).map { it.file.toPath() }).toList()
+        val internalPluginsStream = Stream.of(*internalFileResources).map { ResourcePluginSource(it) }
+        val externalPluginsStream = externalPluginFiles.map { FileSystemPluginSource(it) }
+        return Stream.concat(externalPluginsStream, internalPluginsStream).toList()
     }
 
     fun loadAllPlugins() {
         getAvailablePlugins().forEach { loadPluginAt(it) }
     }
 
-    fun loadPluginAt(path: Path) {
-        PluginRegistration.prepareRegistration(path)
-        Files.newInputStream(path).use {
+    fun loadPluginAt(source: PluginSource) {
+        PluginRegistration.prepareRegistration(source)
+        source.openInputStream().use {
             scriptLoader.execute(it.reader())
         }
         PluginRegistration.cleanUpRegistration()
