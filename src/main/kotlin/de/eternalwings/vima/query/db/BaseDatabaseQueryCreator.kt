@@ -10,6 +10,7 @@ import de.eternalwings.vima.MetadataType.TAGLIST
 import de.eternalwings.vima.MetadataType.TEXT
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.SelectionMetadataOptions
+import de.eternalwings.vima.ext.tolerance
 import de.eternalwings.vima.query.BooleanQuery
 import de.eternalwings.vima.query.Comparator
 import de.eternalwings.vima.query.Comparator.EQUALS
@@ -101,6 +102,11 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
                     ?: throw RuntimeException("Specified selection value does not exist.")
                 valueQueryOrDefault(foundMetadata.id!!, foundId, context, defaultValuePath = "defaultValue.id")
             }
+            DURATION -> {
+                val duration = value.toDuration()
+                val tolerance = if(like) duration.tolerance(3) else 0
+                durationQueryOrDefault(foundMetadata.id!!, duration.toSeconds(), tolerance, context)
+            }
             else -> throw NotImplementedError()
         }
     }
@@ -114,7 +120,7 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
         return when (foundMetadata.type) {
             FLOAT -> valueQueryOrDefault(foundMetadata.id!!, value.toDouble(), context, queryComparator)
             NUMBER, RANGE -> valueQueryOrDefault(foundMetadata.id!!, value.toInt(), context, queryComparator)
-            DURATION -> valueQueryOrDefault(foundMetadata.id!!, value.toDuration(), context, queryComparator)
+            DURATION -> valueQueryOrDefault(foundMetadata.id!!, value.toDuration().toSeconds(), context, queryComparator)
             TAGLIST -> arraySizeQueryOrDefault(foundMetadata.id!!, queryComparator, value.toInt(), context)
             else -> throw NotImplementedError()
         }
@@ -159,7 +165,14 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
         exact: Boolean = false
     ): Filter
 
-    protected fun String.toDuration(): Long {
+    protected abstract fun durationQueryOrDefault(
+        metadataId: Int,
+        value: Long,
+        tolerance: Long,
+        context: QueryContext,
+    ): Filter
+
+    protected fun String.toDuration(): Duration {
         val durationMatch = DURATION_PATTERN.matchEntire(this) ?: throw IllegalArgumentException("Cannot parse duration")
         val values = durationMatch.groupValues
         val hourString = values[2]
@@ -172,7 +185,7 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
         val hours = if (hourString.isEmpty()) 0 else hourString.toLong()
         val minutes = if (minuteString.isEmpty()) 0 else minuteString.toLong()
         val seconds = if (secondString.isEmpty()) 0 else secondString.toLong()
-        return Duration.of(hours, ChronoUnit.HOURS).plus(minutes, ChronoUnit.MINUTES).plus(seconds, ChronoUnit.SECONDS).seconds
+        return Duration.of(hours, ChronoUnit.HOURS).plus(minutes, ChronoUnit.MINUTES).plus(seconds, ChronoUnit.SECONDS)
     }
 
     protected fun List<Metadata>.getByName(name: String): Metadata? {

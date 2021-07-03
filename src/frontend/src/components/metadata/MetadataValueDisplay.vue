@@ -32,7 +32,7 @@
                 this.addFilterFor({ metadata: this.metadataDefinition, value });
             },
             filter() {
-                this.addFilterFor({ metadata: this.metadataDefinition, value: this.metadataValue });
+                this.addFilterFor({ metadata: this.metadataDefinition, value: this.textValue });
             }
         }
     }

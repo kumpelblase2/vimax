@@ -60,7 +60,7 @@ export function durationToString(value) {
     const hourPart = parsedDuration.hours > 0 ? parsedDuration.hours + "h " : "";
     const minutesPart = parsedDuration.minutes > 0 ? parsedDuration.minutes + "m " : "";
     const secondsPart = parsedDuration.seconds > 0 || (parsedDuration.days + parsedDuration.hours + parsedDuration.minutes === 0) ? parsedDuration.seconds + "s " : "";
-    return daysPart + hourPart + minutesPart + secondsPart;
+    return (daysPart + hourPart + minutesPart + secondsPart).trim();
 }
 
 export function parseDurationString(durationString) {

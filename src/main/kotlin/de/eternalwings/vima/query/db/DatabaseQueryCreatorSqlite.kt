@@ -5,6 +5,7 @@ import de.eternalwings.vima.query.Comparator.EQUALS
 import de.eternalwings.vima.query.Comparator.EXISTS
 import de.eternalwings.vima.query.Comparator.IS
 import de.eternalwings.vima.query.Comparator.LIKE
+import de.eternalwings.vima.query.Comparator.SMALLER_OR_EQUALS
 import de.eternalwings.vima.query.Filter
 import de.eternalwings.vima.query.Filter.ContainerQuery
 import de.eternalwings.vima.query.Filter.PropertyFilter
@@ -117,6 +118,26 @@ class DatabaseQueryCreatorSqlite(metadataRepository: MetadataRepository) : BaseD
         ))
     }
 
+    override fun durationQueryOrDefault(metadataId: Int, value: Long, tolerance: Long, context: QueryContext): Filter {
+        val jsonProp = "$metadataId.value"
+        return or(
+            jsonDifferenceMatch(VIDEO_MODEL_NAME, value, tolerance, context, jsonProp),
+            and(
+                jsonNullMatch(VIDEO_MODEL_NAME, context, jsonProp),
+                metadataDefaultValueCheck(metadataId) {
+                    jsonDifferenceMatch(
+                        it,
+                        value,
+                        tolerance,
+                        context,
+                        property = "defaultValue",
+                        column = "options"
+                    )
+                }
+            )
+        )
+    }
+
     private fun tagValueContainsQuery(
         table: String, value: String, like: Boolean, context: QueryContext,
         property: String = "value",
@@ -152,6 +173,21 @@ class DatabaseQueryCreatorSqlite(metadataRepository: MetadataRepository) : BaseD
         column: String = "metadata_values"
     ): Filter {
         return PropertyFilter("json_extract($table.$column, '$.$property')", operator, "?${context.newVar(value)}")
+    }
+
+    private fun jsonDifferenceMatch(
+        table: String,
+        value: Any?,
+        difference: Long,
+        context: QueryContext,
+        property: String = "value",
+        column: String = "metadata_values"
+    ): Filter {
+        return PropertyFilter(
+            "abs(json_extract($table.$column, '$.$property') - ?${context.newVar(value)})",
+            SMALLER_OR_EQUALS,
+            "?${context.newVar(difference)}"
+        )
     }
 
     private fun jsonArrayContains(
