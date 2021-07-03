@@ -4,9 +4,10 @@ import de.eternalwings.vima.MetadataType.SELECTION
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValue
-import de.eternalwings.vima.event.VideoUpdateEvent
+import de.eternalwings.vima.event.MetadataCreateEvent
+import de.eternalwings.vima.event.MetadataDeleteEvent
+import de.eternalwings.vima.event.MetadataSelectionOptionRemovedEvent
 import de.eternalwings.vima.repository.MetadataRepository
-import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -14,9 +15,8 @@ import javax.persistence.EntityNotFoundException
 
 @Component
 class MetadataProcess(
-    private val videoRepository: VideoRepository,
-    private val metadataRepository: MetadataRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val metadataRepository: MetadataRepository
 ) {
     @Transactional
     fun createOrUpdate(metadata: Metadata): Metadata {
@@ -46,11 +46,8 @@ class MetadataProcess(
                     val removedOptions = findRemovedOptions(it.values, previousValues)
                     if (removedOptions.isNotEmpty()) {
                         removedOptions.forEach { option ->
-                            val videos = videoRepository.findVideosWithMetadataValue(metadata.id!!, option.id!!)
-                            videoRepository.assignDefaultIfValueForMetadataIs(metadata.id!!, option.id!!)
-                            videos.forEach { id ->
-                                applicationEventPublisher.publishEvent(VideoUpdateEvent(this, id))
-                            }
+                            val removeEvent = MetadataSelectionOptionRemovedEvent(this, metadata.id!!, option.id!!)
+                            applicationEventPublisher.publishEvent(removeEvent)
                         }
                     }
                 }
@@ -59,7 +56,7 @@ class MetadataProcess(
 
         val saved = metadataRepository.save(metadata)
         if (isNew) {
-            videoRepository.addMetadataEntryIfNotExists(saved.id!!)
+            applicationEventPublisher.publishEvent(MetadataCreateEvent(this, saved.id!!))
         }
         return saved
     }
@@ -78,7 +75,7 @@ class MetadataProcess(
         val oldDisplayOrder = metadata.displayOrder
         this.metadataRepository.delete(metadata)
         this.metadataRepository.updateDisplayOrderWithValuesHigher(oldDisplayOrder)
-        this.videoRepository.removeMetadataValueOf(metadata.id!!)
+        applicationEventPublisher.publishEvent(MetadataDeleteEvent(this, metadataId))
     }
 
     fun getAll(): List<Metadata> {

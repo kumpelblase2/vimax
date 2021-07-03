@@ -4,6 +4,9 @@ import de.eternalwings.vima.domain.Library
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.MetadataValue
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.event.MetadataCreateEvent
+import de.eternalwings.vima.event.MetadataDeleteEvent
+import de.eternalwings.vima.event.MetadataSelectionOptionRemovedEvent
 import de.eternalwings.vima.event.VideoDeleteEvent
 import de.eternalwings.vima.event.VideoUpdateEvent
 import de.eternalwings.vima.plugin.EventType.UPDATE
@@ -11,6 +14,7 @@ import de.eternalwings.vima.plugin.PluginManager
 import de.eternalwings.vima.repository.MetadataRepository
 import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.nio.file.Files
@@ -83,7 +87,11 @@ class VideoProcess(private val videoRepository: VideoRepository,
         return videoRepository.saveAll(existingVideos)
     }
 
-    fun resetValuesToDefault(metadataId: Int, value: Any) {
+    @EventListener
+    @Transactional
+    internal fun resetValuesToDefault(event: MetadataSelectionOptionRemovedEvent) {
+        val metadataId = event.metadataId
+        val value = event.removedOption
         val videos = videoRepository.findVideosWithMetadataValue(metadataId, value)
         videoRepository.assignDefaultIfValueForMetadataIs(metadataId, value)
         videos.forEach {
@@ -104,5 +112,19 @@ class VideoProcess(private val videoRepository: VideoRepository,
         }
 
         existing.metadata!!.entries.removeIf { entry -> metadata.none { it.id == entry.key } }
+    }
+
+    @EventListener
+    internal fun onMetadataCreateEvent(event: MetadataCreateEvent) {
+        addNewMetadataToVideos(event.metadataId)
+    }
+
+    fun addNewMetadataToVideos(metadataId: Int) {
+        videoRepository.addMetadataEntryIfNotExists(metadataId)
+    }
+
+    @EventListener
+    fun removeMetadataFromVideos(event: MetadataDeleteEvent) {
+        videoRepository.removeMetadataValueOf(event.metadataId)
     }
 }

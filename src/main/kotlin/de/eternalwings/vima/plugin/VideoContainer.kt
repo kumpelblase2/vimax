@@ -9,16 +9,16 @@ class VideoContainer(
         val location: String,
         val metadata: Map<Int,MetadataValue<*>>
 ) {
-    var changed: Set<Int> = emptySet()
+    internal var changed: Set<Int> = emptySet()
         private set
 
     fun hasMetadata(id: Int) = metadata.containsKey(id)
 
-    fun markChanged(metadataId: Int) {
+    private fun markChanged(metadataId: Int) {
         changed = changed + metadataId
     }
 
-    fun <T> updateMetadata(id: Int, value: T?) {
+    internal fun <T> updateMetadata(id: Int, value: T?) {
         val metadata = this.metadata[id] ?: throw IllegalStateException("No such metadata with id $id")
         val originalMetadataValue = metadata as MetadataValue<T>
         if(originalMetadataValue.value != value) {
@@ -27,7 +27,7 @@ class VideoContainer(
         }
     }
 
-    fun <T> getMetadataValue(id: Int): T? {
+    internal fun <T> getMetadataValue(id: Int): T? {
         val metadata = this.metadata[id] ?: throw IllegalStateException("No such metadata with id $id")
         return (metadata as MetadataValue<T>).value
     }

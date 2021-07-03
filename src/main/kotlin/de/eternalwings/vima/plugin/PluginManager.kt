@@ -3,6 +3,7 @@ package de.eternalwings.vima.plugin
 import de.eternalwings.vima.domain.Metadata
 import de.eternalwings.vima.domain.PluginInformation
 import de.eternalwings.vima.domain.Video
+import de.eternalwings.vima.plugin.EventType.CREATE
 import de.eternalwings.vima.plugin.EventType.UPDATE
 import de.eternalwings.vima.plugin.api.MetadataRef.OwnedMetadataRef
 import de.eternalwings.vima.process.MetadataProcess
@@ -20,7 +21,8 @@ class PluginManager(
     private val videoRepository: VideoRepository,
     private val metadataProcess: MetadataProcess,
     private val shorthandProvider: SearchShorthandProvider,
-    private val pluginsLoader: PluginLoader
+    private val pluginsLoader: PluginLoader,
+    private val pluginEventDispatcher: PluginEventDispatcher
 ) {
     private data class ActivePluginRegistration(
         val source: PluginSource,
@@ -92,7 +94,10 @@ class PluginManager(
 
     fun callEvent(eventType: EventType, videos: List<Video>): Set<Int> {
         return if (enabledPlugins.isNotEmpty()) {
-            enabledPlugins.map { it.config.callHandlerFor(eventType, videos) }.reduce { acc, set -> acc + set }
+            val configs = enabledPlugins.map { it.config }
+            val changed = pluginEventDispatcher.dispatchEvent(eventType, videos, configs)
+            pluginEventDispatcher.dispatchEventAsync(eventType, videos, configs)
+            changed
         } else {
             emptySet()
         }
@@ -134,11 +139,11 @@ class PluginManager(
     private fun updateMissedVideos(pluginConfig: PluginConfig, afterTime: LocalDateTime) {
         val missedVideos = videoRepository.findVideosByUpdateTimeAfter(afterTime)
         if (pluginConfig.hasHandlerFor(UPDATE)) {
-            missedVideos.forEach { pluginConfig.callHandlerFor(UPDATE, it) }
+            pluginEventDispatcher.dispatchEvent(UPDATE, missedVideos, listOf(pluginConfig))
             videoRepository.saveAll(missedVideos)
         } else {
             val createdVideos = missedVideos.filter { it.creationTime!! > afterTime }
-            createdVideos.forEach { pluginConfig.callHandlerFor(EventType.CREATE, it) }
+            pluginEventDispatcher.dispatchEvent(CREATE, createdVideos, listOf(pluginConfig))
             videoRepository.saveAll(createdVideos)
         }
     }
@@ -149,7 +154,7 @@ class PluginManager(
         val videos = videoRepository.findAll()
         val chunked = videos.chunked(100)
         chunked.forEachIndexed { index, chunk ->
-            plugin.config.callHandlerFor(UPDATE, chunk)
+            pluginEventDispatcher.dispatchEvent(UPDATE, chunk, listOf(plugin.config))
             LOGGER.info("Refresh: ${index * 100 + chunk.size}/${videos.size} done.")
         }
         videoRepository.saveAll(videos)

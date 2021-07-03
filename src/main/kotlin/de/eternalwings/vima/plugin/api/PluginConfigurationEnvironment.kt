@@ -12,6 +12,8 @@ import de.eternalwings.vima.domain.SelectionMetadataOptions
 import de.eternalwings.vima.domain.SelectionValue
 import de.eternalwings.vima.domain.TaglistMetadataOptions
 import de.eternalwings.vima.domain.TextMetadataOptions
+import de.eternalwings.vima.plugin.AsyncVideoHandler
+import de.eternalwings.vima.plugin.CallbackVideoHandlerCall
 import de.eternalwings.vima.plugin.EventType
 import de.eternalwings.vima.plugin.EventType.CREATE
 import de.eternalwings.vima.plugin.EventType.FINISH_WATCHING
@@ -32,6 +34,7 @@ import java.time.Duration
 @Suppress("unused")
 class PluginConfigurationEnvironment(internal val name: String, val context: PluginBindings) {
     internal val eventHandlers: MutableMap<EventType, MutableCollection<VideoHandler>> = mutableMapOf()
+    internal val asyncEventHandlers: MutableMap<EventType, MutableCollection<AsyncVideoHandler>> = mutableMapOf()
     internal val searchShorthands: MutableMap<String, String> = mutableMapOf()
     internal val metadata: MutableList<MetadataRef<*>> = mutableListOf()
     private var finished = false
@@ -150,6 +153,12 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
         handlers.add(VideoHandler(priority, handler))
     }
 
+    private fun addAsyncHandler(eventType: EventType, handler: AsyncVideoHandler) {
+        checkConfigurable()
+        val handlers = asyncEventHandlers.computeIfAbsent(eventType) { arrayListOf() }
+        handlers.add(handler)
+    }
+
     fun onCreate(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
         addHandler(CREATE, priority, handler)
     }
@@ -164,6 +173,22 @@ class PluginConfigurationEnvironment(internal val name: String, val context: Plu
 
     fun onFinishWatching(priority: PluginPriority = NORMAL, handler: VideoHandlerCall) {
         addHandler(FINISH_WATCHING, priority, handler)
+    }
+
+    fun onCreateAsync(handler: CallbackVideoHandlerCall) {
+        addAsyncHandler(CREATE, AsyncVideoHandler(handler))
+    }
+
+    fun onUpdateAsync(handler: CallbackVideoHandlerCall) {
+        addAsyncHandler(UPDATE, AsyncVideoHandler(handler))
+    }
+
+    fun onStartWatchingAsync(handler: CallbackVideoHandlerCall) {
+        addAsyncHandler(START_WATCHING, AsyncVideoHandler(handler))
+    }
+
+    fun onFinishWatchingAsync(handler: CallbackVideoHandlerCall) {
+        addAsyncHandler(FINISH_WATCHING, AsyncVideoHandler(handler))
     }
 
     fun registerSearchShorthand(name: String, result: String) {

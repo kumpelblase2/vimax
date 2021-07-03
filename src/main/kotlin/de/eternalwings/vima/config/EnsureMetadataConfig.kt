@@ -1,7 +1,7 @@
 package de.eternalwings.vima.config
 
+import de.eternalwings.vima.process.VideoProcess
 import de.eternalwings.vima.repository.MetadataRepository
-import de.eternalwings.vima.repository.VideoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.transaction.support.TransactionTemplate
@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct
 class EnsureMetadataConfig {
 
     @Autowired
-    lateinit var videoRepository: VideoRepository
+    lateinit var videoProcess: VideoProcess
 
     @Autowired
     lateinit var metadataRepository: MetadataRepository
@@ -25,7 +25,7 @@ class EnsureMetadataConfig {
 
         transactionExecutor.execute {
             allMetadata.forEach {
-                videoRepository.addMetadataEntryIfNotExists(it)
+                videoProcess.addNewMetadataToVideos(it)
             }
         }
     }
