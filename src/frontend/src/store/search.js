@@ -2,6 +2,10 @@ function createFilterTermFor(metadata, value) {
     switch(metadata.type) {
         case 'BOOLEAN':
             return (value ? '+' : '-') + metadata.name;
+        case 'NUMBER':
+        case 'FLOAT':
+        case 'RANGE':
+            return `${metadata.name}:${value}`;
         case 'SELECTION':
             value = metadata.options.values.find(v => v.id === value).name;
             // Intentional fall through
