@@ -59,6 +59,9 @@
         },
         watch: {
             searchQuery(newValue) {
+                router.push(`/?search=${encodeURIComponent(newValue)}`).catch(ex => {
+                    console.warn("Url seems to already be the same.", ex);
+                });
                 if(newValue !== this.query) {
                     this.query = newValue;
                     this.search();
@@ -71,7 +74,6 @@
             doSearch() {
                 if(this.queryValue != this.searchQuery) {
                     this.updateQuery(this.queryValue);
-                    router.push(`/?search=${encodeURIComponent(this.queryValue)}`);
                 }
                 this.search();
             },
