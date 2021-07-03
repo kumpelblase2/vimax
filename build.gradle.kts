@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "de.eternalwings"
-version = "1.2-SNAPSHOT"
+version = "1.2"
 
 tasks.compileKotlin {
     kotlinOptions {
