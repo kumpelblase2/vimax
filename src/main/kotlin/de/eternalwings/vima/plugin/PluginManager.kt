@@ -37,7 +37,7 @@ class PluginManager(
         if (plugins.any { it.information.name == information.name }) throw PluginAlreadyRegisteredException(information.name)
         val updatedInformation = pluginRepository.save(information)
         LOGGER.info("Loaded plugin ${updatedInformation.name}")
-        plugins = plugins + ActivePluginRegistration(source, information.copy(), pluginConfig)
+        plugins = plugins + ActivePluginRegistration(source, updatedInformation.copy(), pluginConfig)
     }
 
     private fun enablePluginFunctionality(pluginInformation: PluginInformation, pluginConfig: PluginConfig) {
@@ -167,7 +167,8 @@ class PluginManager(
         }
 
         val reloadedPlugin = loadedPlugins.first()
-        this.handlePluginLoaded(toReload.information, reloadedPlugin.second, reloadedPlugin.first)
+        val existingPluginInfo = pluginRepository.findByName(toReload.information.name!!)
+        this.handlePluginLoaded(existingPluginInfo, reloadedPlugin.second, reloadedPlugin.first)
     }
 
     @Transactional
@@ -189,14 +190,10 @@ class PluginManager(
 
     private fun handlePluginLoaded(existingInfo: PluginInformation?, config: PluginConfig, source: PluginSource) {
         val info = if (existingInfo == null) {
-            this.pluginRepository.save(config.pluginDescription.toInformation())
+            config.pluginDescription.toInformation()
         } else {
-            val shouldUpdate = checkAndUpdateInfo(existingInfo, config)
-            if (shouldUpdate) {
-                this.pluginRepository.save(existingInfo)
-            } else {
-                existingInfo
-            }
+            updateInfo(existingInfo, config)
+            existingInfo
         }
 
         this.addPlugin(source, info, config)
@@ -206,23 +203,18 @@ class PluginManager(
         }
     }
 
-    private fun checkAndUpdateInfo(existingInfo: PluginInformation, config: PluginConfig): Boolean {
-        var shouldUpdate = false
+    private fun updateInfo(existingInfo: PluginInformation, config: PluginConfig) {
         if (existingInfo.description.description != config.pluginDescription.description) {
             existingInfo.description.description = config.pluginDescription.description
-            shouldUpdate = true
         }
 
         if (existingInfo.description.author != config.pluginDescription.author) {
             existingInfo.description.author = config.pluginDescription.author
-            shouldUpdate = true
         }
 
         if (existingInfo.description.version != config.pluginDescription.version) {
             existingInfo.description.version = config.pluginDescription.version
-            shouldUpdate = true
         }
-        return shouldUpdate
     }
 
     private fun PluginDescription.toInformation(): PluginInformation {
