@@ -12,7 +12,7 @@ import java.util.stream.Stream
 @Component
 class PluginLoader(
     private val resourceLoader: ResourceLoader,
-    pluginBindingProvider: PluginBindingProvider,
+    pluginBindingProvider: PluginBindingsProvider,
     @Value("\${external-plugin-dir}") private val externalPluginDir: Path
 ) {
     private val matcher = FileSystems.getDefault().getPathMatcher("glob:**.kts")
@@ -28,7 +28,7 @@ class PluginLoader(
         }
 
     init {
-        PluginRegistration.setup(pluginBindingProvider.createBindings())
+        PluginRegistration.setup(pluginBindingProvider)
     }
 
     fun getAvailablePlugins(): List<PluginSource> {
