@@ -116,6 +116,7 @@ class PluginManager(
 
     fun enablePlugin(name: String) {
         val found = plugins.find { it.information.name == name } ?: return
+        enablePluginFunctionality(found.information, found.config)
         if (!found.information.enabled) {
             val disabledAt = found.information.disabledAt
             updateMissedVideos(found.config, disabledAt ?: LocalDateTime.now())
@@ -128,7 +129,6 @@ class PluginManager(
             )
         }
 
-        enablePluginFunctionality(found.information, found.config)
     }
 
     private fun updateMissedVideos(pluginConfig: PluginConfig, afterTime: LocalDateTime) {
