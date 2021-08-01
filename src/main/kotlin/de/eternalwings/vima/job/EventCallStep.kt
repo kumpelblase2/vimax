@@ -12,7 +12,9 @@ class EventCallStep(private val videoRepository: VideoRepository, private val pl
                     private val applicationEventPublisher: ApplicationEventPublisher) {
     fun execute(videoId: Int) {
         val video = videoRepository.getOne(videoId)
-        pluginManager.callEvent(CREATE, video)
         applicationEventPublisher.publishEvent(VideoCreateEvent(this, video))
+        if(pluginManager.callEvent(CREATE, video)) {
+            videoRepository.save(video)
+        }
     }
 }
