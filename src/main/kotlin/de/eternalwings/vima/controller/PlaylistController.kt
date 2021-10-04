@@ -1,6 +1,5 @@
 package de.eternalwings.vima.controller
 
-import de.eternalwings.vima.controller.PlaylistInformation.Companion
 import de.eternalwings.vima.domain.Playlist
 import de.eternalwings.vima.process.CollageCreator
 import de.eternalwings.vima.repository.PlaylistRepository
@@ -55,7 +54,7 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         val playlist = playlistRepository.getOne(playlistId)
         playlist.name = newName
         val saved = playlistRepository.save(playlist)
-        return Companion.from(saved)
+        return PlaylistInformation.from(saved)
     }
 
     @Transactional
@@ -65,14 +64,14 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         val videosToAdd = videos.filter { playlist.videos.none { video -> video.video?.id == it } }
         val lowestPositionBefore = playlistRepository.getLowestPositionIndexFor(playlist.id!!) ?: 0
         playlist.addVideos(videoRepository.findAllById(videosToAdd), lowestPositionBefore + 1)
-        return Companion.from(playlistRepository.save(playlist))
+        return PlaylistInformation.from(playlistRepository.save(playlist))
     }
 
     @Transactional
     @PutMapping("/{id}/remove")
     fun removeVideoFromPlaylist(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
         playlistRepository.deleteFromPlaylist(playlistId, videos)
-        return Companion.from(playlistRepository.getOne(playlistId))
+        return PlaylistInformation.from(playlistRepository.getOne(playlistId))
     }
 
     @Transactional
@@ -88,7 +87,7 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
         playlist.videos.forEach { playlistPosition ->
             playlistPosition.position = videos.indexOf(playlistPosition.video?.id)
         }
-        return Companion.from(playlistRepository.save(playlist))
+        return PlaylistInformation.from(playlistRepository.save(playlist))
     }
 
     @Transactional(readOnly = true)
