@@ -58,7 +58,6 @@ class LibraryController(private val libraryRepository: LibraryRepository,
         }
     }
 
-    @Transactional(readOnly = true)
     @GetMapping
     fun getLibraries(): List<Library> = libraryRepository.findAll()
 
@@ -79,7 +78,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
         videoLoader.scanAllLibraries()
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @GetMapping("/scan/{id}")
     fun scanDirectory(@PathVariable("id") libraryId: Int) {
         val library = libraryRepository.findById(libraryId).orElseThrow { EntityNotFoundException() }

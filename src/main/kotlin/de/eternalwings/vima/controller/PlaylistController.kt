@@ -77,7 +77,6 @@ class PlaylistController(
         return PlaylistInformation.from(playlistRepository.getOne(playlistId))
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     fun delete(@PathVariable("id") playlistId: Int) {
         playlistRepository.deleteById(playlistId)

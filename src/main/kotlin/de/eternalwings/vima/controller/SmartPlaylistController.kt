@@ -66,7 +66,6 @@ class SmartPlaylistController(
         return ResponseEntity.ok(smartPlaylistRepository.save(existing))
     }
 
-    @Transactional
     @PostMapping
     fun createSmartPlaylist(@RequestBody information: SmartPlaylistCreateInformation): ResponseEntity<SmartPlaylist> {
         if (QueryParser.tryParseToEnd(information.query) !is Parsed) {
@@ -76,7 +75,6 @@ class SmartPlaylistController(
         return ResponseEntity.ok(smartPlaylistRepository.save(playlist))
     }
 
-    @Transactional
     @DeleteMapping("/{id}")
     fun deletePlaylist(@PathVariable("id") playlistId: Int) {
         smartPlaylistRepository.deleteById(playlistId)

@@ -19,7 +19,6 @@ class PluginController(
     private val transactionTemplate: TransactionTemplate
 ) {
 
-    @Transactional(readOnly = true)
     @GetMapping
     fun getAllPlugins(): List<PluginInformation> {
         return pluginRepository.findAll()
@@ -41,13 +40,11 @@ class PluginController(
         return pluginRepository.findByName(name)
     }
 
-    @Transactional
     @PostMapping("/{name}/refresh")
     fun refreshPlugin(@PathVariable name: String) {
         pluginManager.refreshPlugin(name)
     }
 
-    @Transactional
     @PostMapping("{name}/reload")
     fun reloadPlugin(@PathVariable name: String): PluginInformation? {
         pluginManager.reloadPlugin(name)

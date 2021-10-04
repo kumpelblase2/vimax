@@ -32,7 +32,6 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     @GetMapping("/metadata")
     fun getAll(): List<MetadataDTO> = metadataRepository.findAll().map { MetadataDTO.fromMetadata(it) }
 
-    @Transactional
     @PostMapping("/metadata")
     fun createOrUpdateMetadata(@RequestBody metadata: Metadata): MetadataDTO {
         if(metadata.isSystemSpecified) throw IllegalArgumentException("Cannot update system metadata.")
@@ -45,6 +44,7 @@ class MetadataController(private val metadataRepository: MetadataRepository,
         return metadataId
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/metadata/{id}/values")
     fun getPossibleValues(@PathVariable("id") metadataId: Int): Set<String> {
         val metadata = metadataRepository.getOne(metadataId)

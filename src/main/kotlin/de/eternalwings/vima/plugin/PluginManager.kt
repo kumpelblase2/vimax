@@ -148,6 +148,7 @@ class PluginManager(
         }
     }
 
+    @Transactional
     fun refreshPlugin(name: String) {
         LOGGER.info("Refreshing videos for plugin $name...")
         val plugin = plugins.find { it.information.name == name } ?: return
@@ -160,6 +161,7 @@ class PluginManager(
         videoRepository.saveAll(videos)
     }
 
+    @Transactional
     fun reloadPlugin(name: String) {
         val toReload = plugins.find { it.information.name == name } ?: throw IllegalStateException("Plugin is not loaded.")
         plugins = plugins - toReload
