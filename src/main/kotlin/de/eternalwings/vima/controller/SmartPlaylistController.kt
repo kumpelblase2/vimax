@@ -1,7 +1,10 @@
 package de.eternalwings.vima.controller
 
+import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
+import com.github.h0tk3y.betterParse.parser.Parsed
 import de.eternalwings.vima.domain.SmartPlaylist
 import de.eternalwings.vima.process.CollageCreator
+import de.eternalwings.vima.query.QueryParser
 import de.eternalwings.vima.query.VideoSearcher
 import de.eternalwings.vima.repository.SmartPlaylistRepository
 import de.eternalwings.vima.repository.VideoRepository
@@ -43,20 +46,30 @@ class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylist
 
     @Transactional
     @PutMapping("/{id}")
-    fun updatePlaylist(@PathVariable id: Int, @RequestBody playlist: SmartPlaylistCreateInformation): SmartPlaylist {
+    fun updatePlaylist(
+        @PathVariable id: Int,
+        @RequestBody playlist: SmartPlaylistCreateInformation
+    ): ResponseEntity<SmartPlaylist> {
+        if (QueryParser.tryParseToEnd(playlist.query) !is Parsed) {
+            return ResponseEntity.badRequest().build()
+        }
+
         val existing = smartPlaylistRepository.getOne(id)
         existing.name = playlist.name
         existing.orderBy = playlist.orderBy
         existing.orderDirection = playlist.orderDirection
         existing.query = playlist.query
-        return smartPlaylistRepository.save(existing)
+        return ResponseEntity.ok(smartPlaylistRepository.save(existing))
     }
 
     @Transactional
     @PostMapping
-    fun createSmartPlaylist(@RequestBody information: SmartPlaylistCreateInformation): SmartPlaylist {
+    fun createSmartPlaylist(@RequestBody information: SmartPlaylistCreateInformation): ResponseEntity<SmartPlaylist> {
+        if (QueryParser.tryParseToEnd(information.query) !is Parsed) {
+            return ResponseEntity.badRequest().build()
+        }
         val playlist = SmartPlaylist(information.name, information.query, information.orderBy, information.orderDirection)
-        return smartPlaylistRepository.save(playlist)
+        return ResponseEntity.ok(smartPlaylistRepository.save(playlist))
     }
 
     @Transactional
