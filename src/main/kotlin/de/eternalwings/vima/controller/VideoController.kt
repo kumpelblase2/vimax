@@ -47,10 +47,8 @@ class VideoController(
     private val thumbnailRepository: ThumbnailRepository,
     private val videoProcess: VideoProcess,
     private val videoSearcher: VideoSearcher,
-    transactionManager: PlatformTransactionManager
+    private val transactionTemplate: TransactionTemplate
 ) {
-
-    private val transactionTemplate = TransactionTemplate(transactionManager)
 
     @Transactional(readOnly = true)
     @GetMapping("/videos")
