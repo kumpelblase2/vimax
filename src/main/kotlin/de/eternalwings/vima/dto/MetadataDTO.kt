@@ -12,7 +12,7 @@ data class MetadataDTO(
     val type: MetadataType,
     val ordering: Direction,
     val readOnly: Boolean,
-    val owner: PluginInformation?,
+    val ownerId: Int?,
     val options: MetadataOptions<*,*>,
     val displayOrder: Int,
     val version: Int?
@@ -25,7 +25,7 @@ data class MetadataDTO(
                 metadata.type!!,
                 metadata.ordering,
                 metadata.readOnly,
-                metadata.owner?.copy(),
+                metadata.owner?.id,
                 metadata.options!!,
                 metadata.displayOrder,
                 metadata.version

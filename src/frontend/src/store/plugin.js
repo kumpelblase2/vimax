@@ -15,6 +15,13 @@ export default {
         ],
         plugins: []
     },
+    getters: {
+        getPluginById(state) {
+            return (id) => {
+                return state.plugins.find(plugin => plugin.id === id);
+            }
+        }
+    },
     actions: {
         async loadPlugins({ commit }) {
             const plugins = await pluginApi.getPlugins();

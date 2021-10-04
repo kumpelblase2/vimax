@@ -52,7 +52,7 @@
                         <td>{{ props.item.name }}</td>
                         <td>{{ props.item.type }}</td>
                         <td>{{ defaultValueToText(props.item) }}</td>
-                        <td>{{ props.item.owner ? props.item.owner.name : "" }}</td>
+                        <td>{{ props.item.ownerId ? pluginNameOf(props.item.ownerId) : "" }}</td>
                         <td>{{ props.item.readOnly ? "Yes" : "No" }}</td>
                         <td class="justify-center">
                             <v-icon v-if="props.item.displayOrder < metadataCount" small class="mr-2"
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-    import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
     import MetadataOptions from "./MetadataOptions";
     import { toDisplayValue } from "@/helpers/metadata-display-helper";
 
@@ -113,7 +113,8 @@
                 'headers',
                 'editingItem',
                 'possibleMetadataTypes'
-            ])
+            ]),
+            ...mapGetters('settings/plugin', ['getPluginById']),
         },
         methods: {
             sort(items) {
@@ -124,7 +125,6 @@
                 this.startEditItem(item);
                 this.dialog = true
             },
-
             deleteItem(item) {
                 if(confirm('Are you sure you want to delete this metadata?')) {
                     this.deleteMetadata(item);
@@ -147,6 +147,14 @@
             },
             moveDown(metadata) {
                 this.moveMetadataDown(metadata);
+            },
+            pluginNameOf(id) {
+                const plugin = this.getPluginById(id);
+                if(plugin != null) {
+                    return plugin.name;
+                } else {
+                    return "";
+                }
             },
             ...mapActions('settings/metadata', [
                 'deleteMetadata',
