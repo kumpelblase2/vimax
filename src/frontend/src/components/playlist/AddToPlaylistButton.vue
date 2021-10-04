@@ -17,7 +17,6 @@
                 </v-list>
             </v-card-text>
             <v-card-actions>
-                <v-spacer></v-spacer>
                 <v-text-field single-line v-model="newPlaylistName" style="margin-right: 20px"
                               placeholder="Create new..."></v-text-field>
                 <v-btn color="primary" @click="createPlaylistsWithSelection">Create</v-btn>
