@@ -30,7 +30,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
     @Transactional
     @PostMapping
     fun saveLibrary(@RequestBody library: Library): Library {
-        val path = Paths.get(library.path)
+        val path = Paths.get(library.path!!)
         if (!path.isAbsolute) {
             throw IllegalArgumentException("Path isn't absolute.")
         }
