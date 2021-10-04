@@ -23,14 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-data class SmartPlaylistCreateInformation(val name: String, val query: String, val orderDirection: Sort.Direction,
-                                          val orderBy: String)
+data class SmartPlaylistCreateInformation(
+    val name: String, val query: String, val orderDirection: Sort.Direction,
+    val orderBy: String
+)
 
 @RestController
 @RequestMapping("/api/smart-playlists")
-class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylistRepository,
-                              private val videoSearcher: VideoSearcher, private val videoRepository: VideoRepository,
-                              private val collageCreator: CollageCreator) {
+class SmartPlaylistController(
+    private val smartPlaylistRepository: SmartPlaylistRepository,
+    private val videoSearcher: VideoSearcher, private val videoRepository: VideoRepository,
+    private val collageCreator: CollageCreator
+) {
     @Transactional(readOnly = true)
     @GetMapping
     fun getAll(): List<SmartPlaylist> {
@@ -80,9 +84,11 @@ class SmartPlaylistController(private val smartPlaylistRepository: SmartPlaylist
 
     @Transactional(readOnly = true)
     @GetMapping("/{id}/poster", produces = [MediaType.IMAGE_PNG_VALUE])
-    fun createPoster(@PathVariable("id") playlistId: Int, @RequestParam("width", defaultValue = "320") width: Int, @RequestParam
-    ("height", defaultValue = "180") height: Int):
-            ResponseEntity<ByteArray> {
+    fun createPoster(
+        @PathVariable("id") playlistId: Int,
+        @RequestParam("width", defaultValue = "320") width: Int,
+        @RequestParam("height", defaultValue = "180") height: Int
+    ): ResponseEntity<ByteArray> {
         val playlist = smartPlaylistRepository.getOne(playlistId)
         val videoIds = videoSearcher.search(playlist.query!!)
         if (videoIds.isEmpty()) {

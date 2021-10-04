@@ -31,8 +31,11 @@ data class PlaylistInformation(val id: Int, val name: String, val videoIds: List
 
 @RestController
 @RequestMapping("/api/playlists")
-class PlaylistController(private val playlistRepository: PlaylistRepository, private val videoRepository: VideoRepository,
-                         private val collageCreator: CollageCreator) {
+class PlaylistController(
+    private val playlistRepository: PlaylistRepository,
+    private val videoRepository: VideoRepository,
+    private val collageCreator: CollageCreator
+) {
 
     @Transactional(readOnly = true)
     @GetMapping
@@ -92,9 +95,11 @@ class PlaylistController(private val playlistRepository: PlaylistRepository, pri
 
     @Transactional(readOnly = true)
     @GetMapping("/{id}/poster", produces = [MediaType.IMAGE_PNG_VALUE])
-    fun createPoster(@PathVariable("id") playlistId: Int, @RequestParam("width", defaultValue = "320") width: Int, @RequestParam
-    ("height", defaultValue = "180") height: Int):
-            ResponseEntity<ByteArray> {
+    fun createPoster(
+        @PathVariable("id") playlistId: Int,
+        @RequestParam("width", defaultValue = "320") width: Int,
+        @RequestParam("height", defaultValue = "180") height: Int
+    ): ResponseEntity<ByteArray> {
         val playlist = playlistRepository.getOne(playlistId)
         val videosThumbnails = playlist.videos.mapNotNull { vip -> vip.video?.thumbnail }
         if (videosThumbnails.isEmpty()) {
