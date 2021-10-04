@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.spring") version "1.5.20"
 
     id("com.github.node-gradle.node") version "3.1.0"
-    id("org.springframework.boot") version "2.4.2"
+    id("org.springframework.boot") version "2.5.5"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.5.20"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
@@ -44,10 +44,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("net.bramp.ffmpeg:ffmpeg:0.6.2")
-    implementation("org.flywaydb:flyway-core:7.4.0")
-    implementation("com.vladmihalcea:hibernate-types-52:2.4.2")
+    implementation("org.flywaydb:flyway-core:7.14.1")
+    implementation("com.vladmihalcea:hibernate-types-52:2.12.1")
     implementation("com.github.h0tk3y.betterParse:better-parse-jvm:0.4.2")
-    implementation("org.xerial:sqlite-jdbc:3.34.0")
+    implementation("org.xerial:sqlite-jdbc:3.36.0.2")
     runtimeOnly(kotlin("scripting-jsr223"))
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
