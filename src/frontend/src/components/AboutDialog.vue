@@ -60,11 +60,6 @@
             license: "Apache License, 2.0"
         },
         {
-            name: "Vue Mugen Scroll",
-            url: "https://github.com/egoist/vue-mugen-scroll",
-            license: "MIT License"
-        },
-        {
             name: "Vue Router",
             url: "https://github.com/vuejs/vue-router",
             license: "MIT License"
