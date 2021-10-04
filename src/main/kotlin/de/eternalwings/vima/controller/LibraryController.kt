@@ -32,15 +32,15 @@ class LibraryController(private val libraryRepository: LibraryRepository,
     fun saveLibrary(@RequestBody library: Library): Library {
         val path = Paths.get(library.path)
         if (!path.isAbsolute) {
-            throw IllegalArgumentException("Isn't absolute.")
+            throw IllegalArgumentException("Path isn't absolute.")
         }
 
         if (!Files.isReadable(path)) {
-            throw IllegalArgumentException("Not readable.")
+            throw IllegalArgumentException("Path isn't readable.")
         }
 
         if (!Files.isDirectory(path)) {
-            throw IllegalArgumentException("Not a directory.")
+            throw IllegalArgumentException("Path is not a directory.")
         }
 
         if (library.id != null) {
@@ -53,7 +53,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
                 eventPublisher.publishEvent(LibraryCreateEvent(this, newLibrary))
                 return newLibrary
             } else {
-                throw IllegalStateException("Already exists.")
+                throw IllegalStateException("Library for the given path already exists.")
             }
         }
     }
