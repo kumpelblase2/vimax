@@ -27,7 +27,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
                         private val videoProcess: VideoProcess,
                         private val eventPublisher: ApplicationEventPublisher) {
 
-    @Transactional(readOnly = true)
+    @Transactional
     @PostMapping
     fun saveLibrary(@RequestBody library: Library): Library {
         val path = Paths.get(library.path)
