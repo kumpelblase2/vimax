@@ -36,7 +36,7 @@ import java.time.temporal.ChronoUnit
 
 abstract class BaseDatabaseQueryCreator(
     protected val metadataRepository: MetadataRepository,
-    protected val durationTolerance: Long
+    protected val durationTolerance: Short
 ) : DatabaseQueryCreator {
     @Throws(MetadataNotValidException::class)
     override fun createQueryFrom(query: FullQuery): Pair<String, QueryContext> {

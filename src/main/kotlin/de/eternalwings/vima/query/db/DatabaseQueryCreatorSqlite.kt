@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
 @Component
 class DatabaseQueryCreatorSqlite(
     metadataRepository: MetadataRepository,
-    @Value("\${duration-query-tolerance:3}") durationTolerance: Long
+    @Value("\${duration-query-tolerance:3}") durationTolerance: Short
 ) : BaseDatabaseQueryCreator(metadataRepository, durationTolerance) {
 
     override fun arraySizeQueryOrDefault(metadataId: Int, comparator: Comparator, size: Int, context: QueryContext): Filter {

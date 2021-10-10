@@ -2,10 +2,10 @@ package de.eternalwings.vima.ext
 
 import java.time.Duration
 
-fun Duration.tolerance(toleranceAmount: Long): Long {
-    return if(this.toHours() > 0) {
-        Duration.ofMinutes(toleranceAmount).toSeconds()
-    } else {
-        toleranceAmount
-    }
+/**
+ * Gets the tolerance in seconds given a specified tolerance amount in percent.
+ */
+fun Duration.tolerance(toleranceAmount: Short): Long {
+    val seconds = toSeconds()
+    return seconds.times(toleranceAmount).div(100)
 }
