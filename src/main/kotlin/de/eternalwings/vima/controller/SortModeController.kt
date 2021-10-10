@@ -19,7 +19,7 @@ class SortModeController(private val videoRepository: VideoRepository, private v
     @Transactional(readOnly = true)
     @GetMapping("/{id}")
     fun getVideosWithMissingMetadata(@PathVariable("id") metadataId: Int): List<Int> {
-        val metadata = metadataRepository.getOne(metadataId)
+        val metadata = metadataRepository.getById(metadataId)
         return when (metadata.type) {
             SELECTION -> videoRepository.findVideosWithDefaultMetadataValue(metadata.id!!,
                     (metadata.options as SelectionMetadataOptions).defaultValue!!.name, ".value.name")

@@ -44,7 +44,7 @@ class SmartPlaylistController(
     @Transactional(readOnly = true)
     @GetMapping("/{id}")
     fun getVideosOf(@PathVariable id: Int): List<Int> {
-        val playlist = smartPlaylistRepository.getOne(id)
+        val playlist = smartPlaylistRepository.getById(id)
         return videoSearcher.search(playlist.query!!, playlist.orderBy!!, playlist.orderDirection ?: ASC)
     }
 
@@ -58,7 +58,7 @@ class SmartPlaylistController(
             return ResponseEntity.badRequest().build()
         }
 
-        val existing = smartPlaylistRepository.getOne(id)
+        val existing = smartPlaylistRepository.getById(id)
         existing.name = playlist.name
         existing.orderBy = playlist.orderBy
         existing.orderDirection = playlist.orderDirection
@@ -87,7 +87,7 @@ class SmartPlaylistController(
         @RequestParam("width", defaultValue = "320") width: Int,
         @RequestParam("height", defaultValue = "180") height: Int
     ): ResponseEntity<ByteArray> {
-        val playlist = smartPlaylistRepository.getOne(playlistId)
+        val playlist = smartPlaylistRepository.getById(playlistId)
         val videoIds = videoSearcher.search(playlist.query!!)
         if (videoIds.isEmpty()) {
             return ResponseEntity.notFound().build()

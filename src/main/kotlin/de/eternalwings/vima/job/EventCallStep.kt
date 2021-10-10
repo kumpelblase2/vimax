@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class EventCallStep(private val videoRepository: VideoRepository, private val pluginManager: PluginManager,
                     private val applicationEventPublisher: ApplicationEventPublisher) {
     fun execute(videoId: Int) {
-        val video = videoRepository.getOne(videoId)
+        val video = videoRepository.getById(videoId)
         applicationEventPublisher.publishEvent(VideoCreateEvent(this, video))
         if(pluginManager.callEvent(CREATE, video)) {
             videoRepository.save(video)

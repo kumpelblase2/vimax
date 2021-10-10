@@ -75,7 +75,7 @@ class VideoController(
 
     @Transactional(readOnly = true)
     @GetMapping("/video/{id}")
-    fun getVideo(@PathVariable("id") id: Int) = VideoDTO.fromVideo(videoRepository.getOne(id))
+    fun getVideo(@PathVariable("id") id: Int) = VideoDTO.fromVideo(videoRepository.getById(id))
 
     @GetMapping("/video/{id}/stream")
     @Cacheable(cacheNames = ["streams"], key = "#id")

@@ -29,7 +29,7 @@ class AsyncVideoEventJob(private val videoRepository: VideoRepository, private v
 
         transactionTemplate.execute {
             var changed = false
-            val original = videoRepository.getOne(video.id)
+            val original = videoRepository.getById(video.id)
             video.changed.forEach { changedMetadata ->
                 val metadataValue = video.metadata[changedMetadata] as MetadataValue<Any>
                 val originalMetadata = original.metadata!![changedMetadata] as MetadataValue<Any>

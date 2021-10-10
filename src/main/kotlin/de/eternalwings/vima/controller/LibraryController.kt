@@ -66,7 +66,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
     fun deleteLibrary(@PathVariable("id") id: Int,
                       @RequestParam("delete_thumbnails", required = false, defaultValue = "false")
                       deleteThumbnails: Boolean): Int {
-        val library = libraryRepository.getOne(id)
+        val library = libraryRepository.getById(id)
         videoProcess.deleteAllVideosInLibrary(library, deleteThumbnails)
         eventPublisher.publishEvent(LibraryDeleteEvent(this, library))
         libraryRepository.delete(library)

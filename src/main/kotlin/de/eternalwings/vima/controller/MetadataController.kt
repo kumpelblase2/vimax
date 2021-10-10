@@ -47,7 +47,7 @@ class MetadataController(private val metadataRepository: MetadataRepository,
     @Transactional(readOnly = true)
     @GetMapping("/metadata/{id}/values")
     fun getPossibleValues(@PathVariable("id") metadataId: Int): Set<String> {
-        val metadata = metadataRepository.getOne(metadataId)
+        val metadata = metadataRepository.getById(metadataId)
         return when (metadata.type) {
             BOOLEAN -> setOf("true", "false")
             SELECTION -> (metadata.options as SelectionMetadataOptions).values.mapNotNull { it.name }.toSet()

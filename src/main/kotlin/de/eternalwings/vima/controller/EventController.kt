@@ -21,7 +21,7 @@ class EventController(private val videoRepository: VideoRepository, private val 
         @RequestParam(required = true, name = "type") eventType: EventType,
         @RequestParam(required = true, name = "video") videoId: Int
     ): ResponseEntity<VideoDTO> {
-        val video = videoRepository.getOne(videoId)
+        val video = videoRepository.getById(videoId)
         val updated = pluginManager.callEvent(eventType, video)
         val result = videoRepository.save(video)
         return if (updated) {

@@ -33,7 +33,7 @@ class MetadataProcess(
                 }
             }
         } else {
-            val existing = metadataRepository.getOne(metadata.id!!)
+            val existing = metadataRepository.getById(metadata.id!!)
             if (existing.type != metadata.type) {
                 throw IllegalArgumentException("Changing the type of metadata is currently not possible.")
             }

@@ -13,7 +13,7 @@ class LoadVideoStep(private val videoRepository: VideoRepository,
                     private val metadataRepository: MetadataRepository) {
     fun execute(location: Path, libraryId: Int): Int {
         val filename = location.fileName.toString()
-        val library = libraryRepository.getOne(libraryId)
+        val library = libraryRepository.getById(libraryId)
         val nameWithoutExtension = getNameWithoutExtension(filename)
         val video = Video(location = location.toString(), name = nameWithoutExtension, library = library)
         appendMetadataTo(video)

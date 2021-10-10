@@ -54,7 +54,7 @@ class PlaylistController(
     @Transactional
     @PutMapping("/{id}")
     fun updatePlaylistName(@PathVariable("id") playlistId: Int, @RequestBody newName: String): PlaylistInformation {
-        val playlist = playlistRepository.getOne(playlistId)
+        val playlist = playlistRepository.getById(playlistId)
         playlist.name = newName
         val saved = playlistRepository.save(playlist)
         return PlaylistInformation.from(saved)
@@ -74,7 +74,7 @@ class PlaylistController(
     @PutMapping("/{id}/remove")
     fun removeVideoFromPlaylist(@PathVariable("id") playlistId: Int, @RequestBody videos: List<Int>): PlaylistInformation {
         playlistRepository.deleteFromPlaylist(playlistId, videos)
-        return PlaylistInformation.from(playlistRepository.getOne(playlistId))
+        return PlaylistInformation.from(playlistRepository.getById(playlistId))
     }
 
     @DeleteMapping("/{id}")
@@ -99,7 +99,7 @@ class PlaylistController(
         @RequestParam("width", defaultValue = "320") width: Int,
         @RequestParam("height", defaultValue = "180") height: Int
     ): ResponseEntity<ByteArray> {
-        val playlist = playlistRepository.getOne(playlistId)
+        val playlist = playlistRepository.getById(playlistId)
         val videosThumbnails = playlist.videos.mapNotNull { vip -> vip.video?.thumbnail }
         if (videosThumbnails.isEmpty()) {
             return ResponseEntity.notFound().build()
