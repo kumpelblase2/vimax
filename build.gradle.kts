@@ -54,10 +54,16 @@ dependencies {
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 }
 
+tasks.register<NpmTask>("synchronizeFrontendVersion") {
+    npmCommand.set(listOf("pkg"))
+    args.set(listOf("set", "version=${project.version}"))
+}
+
 tasks.register<NpmTask>("buildFrontend") {
     npmCommand.set(listOf("run"))
     args.set(listOf("build"))
     dependsOn(tasks.npmInstall)
+    dependsOn("synchronizeFrontendVersion")
 }
 
 tasks.processResources {
