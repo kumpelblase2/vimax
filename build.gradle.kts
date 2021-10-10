@@ -2,13 +2,14 @@ import com.github.gradle.node.npm.task.NpmTask
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version "1.5.20"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.5.20"
-
-    id("com.github.node-gradle.node") version "3.1.0"
+    id("com.github.node-gradle.node") version "3.1.1"
     id("org.springframework.boot") version "2.5.5"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.20"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+
+    val kotlinVersion = "1.5.31"
+    kotlin("jvm") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 }
 
 group = "de.eternalwings"
