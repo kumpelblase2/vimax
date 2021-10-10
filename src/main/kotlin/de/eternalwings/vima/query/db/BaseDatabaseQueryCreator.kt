@@ -34,7 +34,10 @@ import de.eternalwings.vima.repository.MetadataRepository
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-abstract class BaseDatabaseQueryCreator(protected val metadataRepository: MetadataRepository) : DatabaseQueryCreator {
+abstract class BaseDatabaseQueryCreator(
+    protected val metadataRepository: MetadataRepository,
+    protected val durationTolerance: Long
+) : DatabaseQueryCreator {
     @Throws(MetadataNotValidException::class)
     override fun createQueryFrom(query: FullQuery): Pair<String, QueryContext> {
         val allMetadata = this.metadataRepository.findAll()
@@ -104,7 +107,7 @@ abstract class BaseDatabaseQueryCreator(protected val metadataRepository: Metada
             }
             DURATION -> {
                 val duration = value.toDuration()
-                val tolerance = if(like) duration.tolerance(3) else 0
+                val tolerance = if (like) duration.tolerance(durationTolerance) else 0
                 durationQueryOrDefault(foundMetadata.id!!, duration.toSeconds(), tolerance, context)
             }
             else -> throw NotImplementedError()

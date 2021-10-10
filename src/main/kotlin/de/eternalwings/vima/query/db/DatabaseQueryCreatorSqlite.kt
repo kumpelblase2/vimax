@@ -14,10 +14,14 @@ import de.eternalwings.vima.query.and
 import de.eternalwings.vima.query.db.DatabaseQueryCreator.QueryContext
 import de.eternalwings.vima.query.or
 import de.eternalwings.vima.repository.MetadataRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class DatabaseQueryCreatorSqlite(metadataRepository: MetadataRepository) : BaseDatabaseQueryCreator(metadataRepository) {
+class DatabaseQueryCreatorSqlite(
+    metadataRepository: MetadataRepository,
+    @Value("\${duration-query-tolerance:3}") durationTolerance: Long
+) : BaseDatabaseQueryCreator(metadataRepository, durationTolerance) {
 
     override fun arraySizeQueryOrDefault(metadataId: Int, comparator: Comparator, size: Int, context: QueryContext): Filter {
         val jsonProp = "$metadataId.value"
