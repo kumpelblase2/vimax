@@ -9,6 +9,7 @@
         "build": "vue-cli-service build"
     },
     "dependencies": {
+        "@fontsource/roboto": "^4.5.1",
         "axios": "^0.21.1",
         "video.js": "^7.7.6",
         "virtual-flex-wrap": "kumpelblase2/virtual-flex-wrap",

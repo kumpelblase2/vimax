@@ -73,6 +73,11 @@
             name: "Vuex",
             url: "https://github.com/vuejs/vuex",
             license: "MIT License"
+        },
+        {
+            name: "Roboto Font",
+            url: "https://fonts.google.com/specimen/Roboto",
+            license: "Apache License, 2.0"
         }
     ];
 

@@ -8,6 +8,7 @@ import { setup } from './eventsource'
 import './styles/fix-row.css';
 import 'video.js/dist/video-js.css';
 import './video/setup-video-thumbnail-plugin';
+import '@fontsource/roboto';
 
 Vue.config.productionTip = false;
 
