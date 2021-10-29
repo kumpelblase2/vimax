@@ -3,6 +3,9 @@
         <v-card-title>About</v-card-title>
         <v-card-text>
             <div class="text-center">
+                Vimax - Version {{ version }}
+            </div>
+            <div class="text-center">
                 Vimax is made with ❤️ by <a href="https://github.com/kumpelblase2">kumpelblase2</a>.<br/>
                 Source code is located at <a href="https://github.com/kumpelblase2/vimax" target="_blank"
                                              referrerpolicy="no-referrer">GitHub</a> as well
@@ -38,6 +41,8 @@
 </template>
 
 <script>
+    import { VERSION } from "@/version";
+
     const frontendDependencies = [
         {
             name: "Vue.js",
@@ -129,7 +134,8 @@
         data() {
             return {
                 frontendDependencies,
-                backendDependencies
+                backendDependencies,
+                version: VERSION
             };
         }
     }
