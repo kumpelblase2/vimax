@@ -15,7 +15,7 @@ class FFmpegConfig {
         try {
             return FFmpeg(ffmpegLocation)
         } catch (exception: IOException) {
-            throw IllegalStateException("Couldn't find ffmpeg binary!")
+            throw IllegalStateException("Couldn't find ffmpeg binary! Specified path: $ffmpegLocation")
         }
     }
 
@@ -24,7 +24,7 @@ class FFmpegConfig {
         try {
             return FFprobe(ffprobeLocation)
         } catch (exception: IOException) {
-            throw IllegalStateException("Couldn't find ffprobe binary!")
+            throw IllegalStateException("Couldn't find ffprobe binary! Specified path: $ffprobeLocation")
         }
     }
 }
