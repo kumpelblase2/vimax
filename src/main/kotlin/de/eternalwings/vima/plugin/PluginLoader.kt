@@ -1,6 +1,6 @@
 package de.eternalwings.vima.plugin
 
-import org.springframework.beans.factory.annotation.Value
+import de.eternalwings.vima.config.PluginSettings
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
@@ -13,17 +13,17 @@ import java.util.stream.Stream
 class PluginLoader(
     private val resourceLoader: ResourceLoader,
     pluginBindingProvider: PluginBindingsProvider,
-    @Value("\${external-plugin-dir}") private val externalPluginDir: Path
+    private val pluginSettings: PluginSettings
 ) {
     private val matcher = FileSystems.getDefault().getPathMatcher("glob:**.kts")
     private val executor = ScriptExecutor()
 
     private val externalPluginFiles: Stream<Path>
         get() {
-            return if (!Files.exists(externalPluginDir)) {
+            return if (!Files.exists(pluginSettings.externalPath) || !Files.isDirectory(pluginSettings.externalPath)) {
                 Stream.empty()
             } else {
-                Files.list(externalPluginDir).filter { matcher.matches(it) }
+                Files.list(pluginSettings.externalPath).filter { matcher.matches(it) }
             }
         }
 

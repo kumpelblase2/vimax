@@ -1,5 +1,6 @@
 package de.eternalwings.vima.query.db
 
+import de.eternalwings.vima.config.QuerySettings
 import de.eternalwings.vima.query.Comparator
 import de.eternalwings.vima.query.Comparator.EQUALS
 import de.eternalwings.vima.query.Comparator.EXISTS
@@ -20,8 +21,8 @@ import org.springframework.stereotype.Component
 @Component
 class DatabaseQueryCreatorSqlite(
     metadataRepository: MetadataRepository,
-    @Value("\${duration-query-tolerance:3}") durationTolerance: Short
-) : BaseDatabaseQueryCreator(metadataRepository, durationTolerance) {
+    querySettings: QuerySettings
+) : BaseDatabaseQueryCreator(metadataRepository, querySettings.durationTolerance) {
 
     override fun arraySizeQueryOrDefault(metadataId: Int, comparator: Comparator, size: Int, context: QueryContext): Filter {
         val jsonProp = "$metadataId.value"

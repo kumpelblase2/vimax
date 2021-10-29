@@ -1,6 +1,6 @@
 package de.eternalwings.vima.process
 
-import org.springframework.beans.factory.annotation.Value
+import de.eternalwings.vima.config.ThumbnailSettings
 import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
@@ -12,16 +12,14 @@ import java.util.stream.Collectors
 class VideoThumbnailCreator(
     private val thumbnailGenerator: ThumbnailGenerator,
     private val thumbnailProcess: ThumbnailProcess,
-    @Value("\${thumbnail-amount:3}") private val thumbnailCount: Int,
-    @Value("\${thumbnail-relative-dir:.thumbnails}") thumbnailsRelativePath: String
+    private val thumbnailSettings: ThumbnailSettings
 ) {
 
     private val rediscoverPattern: Pattern = Pattern.compile("^(.+)_\\d+\\.jpg$")
-    private val relativeThumbnailDir: Path = Paths.get(thumbnailsRelativePath)
 
     fun createThumbnailsFor(videoPath: Path, videoId: Int) {
         val parentPath = videoPath.parent
-        val thumbnailDir = parentPath.resolve(relativeThumbnailDir)
+        val thumbnailDir = parentPath.resolve(thumbnailSettings.relativePath)
         if (!Files.exists(thumbnailDir)) {
             Files.createDirectory(thumbnailDir)
         }
@@ -30,7 +28,7 @@ class VideoThumbnailCreator(
                 thumbnailDir, videoPath.fileName.toString()
                     .substringBeforeLast(".")
             )
-        val remainingThumbnails = (thumbnailCount - existingThumbnails.size).coerceAtLeast(0)
+        val remainingThumbnails = (thumbnailSettings.count - existingThumbnails.size).coerceAtLeast(0)
         val generatedThumbnails = thumbnailGenerator.generateThumbnailsFor(videoPath, thumbnailDir, remainingThumbnails)
         val allThumbnails = existingThumbnails + generatedThumbnails
         thumbnailProcess.addThumbnailsToVideo(videoId, allThumbnails.map { it.toString() })
