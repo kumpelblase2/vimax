@@ -53,7 +53,7 @@ For development purposes, you also need to have nodejs+npm installed.
 
 Simply place the provided jar in any folder you like and start it using the following command (adjust the filename accordingly):
 ```shell script
-java -jar vima-0.0.1-all.jar -Dspring.profiles.active=production
+java -jar vimax-1.2.jar --spring.profiles.active=production
 ```
 
 This will start the application and once startup has finished, you can access the application via `http://localhost:8080`
