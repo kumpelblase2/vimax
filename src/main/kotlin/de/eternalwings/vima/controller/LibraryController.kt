@@ -20,6 +20,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import javax.persistence.EntityNotFoundException
 
+data class LibraryCreateDTO(val path: String? = null)
+
 @RestController
 @RequestMapping("/api/library")
 class LibraryController(private val libraryRepository: LibraryRepository,
@@ -29,7 +31,7 @@ class LibraryController(private val libraryRepository: LibraryRepository,
 
     @Transactional
     @PostMapping
-    fun saveLibrary(@RequestBody library: Library): Library {
+    fun saveLibrary(@RequestBody library: LibraryCreateDTO): Library {
         val path = Paths.get(library.path!!)
         if (!path.isAbsolute) {
             throw IllegalArgumentException("Path isn't absolute.")
@@ -43,18 +45,14 @@ class LibraryController(private val libraryRepository: LibraryRepository,
             throw IllegalArgumentException("Path is not a directory.")
         }
 
-        if (library.id != null) {
-            throw IllegalStateException("Cannot alter existing library.")
+        val existing = libraryRepository.findByPath(library.path)
+        if (existing == null) {
+            val newLibrary = libraryRepository.save(Library(path = library.path))
+            videoLoader.scanLibrary(newLibrary)
+            eventPublisher.publishEvent(LibraryCreateEvent(this, newLibrary))
+            return newLibrary
         } else {
-            val existing = libraryRepository.findByPath(library.path!!)
-            if (existing == null) {
-                val newLibrary = libraryRepository.save(library)
-                videoLoader.scanLibrary(newLibrary)
-                eventPublisher.publishEvent(LibraryCreateEvent(this, newLibrary))
-                return newLibrary
-            } else {
-                throw IllegalStateException("Library for the given path already exists.")
-            }
+            throw IllegalStateException("Library for the given path already exists.")
         }
     }
 
