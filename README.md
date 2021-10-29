@@ -56,7 +56,8 @@ Simply place the provided jar in any folder you like and start it using the foll
 java -jar vimax-1.2.jar --spring.profiles.active=production
 ```
 
-This will start the application and once startup has finished, you can access the application via `http://localhost:8080`
+This will start the application and once startup has finished, it should open the web interface in your preferred browser. If 
+you don't want it to automatically open the browser, you can pass `--no-browser` at the end of the command to prevent it.
 
 ## Setting up
 
