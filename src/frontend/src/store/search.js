@@ -1,9 +1,13 @@
+function needsQuoting(term) {
+    return /[:. '\-+]/g.test(term);
+}
+
 function createFilterTermFor(metadata, value) {
     switch(metadata.type) {
         case 'BOOLEAN':
             return ((value && value === "Yes") ? '+' : '-') + metadata.name;
         default:
-            return metadata.name + ":" + (value.includes(" ") ? `"${value}"` :value);
+            return metadata.name + ":" + (needsQuoting(value) ? `"${value}"` : value);
     }
 }
 
