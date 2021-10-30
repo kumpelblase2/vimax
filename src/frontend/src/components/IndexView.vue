@@ -15,6 +15,7 @@
 import VideoCardWrapper from "@/components/video/VideoCardWrapper";
 import VideoInfoDialog from "@/components/video/VideoInfoDialog";
 import VirtualFlexWrap from 'virtual-flex-wrap/src/virtual-flex-wrap';
+import { Resize } from "vuetify/lib/directives";
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
 import MultiVideoEditDialog from "./video/MultiVideoEditDialog";
 import VideoCard from "./video/VideoCard";
@@ -23,6 +24,9 @@ import VideoEditDialog from "./video/VideoEditDialog";
 export default {
     name: "Library",
     components: { VirtualFlexWrap, VideoInfoDialog, MultiVideoEditDialog, VideoEditDialog, VideoCard },
+    directives: {
+        Resize
+    },
     data() {
         return {
             videoComponent: VideoCardWrapper,

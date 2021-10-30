@@ -1,1 +1,1 @@
-export const VERSION = process.env.VUE_APP_VERSION;
+export const VERSION = VIMAX_VERSION;
