@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="my-5">
+    <v-sheet class="mt-5">
         <v-toolbar flat>
             <v-toolbar-title>Plugins</v-toolbar-title>
             <v-spacer></v-spacer>
