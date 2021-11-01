@@ -42,8 +42,10 @@ module.exports = {
     },
     css: {
         preprocessorOptions: {
-            scss: {
-                additionalData: '@import "./node_modules/vuetify/src/styles/styles.sass";',
+            sass: {
+                additionalData: [
+                    '@import "@/styles/variables.scss"'
+                ].join('\n') + "\n", // need to end with an empty line
             },
         },
     },
