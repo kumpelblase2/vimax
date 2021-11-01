@@ -16,13 +16,7 @@
                         </v-card-title>
 
                         <v-card-text>
-                            <v-container grid-list-md>
-                                <v-row wrap>
-                                    <v-flex xs12 sm6>
-                                        <v-text-field v-model="editingItem.path" label="Location"/>
-                                    </v-flex>
-                                </v-row>
-                            </v-container>
+                            <v-text-field v-model="editingItem.path" label="Location"/>
                         </v-card-text>
 
                         <v-card-actions>
