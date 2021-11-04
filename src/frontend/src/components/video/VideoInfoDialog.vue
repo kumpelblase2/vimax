@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="shouldShowVideoInfo" @click:outside="close" v-if="shouldShowVideoInfo">
+    <v-dialog :value="shouldShowVideoInfo" @click:outside="close" v-if="shouldShowVideoInfo" max-width="75%">
         <v-card>
             <v-card-title>
                 <span class="headline">{{video.name}}</span>
@@ -10,10 +10,16 @@
             </v-card-title>
             <v-card-text>
                 <v-row>
-                    <v-col md="6">
-                        <v-img :src="thumbnailUrl" />
+                    <v-col lg="6" cols="12">
+                        <v-row>
+                            <v-img :src="thumbnailUrl" :aspect-ratio="16/10" />
+                        </v-row>
+                        <v-row>
+                            <v-img class="ma-5" :src="thumbUrl" :aspect-ratio="16/10"
+                                   v-for="thumbUrl in nonThumbnailUrls" :key="thumbUrl" />
+                        </v-row>
                     </v-col>
-                    <v-col md="6">
+                    <v-col lg="6" cols="12">
                         <VideoMetadataDisplay :video-metadata="video.metadata" all />
                     </v-col>
                 </v-row>
@@ -29,7 +35,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import { getSelectedThumbnailURLForVideo } from "@/video";
+import { getSelectedThumbnailURLForVideo, getThumbnailURL } from "@/video";
 import VideoMetadataDisplay from "@/components/video/VideoMetadataDisplay";
 
 export default {
@@ -42,6 +48,11 @@ export default {
         },
         thumbnailUrl() {
             return getSelectedThumbnailURLForVideo(this.video);
+        },
+        nonThumbnailUrls() {
+            const thumbnails = [...this.video.thumbnails] || [];
+            thumbnails.splice(this.video.selectedThumbnail, 1);
+            return thumbnails.map(getThumbnailURL);
         }
     },
     methods: {
