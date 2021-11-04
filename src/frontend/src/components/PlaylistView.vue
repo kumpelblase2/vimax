@@ -26,6 +26,9 @@
                             </v-list-item-content>
                             <v-list-item-action>
                                 <v-row>
+                                    <v-btn icon @click="startPlaylistAt(video.id)">
+                                        <v-icon>play_arrow</v-icon>
+                                    </v-btn>
                                     <v-btn icon @click="displayVideo(video.id)">
                                         <v-icon>info</v-icon>
                                     </v-btn>
@@ -92,7 +95,7 @@
         methods: {
             ...mapActions('videos', ['loadVideos']),
             ...mapActions('playlist', ['updateOrder', 'removeFromPlaylist']),
-            ...mapActions('player', ['playPlaylist', 'playPlaylistRandom']),
+            ...mapActions('player', ['playPlaylist', 'playPlaylistRandom', 'skipToVideo']),
             ...mapMutations('videos', ["displayVideo"]),
             deleteVideo(videoId) {
                 this.removeFromPlaylist({ playlistId: this.playlistId, videoIds: [videoId] });
@@ -105,6 +108,10 @@
             },
             shufflePlay() {
                 this.playPlaylistRandom(this.playlist);
+            },
+            async startPlaylistAt(id) {
+                await this.startPlaylist();
+                this.skipToVideo(id);
             }
         }
     }
