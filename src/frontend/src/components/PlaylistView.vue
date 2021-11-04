@@ -4,8 +4,12 @@
             <v-card-title>
                 {{ playlist.name }}
                 <v-spacer></v-spacer>
-                <v-icon @click="shufflePlay">shuffle</v-icon>
-                <v-icon @click="startPlaylist">play_arrow</v-icon>
+                <v-btn icon @click="shufflePlay">
+                    <v-icon>shuffle</v-icon>
+                </v-btn>
+                <v-btn icon @click="startPlaylist">
+                    <v-icon>play_arrow</v-icon>
+                </v-btn>
             </v-card-title>
             <v-card-text>
                 <v-list>
@@ -22,8 +26,12 @@
                             </v-list-item-content>
                             <v-list-item-action>
                                 <v-row>
-                                    <v-icon @click="displayVideo(video.id)" class="mr-1">info</v-icon>
-                                    <v-icon @click="deleteVideo(video.id)">close</v-icon>
+                                    <v-btn icon @click="displayVideo(video.id)">
+                                        <v-icon>info</v-icon>
+                                    </v-btn>
+                                    <v-btn icon @click="deleteVideo(video.id)">
+                                        <v-icon>close</v-icon>
+                                    </v-btn>
                                 </v-row>
                             </v-list-item-action>
                         </v-list-item>
