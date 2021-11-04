@@ -3,6 +3,7 @@
         <v-card>
             <v-card-title>
                 {{ playlist.name }}
+                <span class="text--disabled ml-5">{{ videoIds.length }} Video(s)</span>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="shufflePlay">
                     <v-icon>shuffle</v-icon>
@@ -84,12 +85,15 @@
                     this.updateOrder({ playlistId: this.playlistId, videoIds });
                 }
             },
-            videos() {
+            videoIds() {
                 if(this.playlist != null) {
-                    return this.playlist.videoIds.map(this.getVideo);
+                    return this.playlist.videoIds;
                 } else {
                     return [];
                 }
+            },
+            videos() {
+                return this.videoIds.map(this.getVideo);
             }
         },
         methods: {

@@ -3,6 +3,7 @@
         <v-card class="px-2" height="100%">
             <v-card-title>
                 {{ (playlist || {}).name }}
+                <span class="text--disabled ml-5">{{ videoIds.length }} Video(s)</span>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="shufflePlaylist">
                     <v-icon>shuffle</v-icon>
